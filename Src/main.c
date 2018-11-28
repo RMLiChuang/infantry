@@ -101,7 +101,8 @@ int main(void)
   MX_USART2_UART_Init();//蓝牙串口  未用
   MX_USART3_UART_Init();//大疆SDK串口 未用
   delay_init(168);//延时函数初始化
-  mpu_dmp_init();//DMP初始化
+	MPU9250_Init();
+  //mpu_dmp_init();//DMP初始化
   //usmart_dev.init(84);//USMART初始化
   /* USER CODE BEGIN 2 */
 	/**TIM5 GPIO Configuration    
@@ -123,7 +124,7 @@ int main(void)
 	
 
   
-	init_TIM5_PWM();			//初始化TIM5
+	init_TIM5_PWM();			//初始化TIM5的PWM
 	mpu_device_init();   //在初始化imu的时候，要先初始化SPI5和GPIOF6 不然无法初始化imu
 	init_quaternion();	//初始化四元数，用于姿态解算
 	all_pid_init();			//所有电机的pid初始化
@@ -161,11 +162,11 @@ int main(void)
 //	  wave_form_data[5] =(short)chassis_yaw_speed.target;
 		
 		wave_form_data[0] =(short)imu.yaw;
-	  wave_form_data[1] =(short)mag_flag;
-	  wave_form_data[2] =(short)X_g_av;//chassis_yaw.output;
-	  wave_form_data[3] =(short)imu.temp;//mag_field_intensity;//磁场强度;
-	  wave_form_data[4] =(short)X_m_av;//imu.gz;
-	  wave_form_data[5] =(short)Y_g_av;
+	  wave_form_data[1] =(short)chassis_yaw.target;//MPU_Set_Accel_Fsr(2);
+	  wave_form_data[2] =(short)-imu.gz;//chassis_yaw.output;
+	  wave_form_data[3] =(short)chassis_yaw_speed.target;//mag_field_intensity;//磁场强度;
+	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
+	  wave_form_data[5] =(short)chassis_yaw_speed.output;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */

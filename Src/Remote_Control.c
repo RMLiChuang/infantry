@@ -113,8 +113,8 @@ __________________________________________________________________
 *************************** ***************************/
 int16_t moto_ctr[6];
 //遥控控制
-const int THRESHOLD=2000;  //极限速度
-const int TURNSPEED=2000;   //转弯极限速度
+const int THRESHOLD=2500;  //极限速度
+const int TURNSPEED=2500;   //转弯极限速度
 int yaw_control=0;
 void DBUS_Deal()
 {
@@ -139,10 +139,10 @@ void DBUS_Deal()
 		moto_ctr[2]=-remote_control.ch2+remote_control.ch3-remote_control.ch1;   
 		moto_ctr[3]=remote_control.ch2+remote_control.ch3-remote_control.ch1;
 	}
-	motor_pid[0].target=moto_ctr[0]*2000/660;
-   motor_pid[1].target=moto_ctr[1]*2000/660;
-   motor_pid[2].target=moto_ctr[2]*2000/660;
-   motor_pid[3].target=moto_ctr[3]*2000/660;
+	motor_pid[0].target=moto_ctr[0]*2500/660;
+   motor_pid[1].target=moto_ctr[1]*2500/660;
+   motor_pid[2].target=moto_ctr[2]*2500/660;
+   motor_pid[3].target=moto_ctr[3]*2500/660;
 	
 	if((motor_pid[0].target>THRESHOLD)&&(motor_pid[1].target>THRESHOLD)&&(motor_pid[2].target>THRESHOLD)&&(motor_pid[3].target>THRESHOLD))			//顺转速度控制
 		{

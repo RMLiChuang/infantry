@@ -29,6 +29,7 @@
 #include "vector3.h"
 #include "robomaster_calibrate.h"
 #include "robot_status.h"
+#include "pan_tilt_control.h"
 /* USER CODE END Includes */
 
 #endif

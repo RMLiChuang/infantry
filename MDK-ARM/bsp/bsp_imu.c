@@ -13,10 +13,10 @@
 //#include "ist8310_reg.h" 
 //#include "stm32f4xx_hal.h"
 #include <math.h>
-//#include "mpu6500_reg.h"
+#include "mpu6500_reg.h"
 //#include "spi.h"
 #include "robomaster_common.h"
-#include "mpu9250.h"
+//#include "mpu9250.h"
 #define BOARD_DOWN (1)   
 #define IST8310
 #define MPU_HSPI hspi5
@@ -49,9 +49,9 @@ static uint8_t        tx, rx;
 static uint8_t        tx_buff[14] = { 0xff };
 uint8_t               mpu_buff[14];                          /* buffer to save imu raw data */
 uint8_t               ist_buff[6];                           /* buffer to save IST8310 raw data */
-mpu_data_t            mpu_data;
+mpu_data_t            mpu_data,mpu9250_data;
 imu_t                 imu={0};
-imu_t                 imu_cloud={0};
+imu_t                 imu_9250={0};
 
 
 //Butter_Parameter Accel_Parameter={
@@ -338,6 +338,7 @@ void ist8310_get_data(uint8_t* buff)
 
 void mpu_get_data()
 {
+	/********************板载imu 原始数据读取 begin************************/
     mpu_read_bytes(MPU6500_ACCEL_XOUT_H, mpu_buff, 14);
 
     mpu_data.ax   = mpu_buff[0] << 8 | mpu_buff[1];
@@ -348,14 +349,15 @@ void mpu_get_data()
     mpu_data.gx = ((mpu_buff[8]  << 8 | mpu_buff[9])  - mpu_data.gx_offset);
     mpu_data.gy = ((mpu_buff[10] << 8 | mpu_buff[11]) - mpu_data.gy_offset);
     mpu_data.gz = ((mpu_buff[12] << 8 | mpu_buff[13]) - mpu_data.gz_offset);
-
-    ist8310_get_data(ist_buff);
+	/********************板载imu 数据读取 end************************/	
+    
+		ist8310_get_data(ist_buff);
     memcpy(&mpu_data.mx, ist_buff, 6);
 
     memcpy(&imu.ax, &mpu_data.ax, 6 * sizeof(int16_t));
 	
     imu.temp = 21 + mpu_data.temp / 333.87f;
-		/*******************温度补偿**********************/
+		/*******************板载imu温度补偿**********************/
 		if(imu.temp<40)
 		{
 			HAL_GPIO_WritePin(IMU_TEMP_Port, IMU_TEMP_Pin, GPIO_PIN_SET);//设置imu电阻引脚为高电平
@@ -365,40 +367,79 @@ void mpu_get_data()
 			HAL_GPIO_WritePin(IMU_TEMP_Port, IMU_TEMP_Pin, GPIO_PIN_RESET);//设置imu电阻引脚为低电平
 		}
 		
-		/*******************陀螺仪滤波 *******************/
-		X_w_av_bpf=Butterworth_Filter(mpu_data.gx,&Gyro_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_98);
-		Y_w_av_bpf=Butterworth_Filter(mpu_data.gy,&Gyro_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_98);
-		Z_w_av_bpf=Butterworth_Filter(mpu_data.gz,&Gyro_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_98);
-  
-		X_w_av=Butterworth_Filter(X_w_av_bpf,&Gyro_BufferData[0],&Gyro_Parameter);
-		Y_w_av=Butterworth_Filter(Y_w_av_bpf,&Gyro_BufferData[1],&Gyro_Parameter);
-		Z_w_av=Butterworth_Filter(Z_w_av_bpf,&Gyro_BufferData[2],&Gyro_Parameter);  
+		/*******************板载imu 陀螺仪滤波 *******************/
+		imu.X_w_av_bpf=Butterworth_Filter(mpu_data.gx,&Gyro_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_98);
+		imu.Y_w_av_bpf=Butterworth_Filter(mpu_data.gy,&Gyro_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_98);
+		imu.Z_w_av_bpf=Butterworth_Filter(mpu_data.gz,&Gyro_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_98);
+		
+		imu.X_w_av=Butterworth_Filter(imu.X_w_av_bpf,&Gyro_BufferData[0],&Gyro_Parameter);
+		imu.Y_w_av=Butterworth_Filter(imu.Y_w_av_bpf,&Gyro_BufferData[1],&Gyro_Parameter);
+		imu.Z_w_av=Butterworth_Filter(imu.Z_w_av_bpf,&Gyro_BufferData[2],&Gyro_Parameter);  
 		
 		
 		 /* 2000dps -> rad/s */  //弧度制
-		imu.wx   = X_w_av / 16.384f / 57.3f; 
-    imu.wy   = Y_w_av / 16.384f / 57.3f; 
-    imu.wz   = Z_w_av / 16.384f / 57.3f;
+		imu.wx   = imu.X_w_av / 16.384f / 57.3f; 
+    imu.wy   = imu.Y_w_av / 16.384f / 57.3f; 
+    imu.wz   = imu.Z_w_av / 16.384f / 57.3f;
 		/* 2000dps -> rad/s */  //角度制
-		imu.gx   = X_w_av / 16.384f; 
-    imu.gy   = Y_w_av / 16.384f; 
-    imu.gz   = Z_w_av / 16.384f;
+		imu.gx   = imu.X_w_av / 16.384f; 
+    imu.gy   = imu.Y_w_av / 16.384f; 
+    imu.gz   = imu.Z_w_av / 16.384f;
 		
-		/*******************加速度计滤波 *******************/
-		X_g_av_bpf=Butterworth_Filter(imu.ax,&Accel_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
-    Y_g_av_bpf=Butterworth_Filter(imu.ay,&Accel_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
-    Z_g_av_bpf=Butterworth_Filter(imu.az,&Accel_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_94);
-		X_g_av=Butterworth_Filter(X_g_av_bpf,&Accel_BufferData[0],&Accel_Parameter);
-		Y_g_av=Butterworth_Filter(Y_g_av_bpf,&Accel_BufferData[1],&Accel_Parameter);
-		Z_g_av=Butterworth_Filter(Z_g_av_bpf,&Accel_BufferData[2],&Accel_Parameter);
+		/*******************板载imu 加速度计滤波 *******************/
+		imu.X_g_av_bpf=Butterworth_Filter(imu.ax,&Accel_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
+    imu.Y_g_av_bpf=Butterworth_Filter(imu.ay,&Accel_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
+    imu.Z_g_av_bpf=Butterworth_Filter(imu.az,&Accel_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_94);
+		imu.X_g_av=Butterworth_Filter(imu.X_g_av_bpf,&Accel_BufferData[0],&Accel_Parameter);
+		imu.Y_g_av=Butterworth_Filter(imu.Y_g_av_bpf,&Accel_BufferData[1],&Accel_Parameter);
+		imu.Z_g_av=Butterworth_Filter(imu.Z_g_av_bpf,&Accel_BufferData[2],&Accel_Parameter);
 		
-		/******************磁力计滤波*******************/
-		X_m_av=GildeAverageValueFilter_MAG(imu.mx-Mag_Offset[0],Data_X_MAG);//滑动窗口滤波
-    Y_m_av=GildeAverageValueFilter_MAG(imu.my-Mag_Offset[1],Data_Y_MAG);
-    Z_m_av=GildeAverageValueFilter_MAG(imu.mz-Mag_Offset[2],Data_Z_MAG);
+		/******************板载imu 磁力计滤波*******************/
+		imu.X_m_av=GildeAverageValueFilter_MAG(imu.mx-Mag_Offset[0],Data_X_MAG);//滑动窗口滤波
+    imu.Y_m_av=GildeAverageValueFilter_MAG(imu.my-Mag_Offset[1],Data_Y_MAG);
+    imu.Z_m_av=GildeAverageValueFilter_MAG(imu.mz-Mag_Offset[2],Data_Z_MAG);
 		
-		
+
 }
+
+void mpu9250_get_data()
+{
+		/********************mpu9250 原始数据读取 begin************************/
+			MPU_Get_Accelerometer(&mpu9250_data);
+			MPU_Get_Gyroscope(&mpu9250_data);
+			//MPU_Get_Magnetometer(&mpu9250_data);
+
+//		/********************mpu9250 数据读取 end************************/
+//		/*******************mpu9250 陀螺仪滤波 *******************/
+		imu_9250.X_w_av_bpf=Butterworth_Filter(mpu9250_data.gx,&Gyro9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_98);
+		imu_9250.Y_w_av_bpf=Butterworth_Filter(mpu9250_data.gy,&Gyro9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_98);
+		imu_9250.Z_w_av_bpf=Butterworth_Filter(mpu9250_data.gz,&Gyro9250_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_98);
+		
+		imu_9250.X_w_av=Butterworth_Filter(imu_9250.X_w_av_bpf,&Gyro9250_BufferData[0],&Gyro_Parameter);
+		imu_9250.Y_w_av=Butterworth_Filter(imu_9250.Y_w_av_bpf,&Gyro9250_BufferData[1],&Gyro_Parameter);
+		imu_9250.Z_w_av=Butterworth_Filter(imu_9250.Z_w_av_bpf,&Gyro9250_BufferData[2],&Gyro_Parameter);  
+		
+		
+		 /* 2000dps -> rad/s */  //弧度制
+		imu_9250.wx   = imu_9250.X_w_av / 16.384f / 57.3f; 
+    imu_9250.wy   = imu_9250.Y_w_av / 16.384f / 57.3f; 
+    imu_9250.wz   = imu_9250.Z_w_av / 16.384f / 57.3f;
+		/* 2000dps -> rad/s */  //角度制
+		imu_9250.gx   = imu_9250.X_w_av / 16.384f; 
+    imu_9250.gy   = imu_9250.Y_w_av / 16.384f; 
+    imu_9250.gz   = imu_9250.Z_w_av / 16.384f;
+
+		/*******************板载imu 加速度计滤波 *******************/
+		imu_9250.X_g_av_bpf=Butterworth_Filter(mpu9250_data.ax,&Accel9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
+    imu_9250.Y_g_av_bpf=Butterworth_Filter(mpu9250_data.ay,&Accel9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
+    imu_9250.Z_g_av_bpf=Butterworth_Filter(mpu9250_data.az,&Accel9250_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_94);
+		imu_9250.X_g_av=Butterworth_Filter(imu_9250.X_g_av_bpf,&Accel9250_BufferData[0],&Accel_Parameter);
+		imu_9250.Y_g_av=Butterworth_Filter(imu_9250.Y_g_av_bpf,&Accel9250_BufferData[1],&Accel_Parameter);
+		imu_9250.Z_g_av=Butterworth_Filter(imu_9250.Z_g_av_bpf,&Accel9250_BufferData[2],&Accel_Parameter);
+}
+
+
+
 
 
 /**
@@ -689,9 +730,11 @@ void init_quaternion(void)
 	* @retval 
   * @usage  call in main() function
 	*/
+static int yaw_count = 0;
+float last_yaw_temp=0,yaw=0;
 float mag_field_intensity=0;//磁场强度
 char mag_flag=0;
-void imu_ahrs_update(void) 
+float imu_ahrs_update(imu_t *mpu) 
 {
 	float norm;
 	float hx, hy, hz, bx, bz;
@@ -710,18 +753,15 @@ void imu_ahrs_update(void)
 	float q2q3 = q2*q3;
 	float q3q3 = q3*q3;   
 
-	gx = imu.wx;
-	gy = imu.wy;
-	gz = imu.wz;
-//	ax = imu.ax;
-//	ay = imu.ay;
-//	az = imu.az;
-  ax = X_g_av;
-	ay = Y_g_av;
-	az = Z_g_av;
-	mx = X_m_av;
-	my = Y_m_av;
-	mz = Z_m_av;
+	gx = mpu->wx;
+	gy = mpu->wy;
+	gz = mpu->wz;
+  ax = mpu->X_g_av;
+	ay = mpu->Y_g_av;
+	az = mpu->Z_g_av;
+	mx = mpu->X_m_av;
+	my = mpu->Y_m_av;
+	mz = mpu->Z_m_av;
 
 	now_update  = HAL_GetTick(); //ms
 	halfT       = ((float)(now_update - last_update) / 2000.0f);
@@ -812,6 +852,21 @@ void imu_ahrs_update(void)
 	q1 = tempq1 * norm;
 	q2 = tempq2 * norm;
 	q3 = tempq3 * norm;
+	
+	mpu->yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
+	
+//	last_yaw_temp = yaw;
+//	//yaw_temp = angle[0]; 
+//	if(yaw-last_yaw_temp>=330)  //yaw轴角度经过处理后变成连续的
+//	{
+//		yaw_count--;
+//	}
+//	else if (yaw-last_yaw_temp<=-330)
+//	{
+//		yaw_count++;
+//	}
+//	mpu->yaw = yaw + yaw_count*360;  //yaw轴角度
+	
 }
 
 /**
@@ -820,121 +875,121 @@ void imu_ahrs_update(void)
 	* @retval 
   * @usage  call in main() function
 	*/
-void imu_attitude_update(void)
+void imu_attitude_update(imu_t *mpu)
 {
 	/* yaw    -pi----pi */
-	imu.yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
+	mpu->yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
 	/* pitch  -pi/2----pi/2 */
-	imu.pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3;   
+	mpu->pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3;   
 	/* roll   -pi----pi  */	
-	imu.rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3;
+	mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3;
 }
 
-float halfT;
-void imu_cloud_cal(void){
-	
-	float norm;
-	float hx, hy, hz, bx, bz;
-	float vx, vy, vz, wx, wy, wz;
-	float ex, ey, ez;
-	float tempq0,tempq1,tempq2,tempq3;
+//float halfT;
+//void imu_cloud_cal(void){
+//	
+//	float norm;
+//	float hx, hy, hz, bx, bz;
+//	float vx, vy, vz, wx, wy, wz;
+//	float ex, ey, ez;
+//	float tempq0,tempq1,tempq2,tempq3;
 
-	float q0q0 = q0*q0;
-	float q0q1 = q0*q1;
-	float q0q2 = q0*q2;
-	float q0q3 = q0*q3;
-	float q1q1 = q1*q1;
-	float q1q2 = q1*q2;
-	float q1q3 = q1*q3;
-	float q2q2 = q2*q2;   
-	float q2q3 = q2*q3;
-	float q3q3 = q3*q3;   
+//	float q0q0 = q0*q0;
+//	float q0q1 = q0*q1;
+//	float q0q2 = q0*q2;
+//	float q0q3 = q0*q3;
+//	float q1q1 = q1*q1;
+//	float q1q2 = q1*q2;
+//	float q1q3 = q1*q3;
+//	float q2q2 = q2*q2;   
+//	float q2q3 = q2*q3;
+//	float q3q3 = q3*q3;   
 
-	short gx_s,gy_s,gz_s ,ax_s,ay_s,az_s,mx_s,my_s,mz_s;
-	MPU_Get_Gyroscope(&gx_s,&gy_s,&gz_s);
-	gx = (float)gx_s;
-	gy = (float) gy_s;
-	gz = (float)gz_s;
-	MPU_Get_Accelerometer(&ax_s,&ay_s,&az_s);
-	ax = (float)ax_s;
-	ay = (float)ay_s;
-	az = (float)az_s;
-	MPU_Get_Magnetometer(&mx_s,&my_s,&mz_s);
-	mx = (float)mx_s;
-	my = (float)my_s;
-	mz = (float)mz_s;
+//	short gx_s,gy_s,gz_s ,ax_s,ay_s,az_s,mx_s,my_s,mz_s;
+//	MPU_Get_Gyroscope(&gx_s,&gy_s,&gz_s);
+//	gx = (float)gx_s;
+//	gy = (float) gy_s;
+//	gz = (float)gz_s;
+//	MPU_Get_Accelerometer(&ax_s,&ay_s,&az_s);
+//	ax = (float)ax_s;
+//	ay = (float)ay_s;
+//	az = (float)az_s;
+//	MPU_Get_Magnetometer(&mx_s,&my_s,&mz_s);
+//	mx = (float)mx_s;
+//	my = (float)my_s;
+//	mz = (float)mz_s;
 
-	now_update  = HAL_GetTick(); //ms
-	halfT       = ((float)(now_update - last_update) / 2000.0f);
-	last_update = now_update;
-	
-	/* Fast inverse square-root */
-	norm = inv_sqrt(ax*ax + ay*ay + az*az);       
-	ax = ax * norm;
-	ay = ay * norm;
-	az = az * norm;
-	
-	#ifdef IST8310
-		norm = inv_sqrt(mx*mx + my*my + mz*mz);          
-		mx = mx * norm;
-		my = my * norm;
-		mz = mz * norm; 
-	#else
-		mx = 0;
-		my = 0;
-		mz = 0;		
-	#endif
-	/* compute reference direction of flux */
-	hx = 2.0f*mx*(0.5f - q2q2 - q3q3) + 2.0f*my*(q1q2 - q0q3) + 2.0f*mz*(q1q3 + q0q2);
-	hy = 2.0f*mx*(q1q2 + q0q3) + 2.0f*my*(0.5f - q1q1 - q3q3) + 2.0f*mz*(q2q3 - q0q1);
-	hz = 2.0f*mx*(q1q3 - q0q2) + 2.0f*my*(q2q3 + q0q1) + 2.0f*mz*(0.5f - q1q1 - q2q2);         
-	bx = sqrt((hx*hx) + (hy*hy));
-	bz = hz; 
-	
-	/* estimated direction of gravity and flux (v and w) */
-	vx = 2.0f*(q1q3 - q0q2);
-	vy = 2.0f*(q0q1 + q2q3);
-	vz = q0q0 - q1q1 - q2q2 + q3q3;
-	wx = 2.0f*bx*(0.5f - q2q2 - q3q3) + 2.0f*bz*(q1q3 - q0q2);
-	wy = 2.0f*bx*(q1q2 - q0q3) + 2.0f*bz*(q0q1 + q2q3);
-	wz = 2.0f*bx*(q0q2 + q1q3) + 2.0f*bz*(0.5f - q1q1 - q2q2);  
-	
-	/* 
-	 * error is sum of cross product between reference direction 
-	 * of fields and direction measured by sensors 
-	 */
-	ex = (ay*vz - az*vy) + (my*wz - mz*wy);
-	ey = (az*vx - ax*vz) + (mz*wx - mx*wz);
-	ez = (ax*vy - ay*vx) + (mx*wy - my*wx);
+//	now_update  = HAL_GetTick(); //ms
+//	halfT       = ((float)(now_update - last_update) / 2000.0f);
+//	last_update = now_update;
+//	
+//	/* Fast inverse square-root */
+//	norm = inv_sqrt(ax*ax + ay*ay + az*az);       
+//	ax = ax * norm;
+//	ay = ay * norm;
+//	az = az * norm;
+//	
+//	#ifdef IST8310
+//		norm = inv_sqrt(mx*mx + my*my + mz*mz);          
+//		mx = mx * norm;
+//		my = my * norm;
+//		mz = mz * norm; 
+//	#else
+//		mx = 0;
+//		my = 0;
+//		mz = 0;		
+//	#endif
+//	/* compute reference direction of flux */
+//	hx = 2.0f*mx*(0.5f - q2q2 - q3q3) + 2.0f*my*(q1q2 - q0q3) + 2.0f*mz*(q1q3 + q0q2);
+//	hy = 2.0f*mx*(q1q2 + q0q3) + 2.0f*my*(0.5f - q1q1 - q3q3) + 2.0f*mz*(q2q3 - q0q1);
+//	hz = 2.0f*mx*(q1q3 - q0q2) + 2.0f*my*(q2q3 + q0q1) + 2.0f*mz*(0.5f - q1q1 - q2q2);         
+//	bx = sqrt((hx*hx) + (hy*hy));
+//	bz = hz; 
+//	
+//	/* estimated direction of gravity and flux (v and w) */
+//	vx = 2.0f*(q1q3 - q0q2);
+//	vy = 2.0f*(q0q1 + q2q3);
+//	vz = q0q0 - q1q1 - q2q2 + q3q3;
+//	wx = 2.0f*bx*(0.5f - q2q2 - q3q3) + 2.0f*bz*(q1q3 - q0q2);
+//	wy = 2.0f*bx*(q1q2 - q0q3) + 2.0f*bz*(q0q1 + q2q3);
+//	wz = 2.0f*bx*(q0q2 + q1q3) + 2.0f*bz*(0.5f - q1q1 - q2q2);  
+//	
+//	/* 
+//	 * error is sum of cross product between reference direction 
+//	 * of fields and direction measured by sensors 
+//	 */
+//	ex = (ay*vz - az*vy) + (my*wz - mz*wy);
+//	ey = (az*vx - ax*vz) + (mz*wx - mx*wz);
+//	ez = (ax*vy - ay*vx) + (mx*wy - my*wx);
 
-	/* PI */
-	if(ex != 0.0f && ey != 0.0f && ez != 0.0f)
-	{
-		exInt = exInt + ex * Ki * halfT;
-		eyInt = eyInt + ey * Ki * halfT;	
-		ezInt = ezInt + ez * Ki * halfT;
-		
-		gx = gx + Kp*ex + exInt;
-		gy = gy + Kp*ey + eyInt;
-		gz = gz + Kp*ez + ezInt;
-	}
-	
-	tempq0 = q0 + (-q1*gx - q2*gy - q3*gz) * halfT;
-	tempq1 = q1 + (q0*gx + q2*gz - q3*gy) * halfT;
-	tempq2 = q2 + (q0*gy - q1*gz + q3*gx) * halfT;
-	tempq3 = q3 + (q0*gz + q1*gy - q2*gx) * halfT;  
+//	/* PI */
+//	if(ex != 0.0f && ey != 0.0f && ez != 0.0f)
+//	{
+//		exInt = exInt + ex * Ki * halfT;
+//		eyInt = eyInt + ey * Ki * halfT;	
+//		ezInt = ezInt + ez * Ki * halfT;
+//		
+//		gx = gx + Kp*ex + exInt;
+//		gy = gy + Kp*ey + eyInt;
+//		gz = gz + Kp*ez + ezInt;
+//	}
+//	
+//	tempq0 = q0 + (-q1*gx - q2*gy - q3*gz) * halfT;
+//	tempq1 = q1 + (q0*gx + q2*gz - q3*gy) * halfT;
+//	tempq2 = q2 + (q0*gy - q1*gz + q3*gx) * halfT;
+//	tempq3 = q3 + (q0*gz + q1*gy - q2*gx) * halfT;  
 
-	/* normalise quaternion */
-	norm = inv_sqrt(tempq0*tempq0 + tempq1*tempq1 + tempq2*tempq2 + tempq3*tempq3);
-	q0 = tempq0 * norm;
-	q1 = tempq1 * norm;
-	q2 = tempq2 * norm;
-	q3 = tempq3 * norm;
-	
-	/* yaw    -pi----pi */
-	imu_cloud.yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3; 
-	/* pitch  -pi/2----pi/2 */
-	imu_cloud.pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3;   
-	/* roll   -pi----pi  */	
-	imu_cloud.rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3;
-}
+//	/* normalise quaternion */
+//	norm = inv_sqrt(tempq0*tempq0 + tempq1*tempq1 + tempq2*tempq2 + tempq3*tempq3);
+//	q0 = tempq0 * norm;
+//	q1 = tempq1 * norm;
+//	q2 = tempq2 * norm;
+//	q3 = tempq3 * norm;
+//	
+//	/* yaw    -pi----pi */
+//	imu_cloud.yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3; 
+//	/* pitch  -pi/2----pi/2 */
+//	imu_cloud.pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3;   
+//	/* roll   -pi----pi  */	
+//	imu_cloud.rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3;
+//}

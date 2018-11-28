@@ -69,6 +69,7 @@ int32_t turn=0;     //转弯
 long yaw_flag=0;
 extern int cnt1;
 extern int cnt2;
+char cnt_steer=0;
 int yaw_cnt=0;
 int chassis_yaw_correct=0;
 void chassis_control()
@@ -81,7 +82,15 @@ void chassis_control()
 					cnt1=0;
 			}
 			DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
-		
+			
+			cnt_steer++;
+			if(cnt_steer==4)
+			{
+				steer_control();
+				cnt_steer=0;
+			}
+			
+			
 			if(remote_control.switch_left==1)	
 			{
           /*************************yaw轴控制    begin**********/		
@@ -102,7 +111,7 @@ void chassis_control()
 					else//波动偏航方向杆后，只进行内环角速度控制
 					{
 							chassis_yaw.target=0;//偏航角期望给0,不进行角度控制
-							chassis_yaw_speed.target=remote_control.ch3*200/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+							chassis_yaw_speed.target=remote_control.ch3*300/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
 					}
 		
 					/*************************yaw轴控制  end**********/		
@@ -114,7 +123,7 @@ void chassis_control()
 	
 	
 
-					chassis_yaw.f_cal_pid(&chassis_yaw_speed,mpu_data.gz / 16.384f);	
+					chassis_yaw.f_cal_pid(&chassis_yaw_speed,-imu.gz);	
 	
 					set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_speed.output,   //将PID的计算结果通过CAN发送到电机
 																	motor_pid[1].output+chassis_yaw_speed.output,

@@ -174,6 +174,10 @@ float LPButterworth(float curr_input,Butter_BufferData *Buffer,Butter_Parameter 
         return Buffer->Output_Butter[2];
 }
 
+Butter_BufferData Accel9250_BufferData[3];
+Butter_BufferData Accel9250_BufferData_BPF[3];
+Butter_BufferData Gyro9250_BufferData_BPF[3];
+Butter_BufferData Gyro9250_BufferData[3];
 
 Butter_BufferData Accel_BufferData[3];
 Butter_BufferData Accel_BufferData_BPF[3];

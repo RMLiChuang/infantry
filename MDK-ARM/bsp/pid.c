@@ -221,11 +221,11 @@ void all_pid_init()
     pid_init(&motor_pid[i]);
     motor_pid[i].f_param_init(&motor_pid[i],
 																	PID_Speed,					
-																	2000,							//maxOutput												//输出限幅
+																	2500,							//maxOutput												//输出限幅
 																	1000,								//integralLimit										//积分限幅
 																	10,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	5000,								//max_err													//最大误差
+																	1000,								//max_err													//最大误差
 																	0,									//target
 																	2,								//kp
 																	0.05,							//ki	
@@ -267,15 +267,15 @@ void all_pid_init()
 	pid_init(&chassis_yaw_speed);
 	chassis_yaw_speed.f_param_init(&chassis_yaw_speed,
 																	PID_Speed,					
-																	2500,							//maxOutput												//输出限幅
+																	4000,							//maxOutput												//输出限幅
 																	1000,								//integralLimit										//积分限幅
 																	1,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	150,								//max_err													//最大误差
 																	0,									//target
-																	17,								//kp
-																	0.01,							//ki	
-																	0);							//kd
+																	22,								//kp
+																	0.1,							//ki	
+																	0.3);							//kd
 	
 }
 

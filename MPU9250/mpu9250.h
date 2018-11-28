@@ -1,6 +1,7 @@
 #ifndef _MPU9250_H
 #define _MPU9250_H
 #include "mytype.h"
+#include "robomaster_common.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32F746开发板
@@ -103,6 +104,8 @@
 #define MPU_FIFO_RW_REG			0X74	//FIFO读写寄存器
 #define MPU_DEVICE_ID_REG		0X75	//器件ID寄存器
 
+extern mpu_data_t mpu9250;
+
 u8 MPU9250_Init(void);
 u8 MPU_WaitForReady(u8 devaddr);
 u8 MPU_Write_Byte(u8 devaddr,u8 reg,u8 data);
@@ -113,7 +116,8 @@ u8 MPU_Set_Rate(u16 rate);
 u8 MPU_Write_Len(u8 addr,u8 reg,u8 len,u8 *buf);
 u8 MPU_Read_Len(u8 addr,u8 reg,u8 len,u8 *buf);
 short MPU_Get_Temperature(void);
-u8 MPU_Get_Gyroscope(short *gx,short *gy,short *gz);
-u8 MPU_Get_Accelerometer(short *ax,short *ay,short *az);
-u8 MPU_Get_Magnetometer(short *mx,short *my,short *mz);
+u8 MPU_Get_Gyroscope(mpu_data_t *mpu9250);
+//u8 MPU_Get_Gyroscope(short *gx,short *gy,short *gz);
+ u8 MPU_Get_Accelerometer(mpu_data_t *mpu9250);
+u8 MPU_Get_Magnetometer(mpu_data_t *mpu9250);
 #endif

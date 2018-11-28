@@ -18,6 +18,7 @@ void task()
 {	
 	cnt++;
 	cnt1++;
+	
 	if(cnt==100)    //0.5s进入一次，使第7个等以2HZ频率闪烁，从而判断中断程序正常运行
 	{
 		cnt=0;
@@ -25,12 +26,15 @@ void task()
 	}
 	
 	mpu_get_data();//获得imu原始数据
-	imu_ahrs_update();//更新四元数和imu姿态
-	imu_attitude_update();//结算imu的pitch,roll,yaw角度
-	Calibrate_mag();
+	imu_ahrs_update(&imu);//更新四元数和imu姿态
+//	MPU_Get_Accelerometer(&mpu9250_data);
+//	MPU_Get_Gyroscope(&mpu9250_data);
+	mpu9250_get_data();
+	imu_ahrs_update(&imu_9250);
 	
 	
 	chassis_control();		//底盘电机的控制
-	shoot_control();			//摩擦轮以及拨弹电机的控制
-	mpu_dmp_get_data(&mypitch,&myroll,&myyaw);//dmp获取欧拉角
+	//shoot_control();			//摩擦轮以及拨弹电机的控制
+	
+	///mpu_dmp_get_data(&mypitch,&myroll,&myyaw);//dmp获取欧拉角
 }

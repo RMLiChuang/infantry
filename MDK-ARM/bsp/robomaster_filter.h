@@ -52,6 +52,11 @@ extern Butter_Parameter Butter_1HZ_Parameter_Acce;
 extern Butter_Parameter Bandstop_Filter_Parameter_30_94;
 extern Butter_Parameter Bandstop_Filter_Parameter_30_98;
 
+extern Butter_BufferData Accel9250_BufferData[3];
+extern Butter_BufferData Accel9250_BufferData_BPF[3];
+extern Butter_BufferData Gyro9250_BufferData_BPF[3];
+extern Butter_BufferData Gyro9250_BufferData[3];
+
 extern Butter_BufferData Accel_BufferData[3];
 extern Butter_BufferData Accel_BufferData_BPF[3];
 extern Butter_BufferData Gyro_BufferData_BPF[3];

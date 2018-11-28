@@ -565,6 +565,11 @@
               <FileType>1</FileType>
               <FilePath>.\bsp\robot_status.c</FilePath>
             </File>
+            <File>
+              <FileName>pan_tilt_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\pan_tilt_control.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

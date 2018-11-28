@@ -82,25 +82,44 @@ typedef struct
 	float rol;
 	float pit;
 	float yaw;
+	
+	float X_g_av_bpf;//带阻滤波后可用的加速度计值
+	float Y_g_av_bpf;
+	float Z_g_av_bpf;
+	float X_g_av;//可用的加速度计值
+	float Y_g_av;
+	float Z_g_av;
+	
+	float X_w_av_bpf;//带阻滤波后可用的陀螺仪数值
+	float Y_w_av_bpf;
+	float Z_w_av_bpf;
+	float X_w_av;//可用的陀螺仪数值
+	float Y_w_av;
+	float Z_w_av;
+	
+	float X_m_av;//经过滤波后的磁力计读数
+	float Y_m_av;
+	float Z_m_av;
 } imu_t;
 extern char mag_flag;
 
+extern uint8_t mpu_buff[14];   
 //extern bool HEAT_FINISH;//温度补偿完成 标志位
 extern float X_g_av,Y_g_av,Z_g_av;//可用的加速度计值
 extern float X_g_av_bpf,Y_g_av_bpf,Z_g_av_bpf;//带阻滤波后可用的加速度计值
 extern float X_m_av,Y_m_av,Z_m_av;//经过滤波后的磁力计读数
-extern mpu_data_t mpu_data;
-extern imu_t      imu;
+extern mpu_data_t mpu_data,mpu9250_data;//mpu6500和mpu9250原始数据
+extern imu_t  imu,imu_9250;//声明板载imu和mpu9250陀螺仪
 extern float halfT;
 uint8_t   mpu_device_init(void);
 extern float mag_field_intensity;//磁场强度
 void init_quaternion(void);
 void mpu_get_data(void);
-void imu_ahrs_update(void);
-void imu_attitude_update(void);
-void imu_cloud_getdata(void);
+float imu_ahrs_update(imu_t *mpu);
+void imu_attitude_update(imu_t *mpu);
+void mpu9250_get_data(void);
 void mpu_offset_call(void);
-void imu_cloud_cal(void);
+//void imu_cloud_cal(void);
 #endif
 
 
