@@ -16,7 +16,7 @@
 #include "mpu6500_reg.h"
 //#include "spi.h"
 #include "robomaster_common.h"
-//#include "mpu9250.h"
+#include "mpu9250.h"
 #define BOARD_DOWN (1)   
 #define IST8310
 #define MPU_HSPI hspi5
@@ -730,11 +730,11 @@ void init_quaternion(void)
 	* @retval 
   * @usage  call in main() function
 	*/
-static int yaw_count = 0;
+//static int yaw_count = 0;
 float last_yaw_temp=0,yaw=0;
 float mag_field_intensity=0;//磁场强度
 char mag_flag=0;
-float imu_ahrs_update(imu_t *mpu) 
+void imu_ahrs_update(imu_t *mpu) 
 {
 	float norm;
 	float hx, hy, hz, bx, bz;

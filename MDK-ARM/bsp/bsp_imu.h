@@ -115,7 +115,7 @@ uint8_t   mpu_device_init(void);
 extern float mag_field_intensity;//´Å³¡Ç¿¶È
 void init_quaternion(void);
 void mpu_get_data(void);
-float imu_ahrs_update(imu_t *mpu);
+void imu_ahrs_update(imu_t *mpu);
 void imu_attitude_update(imu_t *mpu);
 void mpu9250_get_data(void);
 void mpu_offset_call(void);

@@ -12,7 +12,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+//#define QUADROTOR_PAN_TILT 		//四轴云台
+#define INFANTRY_PAN_TILT     //步兵云台
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
