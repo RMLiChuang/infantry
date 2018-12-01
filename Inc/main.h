@@ -21,10 +21,20 @@
 #define LASER_GPIO_Port 				GPIOG
 #define KEY_Pin 								GPIO_PIN_10
 #define KEY_GPIO_Port 					GPIOD
-#define LED1_Pin 								GPIO_PIN_14	//绿灯
-#define LED1_GPIO_Port 					GPIOF
-#define LED2_Pin 								GPIO_PIN_11  //红灯
-#define LED2_GPIO_Port 					GPIOE
+#define LED_S_Pin 								GPIO_PIN_14	
+#define LED_S_GPIO_Port 					GPIOF//绿灯 编号为S
+#define LED_T_Pin 								GPIO_PIN_11  
+#define LED_T_GPIO_Port 					GPIOE//红灯 编号为T
+#define LED_H_Pin									GPIO_PIN_1
+#define LED_G_Pin									GPIO_PIN_2
+#define LED_F_Pin									GPIO_PIN_3
+#define LED_E_Pin									GPIO_PIN_4
+#define LED_D_Pin									GPIO_PIN_5
+#define LED_C_Pin									GPIO_PIN_6
+#define LED_B_Pin									GPIO_PIN_7
+#define LED_A_Pin									GPIO_PIN_8
+#define LED_USER_GPIO_PORT				GPIOG        //用户灯
+
 #define IMU_TEMP_Pin       			GPIO_PIN_5 //imu电阻加热为PB5
 #define IMU_TEMP_Port						GPIOB
 /* ########################## Assert Selection ############################## */

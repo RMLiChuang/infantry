@@ -125,6 +125,7 @@ int main(void)
 
   
 	init_TIM5_PWM();			//初始化TIM5的PWM
+	Infantry_Start_Bling();//
 	mpu_device_init();   //在初始化imu的时候，要先初始化SPI5和GPIOF6 不然无法初始化imu
 	init_quaternion();	//初始化四元数，用于姿态解算
 	all_pid_init();			//所有电机的pid初始化
@@ -142,7 +143,7 @@ int main(void)
 
   while (1)
   {	
-		
+		 
 		
   /* USER CODE END WHILE */
 

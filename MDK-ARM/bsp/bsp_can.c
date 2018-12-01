@@ -85,7 +85,7 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* _hcan)
 
 	if(HAL_GetTick() - FlashTimer>500){
 			
-		HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
+		HAL_GPIO_TogglePin(LED_S_GPIO_Port,LED_S_Pin);
 		FlashTimer = HAL_GetTick();
 		
 	}
@@ -96,6 +96,8 @@ void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* _hcan)
 		case CAN_3508Moto2_ID:
 		case CAN_3508Moto3_ID:
 		case CAN_3508Moto4_ID:
+		case CAN_PitcMoto5_ID:
+		case CAN_YawMoto6_ID :
 		case CAN_2006Moto7_ID:
 			{
 				static u8 i;

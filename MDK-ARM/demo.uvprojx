@@ -570,6 +570,11 @@
               <FileType>1</FileType>
               <FilePath>.\bsp\pan_tilt_control.c</FilePath>
             </File>
+            <File>
+              <FileName>bling.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\bling.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

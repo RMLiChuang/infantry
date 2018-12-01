@@ -76,11 +76,12 @@ void chassis_control()
 {
 	if(remote_control.switch_left!=3)
 	{
-			if(cnt1==100)//0.5s进入一次，使第4个led以2HZ频率闪烁，判断底盘程序正常运行
-			{
-					HAL_GPIO_TogglePin(GPIOG,GPIO_PIN_4);
-					cnt1=0;
-			}
+//			if(cnt1==100)//0.5s进入一次，使第4个led以2HZ频率闪烁，判断底盘程序正常运行
+//			{
+//					HAL_GPIO_TogglePin(LED_USER_GPIO_PORT,LED_G_Pin);
+//					cnt1=0;
+//			}
+			Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_G_Pin,1);//设置ledG闪烁频率
 			DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
 			
 			cnt_steer++;

@@ -53,25 +53,25 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOH, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8|GPIO_PIN_7|GPIO_PIN_6|GPIO_PIN_5 
-                          |GPIO_PIN_4|GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_H_Pin|LED_G_Pin|LED_F_Pin|LED_E_Pin 
+                          |LED_D_Pin|LED_C_Pin|LED_B_Pin|LED_A_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GPIO_Port, GPIO_PIN_6|LED1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_S_GPIO_Port, GPIO_PIN_6|LED_S_Pin, GPIO_PIN_SET);//编号为S的LED灯
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_T_GPIO_Port, LED_T_Pin, GPIO_PIN_SET);//编号为T的led灯
 
   /*Configure GPIO pins : PGPin PG8 PG7 PG6 
                            PG5 PG4 PG3 PG2 
                            PG1 */
-  GPIO_InitStruct.Pin = LASER_Pin|GPIO_PIN_8|GPIO_PIN_7|GPIO_PIN_6 
-                          |GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_3|GPIO_PIN_2 
-                          |GPIO_PIN_1;
+  GPIO_InitStruct.Pin = LASER_Pin|LED_H_Pin|LED_G_Pin|LED_F_Pin         //用户灯
+                          |LED_E_Pin|LED_D_Pin|LED_C_Pin|LED_B_Pin 
+                          |LED_A_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_USER_GPIO_PORT, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PH2 PH3 PH4 PH5 */
   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
@@ -86,19 +86,19 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin =  GPIO_PIN_6|LED1_Pin;
+  /*Configure GPIO pin : PtPin */  //编号为S的灯
+  GPIO_InitStruct.Pin =  GPIO_PIN_6|LED_S_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_S_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = LED2_Pin;
+  /*Configure GPIO pin : PtPin */    //编号为T的灯
+  GPIO_InitStruct.Pin = LED_T_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_T_GPIO_Port, &GPIO_InitStruct);
 	
 	/*Configure GPIO pin : PtPin */                 //初始化imu_电阻加热模块
 	GPIO_InitStruct.Pin = IMU_TEMP_Pin;

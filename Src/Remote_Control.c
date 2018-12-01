@@ -51,7 +51,7 @@ void Callback_RC_Handle(RC_Type* rc, uint8_t* buff)
 	
 	if(Latest_Remote_Control_Pack_Time - LED_Flash_Timer_remote_control>500){
 			
-			HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);
+			HAL_GPIO_TogglePin(LED_T_GPIO_Port,LED_T_Pin);
 			
 			LED_Flash_Timer_remote_control = Latest_Remote_Control_Pack_Time;
 		
@@ -82,7 +82,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	
 	if(Latest_Remote_Control_Pack_Time - LED_Flash_Timer_remote_control>500){
 			
-			HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);		
+			HAL_GPIO_TogglePin(LED_T_GPIO_Port,LED_T_Pin);		
 			LED_Flash_Timer_remote_control = Latest_Remote_Control_Pack_Time;
 					
 	}

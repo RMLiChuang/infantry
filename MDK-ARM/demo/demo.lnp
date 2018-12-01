@@ -31,6 +31,7 @@
 "demo\levenbergmarquardt.o"
 "demo\robot_status.o"
 "demo\pan_tilt_control.o"
+"demo\bling.o"
 "demo\main.o"
 "demo\stm32f4xx_hal_msp.o"
 "demo\usart.o"
