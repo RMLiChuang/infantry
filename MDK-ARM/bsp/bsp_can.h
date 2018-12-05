@@ -78,7 +78,7 @@ typedef struct{
 extern moto_measure_t  moto_chassis[];
 
 
-
+void pan_tilt_calibrate(CAN_HandleTypeDef* hcan);
 void my_can_filter_init(CAN_HandleTypeDef* hcan);
 void my_can_filter_init_recv_all(CAN_HandleTypeDef* _hcan);
 void can_filter_recv_special(CAN_HandleTypeDef* hcan, uint8_t filter_number, uint16_t filtered_id);

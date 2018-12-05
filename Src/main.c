@@ -29,7 +29,7 @@
 #include "usart.h"
 #include "gpio.h" 
 #include "mpu9250.h"
-#include "inv_mpu.h"
+//#include "inv_mpu.h"
 #include "delay.h"
 #include "usmart.h"
 /* USER CODE BEGIN Includes */
@@ -120,7 +120,7 @@ int main(void)
   my_can_filter_init_recv_all(&hcan1);     //配置CAN过滤器
   HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0);   //启动CAN接收中断
   HAL_UART_Receive_IT_IDLE(&huart1,UART_Buffer,100);   //启动串口接收
-
+	
 	
 
   
@@ -162,12 +162,26 @@ int main(void)
 //	  wave_form_data[4] =(short)HAL_GetTick();//imu.gz;
 //	  wave_form_data[5] =(short)chassis_yaw_speed.target;
 		
-		wave_form_data[0] =(short)imu.yaw;
-	  wave_form_data[1] =(short)chassis_yaw.target;//MPU_Set_Accel_Fsr(2);
-	  wave_form_data[2] =(short)-imu.gz;//chassis_yaw.output;
-	  wave_form_data[3] =(short)chassis_yaw_speed.target;//mag_field_intensity;//磁场强度;
-	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
-	  wave_form_data[5] =(short)chassis_yaw_speed.output;
+//		wave_form_data[0] =(short)imu.yaw;
+//	  wave_form_data[1] =(short)chassis_yaw.target;//MPU_Set_Accel_Fsr(2);
+//	  wave_form_data[2] =(short)-imu.gz;//chassis_yaw.output;
+//	  wave_form_data[3] =(short)chassis_yaw_speed.target;//mag_field_intensity;//磁场强度;
+//	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
+//	  wave_form_data[5] =(short)chassis_yaw_speed.output;
+
+//    wave_form_data[0] =(short)moto_chassis[5].angle;      //YAW ID:206
+//	  wave_form_data[1] =(short)moto_chassis[5].speed_rpm;
+//	  wave_form_data[2] =(short)motor_pid[5].output;
+//	  wave_form_data[3] =(short)motor_pid[5].err;
+//		wave_form_data[4] =(short)moto_chassis[4].angle;      //PITCH ID:205
+//	  wave_form_data[5] =(short)imu.yaw;
+
+    wave_form_data[0] =(short)motor_pid[5].target;      //YAW ID:206
+	  wave_form_data[1] =(short)motor_pid[5].output;
+	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
+	  wave_form_data[3] =(short)pan_tilt_yaw_speed.output;
+		wave_form_data[4] =(short)motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[5] =(short)imu.yaw;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */

@@ -195,6 +195,11 @@ float PID_Control_Yaw(PID_TypeDef* pid, float measure)
 		}
 	
 	}
+	if((ABS(pid->err) < pid->DeadBand))
+	{	
+		pid->err=0;
+		pid->output=0;
+	}
 
 
 	return pid->output;
@@ -306,22 +311,36 @@ void all_pid_init()
 
 	#endif
 	#ifdef INFANTRY_PAN_TILT
-	//YAW轴电机角度环pid初始化  
-	 pid_init(&motor_pid[4]);
-    motor_pid[4].f_param_init(&motor_pid[4],
+	//YAW轴电机角度环pid初始化  //反馈值由imu获得
+	 pid_init(&motor_pid[5]);
+    motor_pid[5].f_param_init(&motor_pid[4],
 																	PID_Speed,					
-																	16384,							//maxOutput												//输出限幅
-																	2000,								//integralLimit										//积分限幅
-																	10,									//deadband												//死区（绝对值）
+																	40,							//maxOutput												//输出限幅
+																	0,								//integralLimit										//积分限幅
+																	8,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	5000,								//max_err													//最大误差
+																	40,								//max_err													//最大误差
 																	0,									//target
 																	2,								//kp
 																	0,							//ki	
 																	0);							//kd
+	//YAW轴电机角速度环pid初始化		//反馈值由imu获得														
+	  pid_init(&pan_tilt_yaw_speed);
+    pan_tilt_yaw_speed.f_param_init(&pan_tilt_yaw_speed,
+																	PID_Speed,					
+																	5000,							//maxOutput												//输出限幅
+																	500,								//integralLimit										//积分限幅
+																	12,									//deadband												//死区（绝对值）
+																	0,									//controlPeriod										//控制周期
+																	100,								//max_err													//最大误差
+																	0,									//target
+																	25,								//kp    3.2
+																	0,							//ki	    0.02
+																	1.5);							//kd			0.1																
+							
 	//PITCH轴电机角度环pid初始化    
-	 pid_init(&motor_pid[5]);
-    motor_pid[5].f_param_init(&motor_pid[5],
+	 pid_init(&motor_pid[4]);
+    motor_pid[4].f_param_init(&motor_pid[5],
 																	PID_Speed,					
 																	16384,							//maxOutput												//输出限幅
 																	2000,								//integralLimit										//积分限幅

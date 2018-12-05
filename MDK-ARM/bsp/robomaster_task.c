@@ -1,6 +1,5 @@
 #include "robomaster_task.h"
 #include "mpu9250.h"
-#include "inv_mpu.h"
 #include "robomaster_common.h"
 
 /**
@@ -21,11 +20,12 @@ void task()
 	Bling_Working(Bling_Mode);
 	mpu_get_data();//获得imu原始数据
 	imu_ahrs_update(&imu);//更新四元数和imu姿态
-	mpu9250_get_data();
-	imu_ahrs_update(&imu_9250);
+	//mpu9250_get_data();
+	//imu_ahrs_update(&imu_9250);
 	
 	
-	chassis_control();		//底盘电机的控制
+	//chassis_control();		//底盘电机的控制
+	pan_tilt_control();
 	//shoot_control();			//摩擦轮以及拨弹电机的控制
 	
 	///mpu_dmp_get_data(&mypitch,&myroll,&myyaw);//dmp获取欧拉角
