@@ -78,11 +78,12 @@ void pid_reset_chassis(u8 motornum,u32 kp, u32 ki, u32 kd);
 void pid_reset_all_chassis(u32 kp, u32 ki, u32 kd);
 void show_pid(u8 motornum);
 void show_all_pid(void);
+float PID_Control_Pitch(PID_TypeDef* pid, float measure);
 float PID_Control_Yaw(PID_TypeDef* pid, float measure);
 #endif
 
 //extern PID_TypeDef pid_pitch;    
 extern PID_TypeDef motor_pid[7];
 extern PID_TypeDef chassis_yaw_speed,chassis_yaw;
-extern PID_TypeDef pan_tilt_pitch,pan_tilt_pithch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;
+extern PID_TypeDef pan_tilt_pitch,pan_tilt_pitch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;
 

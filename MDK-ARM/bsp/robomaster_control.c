@@ -74,7 +74,7 @@ int yaw_cnt=0;
 int chassis_yaw_correct=0;
 void chassis_control()
 {
-	if(remote_control.switch_left!=3)
+	if(remote_control.switch_right!=3)
 	{
 //			if(cnt1==100)//0.5s进入一次，使第4个led以2HZ频率闪烁，判断底盘程序正常运行
 //			{
@@ -92,7 +92,7 @@ void chassis_control()
 			}
 			
 			
-			if(remote_control.switch_left==1)	
+			if(remote_control.switch_right==2)	
 			{
           /*************************yaw轴控制    begin**********/		
 	
@@ -126,15 +126,20 @@ void chassis_control()
 
 					chassis_yaw.f_cal_pid(&chassis_yaw_speed,-imu.gz);	
 	
-					set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_speed.output,   //将PID的计算结果通过CAN发送到电机
-																	motor_pid[1].output+chassis_yaw_speed.output,
-																	motor_pid[2].output+chassis_yaw_speed.output,
-																	motor_pid[3].output+chassis_yaw_speed.output);
+//					set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_speed.output,   //将PID的计算结果通过CAN发送到电机
+//																	motor_pid[1].output+chassis_yaw_speed.output,
+//																	motor_pid[2].output+chassis_yaw_speed.output,
+//																	motor_pid[3].output+chassis_yaw_speed.output);
 			}
 			
 			
-		if(remote_control.switch_left==2)  //遥控器给定数值直接作为速度目标
+		if(remote_control.switch_right==1)  //遥控器给定数值直接作为速度目标
 		{
+			
+			
+			
+			
+
 						motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
 						motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
 						motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
@@ -143,12 +148,13 @@ void chassis_control()
 															motor_pid[1].output,
 															motor_pid[2].output,
 															motor_pid[3].output);
+			//set_moto_current(&hcan1,500,500,0,500);
 		}
 	
 	}
 		else
 		{
-			chassis_yaw.target=imu.yaw;  //上电后标定底盘的初始yaw值，
+			//chassis_yaw.target=imu.yaw;  //上电后标定底盘的初始yaw值，
 		  set_moto_current(&hcan1,0,0,0,0);
 	  }
 }

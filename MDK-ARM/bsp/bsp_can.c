@@ -225,7 +225,7 @@ void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3)
 	HAL_CAN_Transmit(hcan, 100);
 }	
 
-void pan_tilt_calibrate(CAN_HandleTypeDef* hcan)
+void pan_tilt_calibrate(CAN_HandleTypeDef* hcan) //没用
 {
 
 	hcan->pTxMsg->StdId = 0x3F0;

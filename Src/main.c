@@ -101,7 +101,7 @@ int main(void)
   MX_USART2_UART_Init();//蓝牙串口  未用
   MX_USART3_UART_Init();//大疆SDK串口 未用
   delay_init(168);//延时函数初始化
-	MPU9250_Init();
+	//MPU9250_Init();
   //mpu_dmp_init();//DMP初始化
   //usmart_dev.init(84);//USMART初始化
   /* USER CODE BEGIN 2 */
@@ -169,19 +169,26 @@ int main(void)
 //	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
 //	  wave_form_data[5] =(short)chassis_yaw_speed.output;
 
-//    wave_form_data[0] =(short)moto_chassis[5].angle;      //YAW ID:206
-//	  wave_form_data[1] =(short)moto_chassis[5].speed_rpm;
-//	  wave_form_data[2] =(short)motor_pid[5].output;
-//	  wave_form_data[3] =(short)motor_pid[5].err;
-//		wave_form_data[4] =(short)moto_chassis[4].angle;      //PITCH ID:205
-//	  wave_form_data[5] =(short)imu.yaw;
-
     wave_form_data[0] =(short)motor_pid[5].target;      //YAW ID:206
 	  wave_form_data[1] =(short)motor_pid[5].output;
 	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
-	  wave_form_data[3] =(short)pan_tilt_yaw_speed.output;
-		wave_form_data[4] =(short)motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[3] =(short)imu.gz;
+		wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
 	  wave_form_data[5] =(short)imu.yaw;
+
+//    wave_form_data[0] =(short)motor_pid[4].target;      //YAW ID:206
+//	  wave_form_data[1] =(short)motor_pid[4].output;
+//	  wave_form_data[2] =(short)pan_tilt_pitch_speed.err;
+//	  wave_form_data[3] =(short)imu.gx;//pan_tilt_yaw_speed.output;
+//		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
+//	  wave_form_data[5] =(short)moto_chassis[4].angle;
+
+//		wave_form_data[0] =(short)moto_chassis[0].angle;      //YAW ID:206
+//	  wave_form_data[1] =(short)moto_chassis[1].angle;
+//	  wave_form_data[2] =(short)moto_chassis[2].angle;
+//	  wave_form_data[3] =(short)moto_chassis[3].angle;//pan_tilt_yaw_speed.output;
+//		wave_form_data[4] =(short)moto_chassis[4].angle;//motor_pid[5].err;      //PITCH ID:205
+//	  wave_form_data[5] =(short)moto_chassis[5].angle;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */
