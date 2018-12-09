@@ -169,19 +169,19 @@ int main(void)
 //	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
 //	  wave_form_data[5] =(short)chassis_yaw_speed.output;
 
-    wave_form_data[0] =(short)motor_pid[5].target;      //YAW ID:206
-	  wave_form_data[1] =(short)motor_pid[5].output;
-	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
-	  wave_form_data[3] =(short)imu.gz;
-		wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
-	  wave_form_data[5] =(short)imu.yaw;
+//    wave_form_data[0] =(short)motor_pid[5].target;      //YAW ID:206
+//	  wave_form_data[1] =(short)motor_pid[5].output;
+//	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
+//	  wave_form_data[3] =(short)imu.gz;
+//		wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
+//	  wave_form_data[5] =(short)imu.yaw;
 
-//    wave_form_data[0] =(short)motor_pid[4].target;      //YAW ID:206
-//	  wave_form_data[1] =(short)motor_pid[4].output;
-//	  wave_form_data[2] =(short)pan_tilt_pitch_speed.err;
-//	  wave_form_data[3] =(short)imu.gx;//pan_tilt_yaw_speed.output;
-//		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
-//	  wave_form_data[5] =(short)moto_chassis[4].angle;
+    wave_form_data[0] =(short)motor_pid[4].target;      //YAW ID:206
+	  wave_form_data[1] =(short)motor_pid[4].output;
+	  wave_form_data[2] =(short)pan_tilt_pitch_speed.target;
+	  wave_form_data[3] =(short)imu.gx;//pan_tilt_yaw_speed.output;
+		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[5] =(short)moto_chassis[4].angle;
 
 //		wave_form_data[0] =(short)moto_chassis[0].angle;      //YAW ID:206
 //	  wave_form_data[1] =(short)moto_chassis[1].angle;

@@ -388,59 +388,86 @@ void all_pid_init()
 	#endif
 	#ifdef INFANTRY_PAN_TILT
 	//YAW轴电机角度环pid初始化  //反馈值由imu获得
-	 pid_init(&motor_pid[5]);
-    motor_pid[5].f_param_init(&motor_pid[5],
+	 pid_init(&pan_tilt_yaw);
+    pan_tilt_yaw.f_param_init(&pan_tilt_yaw,
 																	PID_Speed,					
-																	60,							//maxOutput												//输出限幅
+																	100,							//maxOutput												//输出限幅
 																	0,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	30,								//max_err													//最大误差
 																	0,									//target
-																  3,								//kp
+																  10,								//kp
 																	0,							//ki	
 																	0);							//kd
+																	
+	//YAW轴电机角度环pid初始化  //反馈值由电机编码器获得
+	 pid_init(&motor_pid[5]);
+    motor_pid[5].f_param_init(&motor_pid[5],
+																	PID_Speed,					
+																	100,							//maxOutput												//输出限幅
+																	0,								//integralLimit										//积分限幅
+																	0,									//deadband												//死区（绝对值）
+																	0,									//controlPeriod										//控制周期
+																	30,								//max_err													//最大误差
+																	0,									//target
+																  10,								//kp
+																	0,							//ki	
+																	0);							//kd
+																	
 	//YAW轴电机角速度环pid初始化		//反馈值由imu获得														
 	  pid_init(&pan_tilt_yaw_speed);
     pan_tilt_yaw_speed.f_param_init(&pan_tilt_yaw_speed,
 																	PID_Speed,					
-																	5000,							//maxOutput												//输出限幅
+																	7000,							//maxOutput												//输出限幅
 																	500,								//integralLimit										//积分限幅
-																	4,									//deadband												//死区（绝对值）
+																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	100,								//max_err													//最大误差
 																	0,									//target
-																	25,								//kp    25
+																	50,								//kp    25
 																	0,							//ki	    0
-																	1);							//kd			1.5																
-							
-	//PITCH轴电机机械角度环pid初始化    
-	 pid_init(&motor_pid[4]);
-    motor_pid[4].f_param_init(&motor_pid[4],
+																	5);							//kd			1.5																
+	//PITCH轴电机机械角度环pid初始化，反馈值由imu获取    
+	 pid_init(&pan_tilt_pitch);
+    pan_tilt_pitch.f_param_init(&pan_tilt_pitch,
 																	PID_Speed,					
-																	45,							//maxOutput												//输出限幅
-																	5,								//integralLimit										//积分限幅
+																	200,							//maxOutput												//输出限幅
+																	50,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	300,								//max_err													//最大误差
 																	0,									//target
-																	0.15,							//kp
+																	0.32,							//kp 0.15
 																	0,							//ki	
-																	0.1);							//kd
+																	0);							//kd 0.1						
+	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    
+	 pid_init(&motor_pid[4]);
+    motor_pid[4].f_param_init(&motor_pid[4],
+																	PID_Speed,					
+																	200,							//maxOutput												//输出限幅
+																	50,								//integralLimit										//积分限幅
+																	0,									//deadband												//死区（绝对值）
+																	0,									//controlPeriod										//控制周期
+																	300,								//max_err													//最大误差
+																	0,									//target
+																	0.32,							//kp 0.15
+																	0,							//ki	
+																	0);							//kd 0.1
 	
 	//PITCH轴电机角速度环pid初始化    
 	 pid_init(&pan_tilt_pitch_speed);
     pan_tilt_pitch_speed.f_param_init(&pan_tilt_pitch_speed,
 																	PID_Speed,					
-																	4000,							//maxOutput												//输出限幅
-																	1300,								//integralLimit										//积分限幅
+																	7000,							//maxOutput												//输出限幅
+																	4000,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	30,								//max_err													//最大误差
+																	80,								//max_err													//最大误差
 																	0,									//target
-																	75,								//kp    3.2
-																	0.01,							//ki	    0.02
-																	0);							//kd			0.1
+																	90,								//kp    3.2
+																	0.10,							//ki	    0.02
+																	0.06);							//kd			0.1
 	#endif																
 																	
 																	
