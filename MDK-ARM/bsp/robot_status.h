@@ -12,7 +12,7 @@ typedef struct
     uint8_t  placement;      //放置状态
     uint8_t  altControl;     //高度控制状态
     uint8_t  posControl;     //位置控制状态
-    uint8_t  mode;
+    uint8_t  mode;					 //
     uint32_t initFinishTime; //初始化完成时间
 } ROBOT_STATUS_t;
 
@@ -27,9 +27,18 @@ enum
 
 //放置状态
 enum
-{
+{		
     STATIC,		            //静止
-    MOTIONAL			    //运动
+    MOTIONAL		    //运动
+};
+
+//步兵运动模式
+enum
+{	
+	INITIAL,          //初始化模式
+	STANDBY,          //步兵待命状态
+	FOLLOW,           //底盘跟随云台
+	TWIST             //扭腰
 };
 extern ROBOT_STATUS_t robot_status;
 void PlaceStausCheck(Vector3f_t gyro_status);

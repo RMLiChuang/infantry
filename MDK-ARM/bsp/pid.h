@@ -31,6 +31,7 @@ typedef struct _PID_TypeDef
 	PID_ID id;
 	
 	float target;							//目标值
+	float initial;            //初始值
 	float lastNoneZeroTarget;
 	float kp;
 	float ki;
@@ -84,6 +85,6 @@ float PID_Control_Yaw(PID_TypeDef* pid, float measure);
 
 //extern PID_TypeDef pid_pitch;    
 extern PID_TypeDef motor_pid[7];
-extern PID_TypeDef chassis_yaw_speed,chassis_yaw;
+extern PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw;
 extern PID_TypeDef pan_tilt_pitch,pan_tilt_pitch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;
 

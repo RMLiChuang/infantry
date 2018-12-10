@@ -118,7 +118,7 @@ const int TURNSPEED=2500;   //转弯极限速度
 int yaw_control=0;
 void DBUS_Deal()
 {
-	if(remote_control.switch_left==2)//将imu融合到底盘中
+	if(remote_control.switch_left==1)//将imu融合到底盘中
 	{
 		moto_ctr[0]=remote_control.ch2+remote_control.ch1;
 		moto_ctr[1]=-remote_control.ch2+remote_control.ch1;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
@@ -132,12 +132,12 @@ void DBUS_Deal()
 //		else
 //			yaw_control=0;
 	}
-	if(remote_control.switch_left==1)
+	if(remote_control.switch_left==2)
 	{
-		moto_ctr[0]=remote_control.ch2+remote_control.ch4+remote_control.ch1;
-		moto_ctr[1]=-remote_control.ch2+remote_control.ch4+remote_control.ch1;
-		moto_ctr[2]=-remote_control.ch2+remote_control.ch4-remote_control.ch1;   
-		moto_ctr[3]=remote_control.ch2+remote_control.ch4-remote_control.ch1;
+		moto_ctr[0]=remote_control.ch2+remote_control.ch3+remote_control.ch1;
+		moto_ctr[1]=-remote_control.ch2+remote_control.ch3+remote_control.ch1;
+		moto_ctr[2]=-remote_control.ch2+remote_control.ch3-remote_control.ch1;   
+		moto_ctr[3]=remote_control.ch2+remote_control.ch3-remote_control.ch1;
 			
 	}
 	motor_pid[0].target=moto_ctr[0]*2500/660;

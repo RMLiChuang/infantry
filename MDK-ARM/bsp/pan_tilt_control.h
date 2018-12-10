@@ -9,4 +9,5 @@ void pan_tilt_yaw_imu_angle_control(void);
 void pan_tilt_yaw_mechanical_angle_control(void);
 void pan_tilt_pitch_imu_angle_control(void);
 void pan_tilt_pitch_mechanical_angle_control(void);
+void pan_tilt_lock_control(void);
 #endif
