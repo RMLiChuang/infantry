@@ -45,7 +45,7 @@ typedef struct _PID_TypeDef
 	float iout;
 	float dout;
 	
-	float output;						//本次输出
+	int16_t output;						//本次输出
 	float last_output;			//上次输出
 	
 	float MaxOutput;				//输出限幅

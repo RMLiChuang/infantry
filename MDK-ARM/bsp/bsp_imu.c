@@ -854,8 +854,8 @@ void imu_ahrs_update(imu_t *mpu)
 	q3 = tempq3 * norm;
 	
 	mpu->yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
-	//mpu->pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3; 
-	mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;
+	mpu->pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3+180; 
+	//mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;
 //	last_yaw_temp = yaw;
 //	//yaw_temp = angle[0]; 
 //	if(yaw-last_yaw_temp>=330)  //yaw轴角度经过处理后变成连续的

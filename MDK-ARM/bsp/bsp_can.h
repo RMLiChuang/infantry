@@ -56,6 +56,8 @@ typedef enum
 	CAN_2006Moto7_ID = 0x207,
 }CAN_Message_ID;
 
+#define MOTORID   0x200  //底盘电机ID
+#define HEADID    0x1FF   //云台电机ID  
 #define FILTER_BUF_LEN		5
 /*接收到的云台电机的参数结构体*/
 typedef struct{
@@ -76,7 +78,8 @@ typedef struct{
 
 /* Extern  ------------------------------------------------------------------*/
 extern moto_measure_t  moto_chassis[];
-
+extern uint8_t MotorTxData[8];
+extern uint8_t HeadTxData[8];
 
 void pan_tilt_calibrate(CAN_HandleTypeDef* hcan);
 void my_can_filter_init(CAN_HandleTypeDef* hcan);
@@ -87,4 +90,5 @@ void can_receive_onetime(CAN_HandleTypeDef* _hcan, int time);
 void set_moto_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2, s16 iq3, s16 iq4);
 void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3);
 void set_pan_tilt_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2);
+void CAN_Send_Msg(CAN_HandleTypeDef* hcan, uint8_t *msg, uint32_t id, uint8_t len);
 #endif

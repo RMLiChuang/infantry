@@ -9,7 +9,7 @@
 #include "robomaster_control.h"
 #include "robomaster_common.h"
 
-#define twist_speed 500
+#define twist_speed 1000
 
 void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,float duty)
 	{
@@ -29,9 +29,13 @@ void shoot_control()
 		{
 				if(remote_control.switch_right==3)
 				{
-				  motor_pid[6].target=4000;
-					motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
-					set_rammer_current(&hcan1,motor_pid[6].output);
+				  //motor_pid[6].target=4000;
+					//motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
+					//set_rammer_current(&hcan1,motor_pid[6].output);
+					//set_rammer_current(&hcan1,0);
+					HeadTxData[5]=0;
+					HeadTxData[6]=0;//拨弹轮电流值
+					
 					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.14);
 					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.14);
 					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.14);
@@ -39,20 +43,30 @@ void shoot_control()
 				}
 				if(remote_control.switch_right==2)
 				{	
-					motor_pid[6].target=7000;
+					motor_pid[6].target=4000;
 					motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
+					HeadTxData[5]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
+					HeadTxData[6]=(uint8_t)(motor_pid[6].output&0xFF); 
+					//set_rammer_current(&hcan1,motor_pid[6].output);
 					
-					set_rammer_current(&hcan1,motor_pid[6].output);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.14);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.14);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.14);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.14);
 				}
 				if(remote_control.switch_right==1)
 				{
-					set_rammer_current(&hcan1,0);
+					HeadTxData[5]=0;
+					HeadTxData[6]=0;//拨弹轮电流值
+					//set_rammer_current(&hcan1,0);
 					init_TIM5_PWM();
 				}
 
 		}else
 		{
-			set_rammer_current(&hcan1,0);
+			HeadTxData[5]=0;
+			HeadTxData[6]=0;//拨弹轮电流值
+			//set_rammer_current(&hcan1,0);
 			init_TIM5_PWM();
 		}
 }
@@ -172,10 +186,38 @@ void chassis_speed_control()
 		motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
 		motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
 		motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
+	
+//		//将底盘电机的速度解码发送
+//	MotorTxData[0] = ((motor_pid[0].output>>8)&0xFF);
+//	MotorTxData[1] = (motor_pid[0].output&0xFF); 
+//	MotorTxData[2] = ((motor_pid[1].output>>8)&0xFF);
+//	MotorTxData[3] = (motor_pid[1].output&0xFF); 
+//	MotorTxData[4] = ((motor_pid[2].output>>8)&0xFF);
+//	MotorTxData[5] = (motor_pid[2].output&0xFF); 
+//	MotorTxData[6] = ((motor_pid[3].output>>8)&0xFF);
+//	MotorTxData[7] = (motor_pid[3].output&0xFF); 
+
+}
+/**********************************************************************************************************
+*函 数 名: chassis_current_mix
+*功能说明: 底盘电流输出融合
+*形    参: 需要速度环电流，位置换电流，功率环电流
+*返 回 值: 电流输出
+**********************************************************************************************************/
+void chassis_current_mix()
+{
+	MotorTxData[0] = (((motor_pid[0].output+chassis_yaw_angle.output)>>8)&0xFF);
+	MotorTxData[1] = ((motor_pid[0].output+chassis_yaw_angle.output)&0xFF); 
+	MotorTxData[2] = (((motor_pid[1].output+chassis_yaw_angle.output)>>8)&0xFF);
+	MotorTxData[3] = ((motor_pid[1].output+chassis_yaw_angle.output)&0xFF); 
+	MotorTxData[4] = (((motor_pid[2].output+chassis_yaw_angle.output)>>8)&0xFF);
+	MotorTxData[5] = ((motor_pid[2].output+chassis_yaw_angle.output)&0xFF); 
+	MotorTxData[6] = (((motor_pid[3].output+chassis_yaw_angle.output)>>8)&0xFF);
+	MotorTxData[7] = ((motor_pid[3].output+chassis_yaw_angle.output)&0xFF); 
 }
 /**********************************************************************************************************
 *函 数 名: chassis_twist_control
-*功能说明: 底盘与云台相结合的扭腰程序（熟称猫步）
+*功能说明: 底盘与云台相结合的扭腰程序 （熟称猫步）
 *形    参: 需要yaw轴角度，角速度，电机速度反馈
 *返 回 值: 电流输出
 **********************************************************************************************************/
@@ -190,28 +232,29 @@ void chassis_twist_control()
 		{
 			chassis_yaw_angle.initial=moto_chassis[5].angle;//开启猫步时，记录底盘初始值为云台yaw轴所在机械角度值
 			chassis_yaw_angle.target=chassis_yaw_angle.initial;
+			
+			pan_tilt_pitch.initial=moto_chassis[4].angle;
 			robot_status.mode=TWIST;//将步兵模式设置为猫步模式
 		}
-		pan_tilt_lock_control(); //云台锁头程序启动
-		chassis_speed_control();//底盘速度环控制
-		
-//		motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
-//		motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
-//		motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
-//		motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
-//		set_moto_current(&hcan1,(motor_pid[0].output+twist_speed),   //将PID的计算结果通过CAN发送到电机
-//														(motor_pid[1].output+twist_speed),
-//														(motor_pid[2].output+twist_speed),
-//														(motor_pid[3].output+twist_speed));
-		set_moto_current(&hcan1,motor_pid[0].output,motor_pid[1].output,motor_pid[2].output,0);
+			pan_tilt_lock_control(); //云台锁头程序启动
+			chassis_speed_control();//底盘速度环控制
+			chassis_yaw_angle.target=chassis_yaw_angle.initial;
+			PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+			chassis_current_mix();
+			CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+	
 		}
 	else if(remote_control.switch_left==3)//使步兵底盘与云台之间的角度变成初始化状态
 	{
 		robot_status.mode=STANDBY;//步兵进入待命状态
 		chassis_yaw_angle.target=chassis_yaw_angle.initial;
 		PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
-		set_moto_current(&hcan1,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output);
+		chassis_speed_control();//底盘速度环控制
+		//set_moto_current(&hcan1,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output);
+		chassis_current_mix();
+		CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
 	}
+	
 }
 /**********************************************************************************************************
 *函 数 名: chassis_follow_pan_tilt_control

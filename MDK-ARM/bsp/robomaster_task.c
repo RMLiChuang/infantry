@@ -29,8 +29,9 @@ void task()
   chassis_twist_control();//步兵扭腰
 	//pan_tilt_control();
 	//chassis_control();		//底盘电机的控制
-	
-	//shoot_control();			//摩擦轮以及拨弹电机的控制
+	//pan_tilt_lock_control();
+//	if(cnt1%2==0)
+//	shoot_control();			//摩擦轮以及拨弹电机的控制
 	
 	
 }

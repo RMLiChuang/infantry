@@ -169,23 +169,31 @@ int main(void)
 //	  wave_form_data[4] =(short)chassis_yaw.output;//imu.gz;
 //	  wave_form_data[5] =(short)chassis_yaw_speed.output;
 
+//底盘电机跟随云台闭环
+			wave_form_data[0] =(short)chassis_yaw_angle.target;    //YAW ID:206
+	    wave_form_data[1] =(short)chassis_yaw_angle.output;
+	    wave_form_data[2] =(short)moto_chassis[5].angle;
+	    wave_form_data[3] =(short)imu.gz;
+	    wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
+	    wave_form_data[5] =(short)imu.yaw;
+
 //yaw轴imu角度反馈调试
-    wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
-	  wave_form_data[1] =(short)motor_pid[5].output;
-	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
-	  wave_form_data[3] =(short)imu.gz;
-		wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
-	  wave_form_data[5] =(short)moto_chassis[5].angle;
+//    wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
+//	  wave_form_data[1] =(short)motor_pid[5].output;
+//	  wave_form_data[2] =(short)pan_tilt_yaw_speed.target;
+//	  wave_form_data[3] =(short)imu.gz;
+//		wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
+//	  wave_form_data[5] =(short)moto_chassis[5].angle;
 
-//pitch轴机械角度反馈调试
-//    wave_form_data[0] =(short)motor_pid[4].target;      //YAW ID:206
-//	  wave_form_data[1] =(short)motor_pid[4].output;
+//pitch轴imu角度反馈调试
+//    wave_form_data[0] =(short)pan_tilt_pitch.target;      //YAW ID:206
+//	  wave_form_data[1] =(short)pan_tilt_pitch.output;
 //	  wave_form_data[2] =(short)pan_tilt_pitch_speed.target;
-//	  wave_form_data[3] =(short)imu.gx;//pan_tilt_yaw_speed.output;
+//	  wave_form_data[3] =(short)-imu.gy;//pan_tilt_yaw_speed.output;
 //		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
-//	  wave_form_data[5] =(short)moto_chassis[4].angle;
+//	  wave_form_data[5] =(short)imu.pit;//moto_chassis[4].angle;
 
-//云台归中的yaw和pitch机械角度调试
+////云台归中的yaw和pitch机械角度调试
 //		wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
 //	  wave_form_data[1] =(short)motor_pid[5].err;
 //	  wave_form_data[2] =(short)moto_chassis[5].angle;

@@ -26,7 +26,8 @@
 
 
 moto_measure_t moto_chassis[7] = {0};//4 chassis moto
-
+uint8_t MotorTxData[8] = {0};    //底盘控制
+uint8_t HeadTxData[8] = {0,0,0,0,0,0,0,0};     //云台控制
 
 
 void get_total_angle(moto_measure_t *p);
@@ -236,4 +237,20 @@ void pan_tilt_calibrate(CAN_HandleTypeDef* hcan) //没用
 
 	
 	HAL_CAN_Transmit(hcan,100);
+}
+//CAN send message test
+void CAN_Send_Msg(CAN_HandleTypeDef* hcan, uint8_t *msg, uint32_t id, uint8_t len)
+{
+  uint8_t index = 0;
+  
+  hcan->pTxMsg->StdId = id;
+  hcan->pTxMsg->IDE = CAN_ID_STD;
+  hcan->pTxMsg->RTR = CAN_RTR_DATA;
+  hcan->pTxMsg->DLC = len;
+  
+  for(index = 0; index <len; index++)
+    hcan->pTxMsg->Data[index] = msg[index];
+  
+  HAL_CAN_Transmit_IT(hcan);
+
 }

@@ -333,13 +333,13 @@ void all_pid_init()
 	pid_init(&chassis_yaw_angle);//来源于yaw轴电机机械角度的数值
 	chassis_yaw_angle.f_param_init(&chassis_yaw_angle,
 																	PID_Speed,					
-																	150,							//maxOutput												//输出限幅
-																	50,								//integralLimit										//积分限幅
+																	3000,							//maxOutput												//输出限幅
+																	1000,								//integralLimit										//积分限幅
 																	0.5,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	30,								//max_err													//最大误差
+																	500,								//max_err													//最大误差
 																	0,									//target
-																	0,								//kp
+																	10,								//kp
 																	0,							//ki	
 																	0);							//kd
 //chassis_yaw pid初始化  用于走直线，角度外环控制
@@ -410,7 +410,7 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	30,								//max_err													//最大误差
 																	0,									//target
-																  8,								//kp
+																  6,								//kp
 																	0,							//ki	
 																	0);							//kd
 																	
@@ -424,7 +424,7 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	100,								//max_err													//最大误差
 																	0,									//target
-																  0.8,								//kp
+																  0.8,								//kp 0.8
 																	0,							//ki	
 																	0);							//kd
 																	
@@ -438,9 +438,9 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	60,								//max_err													//最大误差
 																	0,									//target
-																	50,								//kp    50
-																	0.003,							//ki	    0
-																	1);							//kd			5																
+																	75,								//kp    50
+																	0,							//ki	    0.003
+																	2);							//kd			1																
 	//PITCH轴电机机械角度环pid初始化，反馈值由imu获取    
 	 pid_init(&pan_tilt_pitch);
     pan_tilt_pitch.f_param_init(&pan_tilt_pitch,
@@ -449,11 +449,11 @@ void all_pid_init()
 																	50,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	300,								//max_err													//最大误差
+																	60,								//max_err													//最大误差
 																	0,									//target
-																	18,							//kp 0.15
+																	10,							//kp 18
 																	0,							//ki	
-																	0);							//kd 0.1						
+																	0);							//kd 0						
 	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    
 	 pid_init(&motor_pid[4]);
     motor_pid[4].f_param_init(&motor_pid[4],
@@ -464,7 +464,7 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	300,								//max_err													//最大误差
 																	0,									//target
-																	0.1,							//kp 0.32
+																	0.7,							//kp 0.32
 																	0,							//ki	
 																	0);							//kd 0
 	
@@ -472,15 +472,15 @@ void all_pid_init()
 	 pid_init(&pan_tilt_pitch_speed);
     pan_tilt_pitch_speed.f_param_init(&pan_tilt_pitch_speed,
 																	PID_Speed,					
-																	7000,							//maxOutput												//输出限幅
-																	4000,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
+																	5500,							//maxOutput												//输出限幅
+																	2000,								//integralLimit										//积分限幅
+																	3,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	100,								//max_err													//最大误差
+																	80,								//max_err													//最大误差
 																	0,									//target
-																	55,								//kp    90
-																	0.5,							//ki	    0.10
-																	0);							//kd			0.06
+																	55,								//kp    55
+																	0.0001,							//ki	   0.5
+																	0.5);							//kd			0
 	#endif																
 																	
 																	
