@@ -175,7 +175,7 @@ int main(void)
 	    wave_form_data[2] =(short)moto_chassis[5].angle;
 	    wave_form_data[3] =(short)imu.gz;
 	    wave_form_data[4] =(short)pan_tilt_yaw_speed.output;      //PITCH ID:205
-	    wave_form_data[5] =(short)imu.yaw;
+	    wave_form_data[5] =(short)imu.pit;
 
 //yaw÷·imuΩ«∂»∑¥¿°µ˜ ‘
 //    wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206

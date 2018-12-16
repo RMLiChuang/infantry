@@ -325,21 +325,21 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	5000,								//max_err													//最大误差
 																	0,									//target
-																	2,								//kp
-																	0.05,							//ki	
-																	3);							//kd
+																	5,								//kp 2
+																	0,							//ki	 0.05
+																	0);							//kd  3
 	
 	//chassis_yaw_angle pid初始化  
 	pid_init(&chassis_yaw_angle);//来源于yaw轴电机机械角度的数值
 	chassis_yaw_angle.f_param_init(&chassis_yaw_angle,
 																	PID_Speed,					
-																	3000,							//maxOutput												//输出限幅
+																	3500,							//maxOutput												//输出限幅
 																	1000,								//integralLimit										//积分限幅
 																	0.5,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	500,								//max_err													//最大误差
 																	0,									//target
-																	10,								//kp
+																	18,								//kp
 																	0,							//ki	
 																	0);							//kd
 //chassis_yaw pid初始化  用于走直线，角度外环控制

@@ -137,11 +137,11 @@ void pan_tilt_lock_control()
 	  
 	HeadTxData[2]=(uint8_t)((pan_tilt_yaw_speed.output>>8)&0xFF);
   HeadTxData[3]=(uint8_t)(pan_tilt_yaw_speed.output&0xFF);           //206  yaw 
-	if(remote_control.switch_right!=3)
+	if(remote_control.switch_left!=3)
 	{
-		CAN_Send_Msg(&hcan1,HeadTxData,HEADID,4);
+		CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 	}
-	else
+	else if(remote_control.switch_left==3)
 	{
 		HeadTxData[0]=0;
 		HeadTxData[1]=0;           //205   pitch
@@ -149,6 +149,8 @@ void pan_tilt_lock_control()
 		HeadTxData[3]=0;           //206  yaw 
 		CAN_Send_Msg(&hcan1,0,HEADID,8);
 	}
+	
+	//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 }
 
 
@@ -173,7 +175,7 @@ void pan_tilt_yaw_imu_angle_control(void)
 		else
 		{
 			pan_tilt_yaw.target=0;////偏航角期望给0,不进行角度控制
-			pan_tilt_yaw_speed.target=remote_control.ch4*300/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+			pan_tilt_yaw_speed.target=remote_control.ch4*100/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
 		}
 		
 		pan_tilt_yaw.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
@@ -239,10 +241,10 @@ void pan_tilt_pitch_imu_angle_control(void)
 //			pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
 //			pan_tilt_pitch_speed.target=remote_control.ch3*300/660;//pitch_control;//偏航角速度环期望，直接来源于遥控器打杆量
 //		}
-		pan_tilt_pitch.target=170;//pan_tilt_pitch.initial;
+		pan_tilt_pitch.target=180;//pan_tilt_pitch.initial;
 		PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
-		pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
-		PID_Control_Pitch(&pan_tilt_pitch_speed,-imu.gy);//角速度环
+		pan_tilt_pitch_speed.target=-pan_tilt_pitch.output;
+		PID_Control_Pitch(&pan_tilt_pitch_speed,imu.gy);//角速度环
 }
 /**********************************************************************************************************
 *函 数 名: pan_tilt_pitch_mechanical_angle_control

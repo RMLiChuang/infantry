@@ -33,22 +33,22 @@ void shoot_control()
 					//motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
 					//set_rammer_current(&hcan1,motor_pid[6].output);
 					//set_rammer_current(&hcan1,0);
-					HeadTxData[5]=0;
-					HeadTxData[6]=0;//拨弹轮电流值
-					
-					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.14);
+					HeadTxData[4]=0;
+					HeadTxData[5]=0;//拨弹轮电流值
+					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.16);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.16);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.16);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.16);
 				}
 				if(remote_control.switch_right==2)
 				{	
-					motor_pid[6].target=4000;
+					motor_pid[6].target=2500;
 					motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
-					HeadTxData[5]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
-					HeadTxData[6]=(uint8_t)(motor_pid[6].output&0xFF); 
+					HeadTxData[4]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
+					HeadTxData[5]=(uint8_t)(motor_pid[6].output&0xFF); 
 					//set_rammer_current(&hcan1,motor_pid[6].output);
-					
+					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.14);
 					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.14);
 					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.14);
@@ -56,16 +56,18 @@ void shoot_control()
 				}
 				if(remote_control.switch_right==1)
 				{
-					HeadTxData[5]=0;
-					HeadTxData[6]=0;//拨弹轮电流值
+					HeadTxData[4]=0;
+					HeadTxData[5]=0;//拨弹轮电流值
+					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 					//set_rammer_current(&hcan1,0);
 					init_TIM5_PWM();
 				}
 
 		}else
 		{
-			HeadTxData[5]=0;
-			HeadTxData[6]=0;//拨弹轮电流值
+			HeadTxData[4]=0;
+			HeadTxData[5]=0;//拨弹轮电流值
+			//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 			//set_rammer_current(&hcan1,0);
 			init_TIM5_PWM();
 		}
@@ -181,7 +183,7 @@ void chassis_control()
 **********************************************************************************************************/
 void chassis_speed_control()
 {
-		DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
+//		DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
 		motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
 		motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
 		motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
@@ -215,6 +217,24 @@ void chassis_current_mix()
 	MotorTxData[6] = (((motor_pid[3].output+chassis_yaw_angle.output)>>8)&0xFF);
 	MotorTxData[7] = ((motor_pid[3].output+chassis_yaw_angle.output)&0xFF); 
 }
+
+/**********************************************************************************************************
+*函 数 名: set_current_zero
+*功能说明: 将电流值设置为0
+*形    参: 
+*返 回 值: 电流输出
+**********************************************************************************************************/
+void set_current_zero()
+{
+	char i;
+	for(i=0;i<8;i++)
+	{
+		MotorTxData[i]=0;
+		HeadTxData[i]=0;
+	}
+	CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+	//CAN_Send_Msg(&hcan1, HeadTxData, HEADID, 8);  //向底盘电机发送给定的电流值
+}
 /**********************************************************************************************************
 *函 数 名: chassis_twist_control
 *功能说明: 底盘与云台相结合的扭腰程序 （熟称猫步）
@@ -222,12 +242,13 @@ void chassis_current_mix()
 *返 回 值: 电流输出
 **********************************************************************************************************/
 
+
 void chassis_twist_control()
 {
-	if(remote_control.switch_left==2)
+	if(remote_control.switch_left!=3)
 	{
 		Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_G_Pin,1);//设置ledG闪烁频率
-		//DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
+		DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
 		if(robot_status.mode!=TWIST)
 		{
 			chassis_yaw_angle.initial=moto_chassis[5].angle;//开启猫步时，记录底盘初始值为云台yaw轴所在机械角度值
@@ -236,23 +257,27 @@ void chassis_twist_control()
 			pan_tilt_pitch.initial=moto_chassis[4].angle;
 			robot_status.mode=TWIST;//将步兵模式设置为猫步模式
 		}
-			pan_tilt_lock_control(); //云台锁头程序启动
+			
+			
 			chassis_speed_control();//底盘速度环控制
 			chassis_yaw_angle.target=chassis_yaw_angle.initial;
 			PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+			pan_tilt_lock_control(); //云台锁头程序启动
 			chassis_current_mix();
+			
 			CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
-	
+			
 		}
 	else if(remote_control.switch_left==3)//使步兵底盘与云台之间的角度变成初始化状态
 	{
 		robot_status.mode=STANDBY;//步兵进入待命状态
-		chassis_yaw_angle.target=chassis_yaw_angle.initial;
-		PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
-		chassis_speed_control();//底盘速度环控制
-		//set_moto_current(&hcan1,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output);
-		chassis_current_mix();
-		CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+//		chassis_yaw_angle.target=chassis_yaw_angle.initial;
+//		PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+//		chassis_speed_control();//底盘速度环控制
+//		//set_moto_current(&hcan1,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output);
+//		chassis_current_mix();
+//		CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+		set_current_zero();
 	}
 	
 }

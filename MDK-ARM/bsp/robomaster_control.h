@@ -20,5 +20,6 @@ void chassis_twist_control(void);
 void chassis_follow_pan_tilt_control(void);
 void chassis_speed_control(void);
 void chassis_current_mix(void);
+void set_current_zero(void);
 #endif
 
