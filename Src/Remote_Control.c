@@ -13,6 +13,7 @@
 #include "Remote_Control.h"
 #include "pid.h"
 
+#define INFANTRY_MAX_SPEED 3000
 RC_Type remote_control;
 uint32_t  Latest_Remote_Control_Pack_Time = 0;
 uint32_t  LED_Flash_Timer_remote_control = 0;
@@ -113,12 +114,12 @@ __________________________________________________________________
 *************************** ***************************/
 int16_t moto_ctr[6];
 //遥控控制
-const int THRESHOLD=2500;  //极限速度
-const int TURNSPEED=2500;   //转弯极限速度
+const int THRESHOLD=3000;  //极限速度
+const int TURNSPEED=3000;   //转弯极限速度
 int yaw_control=0;
 void DBUS_Deal()
 {
-	if(remote_control.switch_left==1)//将imu融合到底盘中
+	if(remote_control.switch_left==2)//将imu融合到底盘中
 	{
 		moto_ctr[0]=remote_control.ch2+remote_control.ch1;
 		moto_ctr[1]=-remote_control.ch2+remote_control.ch1;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
@@ -132,7 +133,7 @@ void DBUS_Deal()
 //		else
 //			yaw_control=0;
 	}
-	if(remote_control.switch_left==2)
+	if(remote_control.switch_left==1)
 	{
 		moto_ctr[0]=remote_control.ch2+remote_control.ch3+remote_control.ch1;
 		moto_ctr[1]=-remote_control.ch2+remote_control.ch3+remote_control.ch1;
@@ -140,10 +141,10 @@ void DBUS_Deal()
 		moto_ctr[3]=remote_control.ch2+remote_control.ch3-remote_control.ch1;
 			
 	}
-	motor_pid[0].target=moto_ctr[0]*2500/660;
-   motor_pid[1].target=moto_ctr[1]*2500/660;
-   motor_pid[2].target=moto_ctr[2]*2500/660;
-   motor_pid[3].target=moto_ctr[3]*2500/660;
+	motor_pid[0].target=moto_ctr[0]*INFANTRY_MAX_SPEED/660;
+   motor_pid[1].target=moto_ctr[1]*INFANTRY_MAX_SPEED/660;
+   motor_pid[2].target=moto_ctr[2]*INFANTRY_MAX_SPEED/660;
+   motor_pid[3].target=moto_ctr[3]*INFANTRY_MAX_SPEED/660;
 	
 	if((motor_pid[0].target>THRESHOLD)&&(motor_pid[1].target>THRESHOLD)&&(motor_pid[2].target>THRESHOLD)&&(motor_pid[3].target>THRESHOLD))			//顺转速度控制
 		{

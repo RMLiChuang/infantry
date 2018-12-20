@@ -9,8 +9,10 @@
 #include "robomaster_control.h"
 #include "robomaster_common.h"
 
-#define twist_speed 1000
 
+#define twist_speed        1000
+#define chassis_limit      1000       //走猫步时的底盘限位机械角度
+#define chassis_dead_band  100        //底盘机械角度的死区
 void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,float duty)
 	{
 	
@@ -176,6 +178,34 @@ void chassis_control()
 	  }
 }
 /**********************************************************************************************************
+*函 数 名: GildeAverageValueFilter
+*功能说明: 底盘速度环控制
+*形    参: 
+*返 回 值: 电流输出
+**********************************************************************************************************/
+float Data[N];
+float GildeAverageValueFilter(float NewValue,float *Data)
+{
+  float max,min;
+  float sum;
+  unsigned char i;
+  Data[0]=NewValue;
+  max=Data[0];
+  min=Data[0];
+  sum=Data[0];
+  for(i=N-1;i!=0;i--)
+  {
+    if(Data[i]>max) max=Data[i];
+    else if(Data[i]<min) min=Data[i];
+    sum+=Data[i];
+    Data[i]=Data[i-1];
+  }
+  i=N-2;
+  sum=sum-max-min;
+  sum=sum/i;
+  return(sum);
+}
+/**********************************************************************************************************
 *函 数 名: chassis_speed_control
 *功能说明: 底盘速度环控制
 *形    参: 
@@ -233,7 +263,7 @@ void set_current_zero()
 		HeadTxData[i]=0;
 	}
 	CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
-	//CAN_Send_Msg(&hcan1, HeadTxData, HEADID, 8);  //向底盘电机发送给定的电流值
+	CAN_Send_Msg(&hcan1, HeadTxData, HEADID, 8);  //向底盘电机发送给定的电流值
 }
 /**********************************************************************************************************
 *函 数 名: chassis_twist_control
@@ -241,42 +271,75 @@ void set_current_zero()
 *形    参: 需要yaw轴角度，角速度，电机速度反馈
 *返 回 值: 电流输出
 **********************************************************************************************************/
-
-
+bool chassis_position_flag=0;
 void chassis_twist_control()
 {
-	if(remote_control.switch_left!=3)
-	{
-		Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_G_Pin,1);//设置ledG闪烁频率
-		DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
+		
+		DBUS_Deal();
 		if(robot_status.mode!=TWIST)
 		{
-			chassis_yaw_angle.initial=moto_chassis[5].angle;//开启猫步时，记录底盘初始值为云台yaw轴所在机械角度值
-			chassis_yaw_angle.target=chassis_yaw_angle.initial;
-			
-			pan_tilt_pitch.initial=moto_chassis[4].angle;
-			robot_status.mode=TWIST;//将步兵模式设置为猫步模式
-		}
-			
-			
-			chassis_speed_control();//底盘速度环控制
+			//Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_B_Pin,1);//设置ledB闪烁频率
+			pan_tilt_lock_control(); //云台锁头程序启动
 			chassis_yaw_angle.target=chassis_yaw_angle.initial;
 			PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+			chassis_current_mix();
+			CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+			if((moto_chassis[5].angle<(chassis_yaw_angle.initial+chassis_dead_band))&&(moto_chassis[5].angle>(chassis_yaw_angle.initial-chassis_dead_band)))
+			robot_status.mode=TWIST;//将步兵模式设置为猫步模式
+		}
+		if(robot_status.mode==TWIST)
+		{	
+			//Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_B_Pin,1);//设置ledB闪烁频率
+			chassis_speed_control();//底盘速度环控制
+			if(chassis_position_flag==0)
+			{
+				chassis_yaw_angle.target=(chassis_yaw_angle.initial+chassis_limit);
+				PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+				if((moto_chassis[5].angle<(chassis_yaw_angle.target+chassis_dead_band))&&(moto_chassis[5].angle>(chassis_yaw_angle.target-chassis_dead_band)))
+					chassis_position_flag=1;
+			}
+			if(chassis_position_flag==1)
+			{
+				chassis_yaw_angle.target=(chassis_yaw_angle.initial-chassis_limit);
+				PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+				if((moto_chassis[5].angle<(chassis_yaw_angle.target+chassis_dead_band))&&(moto_chassis[5].angle>(chassis_yaw_angle.target-chassis_dead_band)))
+					chassis_position_flag=0;
+			}
 			pan_tilt_lock_control(); //云台锁头程序启动
 			chassis_current_mix();
 			
 			CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
-			
 		}
+}
+
+
+
+/**********************************************************************************************************
+*函 数 名: infantry_control
+*功能说明: 底盘与云台相结合的控制程序 
+*形    参: 
+*返 回 值: 电流输出
+**********************************************************************************************************/
+
+bool calibrate_flag=0;
+void infantry_control()
+{
+	if(calibrate_flag==0)
+	{
+		calibrate_initial_position();
+		calibrate_flag=1;
+	}
+	if(remote_control.switch_left==2)//底盘跟随云台模式
+	{
+			chassis_follow_pan_tilt_control();		
+	}
+	else if(remote_control.switch_left==1)//猫步模式
+	{
+		chassis_twist_control();
+	}
 	else if(remote_control.switch_left==3)//使步兵底盘与云台之间的角度变成初始化状态
 	{
 		robot_status.mode=STANDBY;//步兵进入待命状态
-//		chassis_yaw_angle.target=chassis_yaw_angle.initial;
-//		PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
-//		chassis_speed_control();//底盘速度环控制
-//		//set_moto_current(&hcan1,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output,chassis_yaw_angle.output);
-//		chassis_current_mix();
-//		CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
 		set_current_zero();
 	}
 	
@@ -287,27 +350,40 @@ void chassis_twist_control()
 *形    参: 
 *返 回 值: 电流输出
 **********************************************************************************************************/
-bool follow_flag=0;
+//bool follow_flag=0;
 void chassis_follow_pan_tilt_control()
 {
 	
-	if(robot_status.mode!=FOLLOW)//步兵从非跟随模式进入跟随模式时，需要记录底盘与云台的绝对角度
+		//Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_A_Pin,1);//设置ledA闪烁频率
+		DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
+		if(robot_status.mode!=FOLLOW)
 		{
-			chassis_yaw_angle.initial=moto_chassis[5].angle;//开启底盘跟随时，记录底盘初始值为云台yaw轴所在机械角度值
-			robot_status.mode=FOLLOW;//步兵处于底盘跟谁模式
-			//chassis_yaw.target=chassis_yaw.initial;
+			chassis_yaw_angle.target=chassis_yaw_angle.initial;
+			
+			//pan_tilt_pitch.initial=moto_chassis[4].angle;
+			robot_status.mode=FOLLOW;//将步兵模式设置为底盘跟随云台模式
 		}
-		chassis_speed_control();//底盘速度环控制
-		chassis_yaw_angle.target=chassis_yaw_angle.initial;
-		PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
-		pan_tilt_lock_control(); //云台锁头程序启动
-		
-		set_pan_tilt_current(&hcan1,pan_tilt_pitch_speed.output,pan_tilt_yaw_speed.output);
-		set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_angle.output,
-														motor_pid[1].output+chassis_yaw_angle.output,
-														motor_pid[2].output+chassis_yaw_angle.output,
-														0);
-		
+		if(robot_status.mode==FOLLOW)
+		{	
+			chassis_speed_control();//底盘速度环控制
+			chassis_yaw_angle.target=chassis_yaw_angle.initial;
+			PID_Control_Yaw(&chassis_yaw_angle,moto_chassis[5].angle);//yaw电机编码器获得的角度作为反馈值
+			pan_tilt_lock_control(); //云台锁头程序启动
+			chassis_current_mix();
+			
+			CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+		}
+}
+
+/**********************************************************************************************************
+*函 数 名: calibrate_initial_position
+*功能说明: 标定初始化的云台与底盘位置，用于底盘回正
+*形    参: 
+*返 回 值: 电流输出
+**********************************************************************************************************/
+void calibrate_initial_position()
+{
+	chassis_yaw_angle.initial=moto_chassis[5].angle;//记录上电时刻底盘相对云台的初始位置
 }
 
 

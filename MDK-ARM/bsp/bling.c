@@ -101,6 +101,13 @@ void Bling_Working(uint16_t bling_mode)
       }
 			
 			
+		
+		Bling_Process(&Light_A);//判断底盘跟随云台模式是否正常
+		Bling_Process(&Light_B);//判断猫步程序是否正常
+		Bling_Process(&Light_C);
+		Bling_Process(&Light_D);
+		Bling_Process(&Light_E);
+		Bling_Process(&Light_F);
+		Bling_Process(&Light_G);
 		Bling_Process(&Light_H);//判断中断2是否正常
-		Bling_Process(&Light_G);//判断底盘程序是否正常
 }

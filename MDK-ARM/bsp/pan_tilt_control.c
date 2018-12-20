@@ -161,7 +161,28 @@ void pan_tilt_lock_control()
 *返 回 值: 电流输出
 **********************************************************************************************************/
 void pan_tilt_yaw_imu_angle_control(void)
-{
+{	
+	if(remote_control.switch_left==2)
+	{
+	if(remote_control.ch3==0)//偏航杆置于中位
+		{
+			if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
+			{
+				pan_tilt_yaw.target=imu.yaw;
+				
+			}
+			PID_Control_Yaw(&pan_tilt_yaw,imu.yaw);
+			pan_tilt_yaw_speed.target=pan_tilt_yaw.output;
+	  }
+	
+		else
+		{
+			pan_tilt_yaw.target=0;////偏航角期望给0,不进行角度控制
+			pan_tilt_yaw_speed.target=remote_control.ch3*120/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+		}
+	}
+	else if(remote_control.switch_left==1)
+	{
 	if(remote_control.ch4==0)//偏航杆置于中位
 		{
 			if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
@@ -172,11 +193,14 @@ void pan_tilt_yaw_imu_angle_control(void)
 			PID_Control_Yaw(&pan_tilt_yaw,imu.yaw);
 			pan_tilt_yaw_speed.target=pan_tilt_yaw.output;
 	  }
+	
 		else
 		{
 			pan_tilt_yaw.target=0;////偏航角期望给0,不进行角度控制
-			pan_tilt_yaw_speed.target=remote_control.ch4*100/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+			pan_tilt_yaw_speed.target=remote_control.ch4*120/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
 		}
+	}
+	
 		
 		pan_tilt_yaw.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
 		
@@ -241,10 +265,11 @@ void pan_tilt_pitch_imu_angle_control(void)
 //			pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
 //			pan_tilt_pitch_speed.target=remote_control.ch3*300/660;//pitch_control;//偏航角速度环期望，直接来源于遥控器打杆量
 //		}
-		pan_tilt_pitch.target=180;//pan_tilt_pitch.initial;
+		pan_tilt_pitch.target=185;//pan_tilt_pitch.initial;
 		PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
 		pan_tilt_pitch_speed.target=-pan_tilt_pitch.output;
 		PID_Control_Pitch(&pan_tilt_pitch_speed,imu.gy);//角速度环
+		pan_tilt_pitch_speed.output=GildeAverageValueFilter(pan_tilt_pitch_speed.output,Data);
 }
 /**********************************************************************************************************
 *函 数 名: pan_tilt_pitch_mechanical_angle_control
@@ -274,7 +299,7 @@ void pan_tilt_pitch_mechanical_angle_control(void)
 		PID_Control_Pitch(&motor_pid[4],moto_chassis[4].angle);
 		pan_tilt_pitch_speed.target=-motor_pid[4].output;
 		
-		PID_Control_Pitch(&pan_tilt_pitch_speed,-imu.gy);//角速度环
+		PID_Control_Pitch(&pan_tilt_pitch_speed,imu.gy);//角速度环
 		
 }
 

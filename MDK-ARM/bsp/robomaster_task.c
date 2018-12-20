@@ -26,7 +26,7 @@ void task()
 	//imu_ahrs_update(&imu_9250);
 	
 	//pan_tilt_machine_home();//上电时机械归中
-  chassis_twist_control();//步兵扭腰
+  infantry_control();//步兵控制
 	//pan_tilt_control();
 	//chassis_control();		//底盘电机的控制
 	//pan_tilt_lock_control();
