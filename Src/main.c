@@ -133,8 +133,9 @@ int main(void)
   
 	
 	HAL_TIM_IC_Start_DMA(&htim1,TIM_CHANNEL_2,(uint32_t *)TIM_COUNT,2);
+	RM2312_Init();
 	HAL_TIM_Base_Start_IT(&htim2);//开启定时器2  程序主要任务都在定时器2中断里完成呢
-	
+	//RM2312_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -206,8 +207,8 @@ int main(void)
 	  wave_form_data[1] =(short)motor_pid[1].target;
 	  wave_form_data[2] =(short)motor_pid[2].target;
 	  wave_form_data[3] =(short)motor_pid[3].target;//pan_tilt_yaw_speed.output;
-		wave_form_data[4] =(short)moto_chassis[4].angle;//motor_pid[5].err;      //PITCH ID:205
-	  wave_form_data[5] =(short)moto_chassis[5].angle;
+		wave_form_data[4] =(short)moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[5] =(short)moto_chassis[6].angle;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */

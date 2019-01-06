@@ -462,10 +462,10 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /* USER CODE BEGIN 1 */
 void init_TIM5_PWM()
 {
-	PWM_SetDuty(&htim5,TIM_CHANNEL_1,1000);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_2,1000);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_3,1000);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_4,1000);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_1,1050);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_2,1050);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_3,1050);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_4,1050);
 }
 /* USER CODE END 1 */
 

@@ -31,6 +31,7 @@
 #include "robot_status.h"
 #include "pan_tilt_control.h"
 #include "bling.h"
+#include "delay.h"
 /* USER CODE END Includes */
 
 #endif

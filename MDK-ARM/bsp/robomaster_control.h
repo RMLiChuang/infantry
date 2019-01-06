@@ -25,5 +25,7 @@ void infantry_control(void);
 void calibrate_initial_position(void);
 float GildeAverageValueFilter(float NewValue,float *Data);
 void set_chassis_moto_target_zero(void);
+void RM2312_Init(void);
+	void TIM_SetTIM5Compare(uint16_t compare);
 #endif
 

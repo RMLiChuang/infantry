@@ -13,6 +13,30 @@
 #define twist_speed        1000
 #define chassis_limit      1000       //走猫步时的底盘限位机械角度
 #define chassis_dead_band  100        //底盘机械角度的死区
+
+//摩擦轮初始化
+void RM2312_Init(void)
+{
+	uint16_t pulse=1050;					
+	TIM_SetTIM5Compare(pulse);
+	delay_ms(400);
+	char  i;
+  for(i=0;i<10;i++)
+	{
+		pulse+=80;
+		TIM_SetTIM5Compare(pulse);
+		delay_ms(300);		
+	} 
+}
+	void TIM_SetTIM5Compare(uint16_t compare)
+{
+	TIM5->CCR1=compare;
+	TIM5->CCR2=compare;
+	TIM5->CCR3=compare;
+	TIM5->CCR4=compare;
+	
+}
+
 void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,int duty)
 	{
 	
@@ -24,7 +48,10 @@ void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,int duty)
 	}
 	
 }
-int i;
+	
+char BD_zhuangtai=0;
+char BD_tuidan=0;
+int i,keep;
 int pwm_output;
 void shoot_control()
 {
@@ -43,23 +70,59 @@ void shoot_control()
 					{
 						pwm_output=2000-i*1;
 					}
-					PWM_SetDuty(&htim5,TIM_CHANNEL_1,pwm_output);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_2,pwm_output);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_3,pwm_output);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_4,pwm_output);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,1500);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,1500);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,1500);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,1500);
 				}
 				if(remote_control.switch_right==2)
 				{	
-					motor_pid[6].target=2500;
+					motor_pid[6].target=3000;
 					motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
 					HeadTxData[4]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
 					HeadTxData[5]=(uint8_t)(motor_pid[6].output&0xFF); 
-					//set_rammer_current(&hcan1,motor_pid[6].output);
-					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_1,1400);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_2,1400);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_3,1400);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_4,1400);
+					
+					if(motor_pid[6].err<500&&moto_chassis[6].speed_rpm>600)		//拨弹轮工作状态稳定
+					{
+						BD_zhuangtai=1;
+					}
+					if((BD_zhuangtai==1)&&(motor_pid[6].err>400)&&(moto_chassis[6].speed_rpm<600))//拨弹轮由工作稳定到卡弹
+					{
+						BD_zhuangtai=2;
+						BD_tuidan=1;
+					}
+					if(BD_tuidan==1)
+					{
+						BD_tuidan=2;
+						moto_chassis[6].round_cnt=0;
+					}
+					if(BD_tuidan==2)
+					{
+						if(moto_chassis[6].round_cnt>-1)
+						{
+							motor_pid[6].target=-2500;
+							motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
+							HeadTxData[4]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
+					HeadTxData[5]=(uint8_t)(motor_pid[6].output&0xFF); 
+						}
+						else
+						{
+							BD_tuidan=0;
+							BD_zhuangtai=3;
+						}
+					}
+					if(BD_zhuangtai==3)
+					{
+						keep++;
+						if(keep>500)
+							{BD_zhuangtai=0;keep=0;}
+					}
+					
+					
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,1800);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,1800);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,1800);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,1800);
 				}
 				if(remote_control.switch_right==1)
 				{

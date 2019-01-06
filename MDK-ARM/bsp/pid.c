@@ -321,11 +321,11 @@ void all_pid_init()
 																	PID_Speed,					
 																	6000,							//maxOutput												//输出限幅
 																	2000,								//integralLimit										//积分限幅
-																	10,									//deadband												//死区（绝对值）
+																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	5000,								//max_err													//最大误差
 																	0,									//target
-																	5,								//kp 2
+																	6,								//kp 2
 																	0,							//ki	 0.05
 																	0);							//kd  3
 	
