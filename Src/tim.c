@@ -177,7 +177,7 @@ void MX_TIM5_Init(void)
   htim5.Instance = TIM5;
   htim5.Init.Prescaler = 83;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 9999;
+  htim5.Init.Period = 19999;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
   {
@@ -462,10 +462,10 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /* USER CODE BEGIN 1 */
 void init_TIM5_PWM()
 {
-	PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.10);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.10);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.10);
-	PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.10);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_1,1000);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_2,1000);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_3,1000);
+	PWM_SetDuty(&htim5,TIM_CHANNEL_4,1000);
 }
 /* USER CODE END 1 */
 

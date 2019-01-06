@@ -6,20 +6,19 @@
 typedef struct
 {
     uint8_t  init;           //初始化状态
-    uint8_t  failsafe;       //失控保护状态
+    uint8_t  imu_status;		 //imu加热状态
+		uint8_t	 anomaly;				 //异常检测状态
     uint8_t  armed;          //电机锁定状态
-    uint8_t  flight;         //飞行状态
     uint8_t  placement;      //放置状态
-    uint8_t  altControl;     //高度控制状态
     uint8_t  posControl;     //位置控制状态
-    uint8_t  mode;					 //
+    uint8_t  mode;					 //步兵运行模式
     uint32_t initFinishTime; //初始化完成时间
 } ROBOT_STATUS_t;
 
 
-//初始化状态
+//imu初始化状态
 enum
-{
+{		
     HEATING,		        //加热中
     HEAT_FINISH,		    //加热完成
     INIT_FINISH             //初始化完成 （完成加速度零偏计算）
@@ -28,19 +27,31 @@ enum
 //放置状态
 enum
 {		
-    STATIC,		            //静止
-    MOTIONAL		    //运动
+    MOTIONAL,		    			//运动
+		STATIC 		            //静止
 };
 
 //步兵运动模式
 enum
 {	
-	INITIAL,          //初始化模式
-	STANDBY,          //步兵待命状态
-	FOLLOW,           //底盘跟随云台
-	TWIST             //扭腰
+	INITIAL,         			 //初始化模式
+	STANDBY,          		 //步兵待命状态
+	FOLLOW,           		 //底盘跟随云台
+	TWIST,             		 //扭腰
+	KEY_BOARD_CONTROL			 //键盘控制状态
+};
+//步兵异常模式
+enum
+{
+	NORMAL,								 //正常状态
+	REMOTE_CONTROL_OFFLINE,//遥控器离线
+	CHASSIS_MOTOR_OFFLINE, //底盘电机离线
+	PAN_TILT_OFFLINE			 //云台电机离线
+	
 };
 extern ROBOT_STATUS_t robot_status;
 void PlaceStausCheck(Vector3f_t gyro_status);
+void robot_status_init(void);
+void robot_status_detection(void);
 #endif
 

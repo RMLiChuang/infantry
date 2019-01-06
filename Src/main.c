@@ -102,7 +102,6 @@ int main(void)
   MX_USART3_UART_Init();//大疆SDK串口 未用
   delay_init(168);//延时函数初始化
 	//MPU9250_Init();
-  //mpu_dmp_init();//DMP初始化
   //usmart_dev.init(84);//USMART初始化
   /* USER CODE BEGIN 2 */
 	/**TIM5 GPIO Configuration    
@@ -125,8 +124,9 @@ int main(void)
 
   
 	init_TIM5_PWM();			//初始化TIM5的PWM
-	Infantry_Start_Bling();//
+	Infantry_Start_Bling();//步兵状态指示灯
 	mpu_device_init();   //在初始化imu的时候，要先初始化SPI5和GPIOF6 不然无法初始化imu
+	robot_status_init();//步兵模式初始化
 	init_quaternion();	//初始化四元数，用于姿态解算
 	all_pid_init();			//所有电机的pid初始化
     																	
@@ -194,20 +194,20 @@ int main(void)
 //	  wave_form_data[5] =(short)imu.pit;//moto_chassis[4].angle;
 
 ////云台归中的yaw和pitch机械角度调试
-		wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
-	  wave_form_data[1] =(short)motor_pid[5].err;
-	  wave_form_data[2] =(short)moto_chassis[5].angle;
-	  wave_form_data[3] =(short)motor_pid[4].target; 
-		wave_form_data[4] =(short)motor_pid[4].output;     //PITCH ID:205
-	  wave_form_data[5] =(short)moto_chassis[4].angle;
+//		wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
+//	  wave_form_data[1] =(short)motor_pid[5].err;
+//	  wave_form_data[2] =(short)moto_chassis[5].angle;
+//	  wave_form_data[3] =(short)motor_pid[4].target; 
+//		wave_form_data[4] =(short)motor_pid[4].output;     //PITCH ID:205
+//	  wave_form_data[5] =(short)moto_chassis[4].angle;
 
 //检测can通信的6个电机是否有数据
-//		wave_form_data[0] =(short)moto_chassis[0].angle;      //YAW ID:206
-//	  wave_form_data[1] =(short)moto_chassis[1].angle;
-//	  wave_form_data[2] =(short)moto_chassis[2].angle;
-//	  wave_form_data[3] =(short)moto_chassis[3].angle;//pan_tilt_yaw_speed.output;
-//		wave_form_data[4] =(short)moto_chassis[4].angle;//motor_pid[5].err;      //PITCH ID:205
-//	  wave_form_data[5] =(short)moto_chassis[5].angle;
+		wave_form_data[0] =(short)motor_pid[0].target;      //YAW ID:206
+	  wave_form_data[1] =(short)motor_pid[1].target;
+	  wave_form_data[2] =(short)motor_pid[2].target;
+	  wave_form_data[3] =(short)motor_pid[3].target;//pan_tilt_yaw_speed.output;
+		wave_form_data[4] =(short)moto_chassis[4].angle;//motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[5] =(short)moto_chassis[5].angle;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */

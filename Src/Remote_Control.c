@@ -12,11 +12,12 @@
   */
 #include "Remote_Control.h"
 #include "pid.h"
-
-#define INFANTRY_MAX_SPEED 3000
+#include "robomaster_common.h"
+#define INFANTRY_MAX_SPEED 4000
 RC_Type remote_control;
 uint32_t  Latest_Remote_Control_Pack_Time = 0;
 uint32_t  LED_Flash_Timer_remote_control = 0;
+uint32_t dbus_time=0;//用于检测遥控器是否离线
 /*******************************************************************************************
   * @Func		void Callback_RC_Handle(RC_Type* rc, uint8_t* buff)
   * @Brief  DR16接收机协议解码程序
@@ -50,15 +51,19 @@ void Callback_RC_Handle(RC_Type* rc, uint8_t* buff)
 	
 	Latest_Remote_Control_Pack_Time = HAL_GetTick();
 	
-	if(Latest_Remote_Control_Pack_Time - LED_Flash_Timer_remote_control>500){
+	if(Latest_Remote_Control_Pack_Time - LED_Flash_Timer_remote_control>500) //让LED_T每1秒闪烁一次
+		{
 			
 			HAL_GPIO_TogglePin(LED_T_GPIO_Port,LED_T_Pin);
 			
 			LED_Flash_Timer_remote_control = Latest_Remote_Control_Pack_Time;
-		
+			
+			
 			
 	}
-	
+	robot_status.anomaly=NORMAL;//判断遥控器接受正常
+	dbus_time=Latest_Remote_Control_Pack_Time;
+	HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_B_Pin,GPIO_PIN_SET);
 }
 
 extern uint16_t TIM_COUNT[];
@@ -87,6 +92,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			LED_Flash_Timer_remote_control = Latest_Remote_Control_Pack_Time;
 					
 	}
+	
 	
 }
 

@@ -18,6 +18,10 @@
 #include "robomaster_common.h"
 #include "mpu9250.h"
 #define BOARD_DOWN (1)   
+//
+
+
+
 #define IST8310
 #define MPU_HSPI hspi5
 #define MPU_NSS_LOW HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET)
@@ -518,13 +522,20 @@ uint8_t mpu_device_init(void)
 	/*****************恒温处理 end********************************/
 	if(robot_status.init==HEAT_FINISH)  //恒温处理后进行陀螺仪较准
 	{
-		mpu_read_bytes(MPU6500_GYRO_XOUT_H , mpu_buff, 6);
-		gyro_status.x = ((mpu_buff[8]  << 8 | mpu_buff[9])  - mpu_data.gx_offset);//获取陀螺仪数据
-    gyro_status.y = ((mpu_buff[10] << 8 | mpu_buff[11]) - mpu_data.gy_offset);
-    gyro_status.z = ((mpu_buff[12] << 8 | mpu_buff[13]) - mpu_data.gz_offset);
-		
-		PlaceStausCheck(gyro_status);//检测机器人状态
-		while(robot_status.placement != STATIC);//等待机器人静止
+//		mpu_read_bytes(MPU6500_GYRO_XOUT_H , mpu_buff, 6);
+//		gyro_status.x = ((mpu_buff[8]  << 8 | mpu_buff[9])  - mpu_data.gx_offset);//获取陀螺仪数据
+//    gyro_status.y = ((mpu_buff[10] << 8 | mpu_buff[11]) - mpu_data.gy_offset);
+//    gyro_status.z = ((mpu_buff[12] << 8 | mpu_buff[13]) - mpu_data.gz_offset);
+//		
+//		PlaceStausCheck(gyro_status);//检测机器人状态
+		while(robot_status.placement != STATIC)//等待机器人静止
+		{
+			mpu_read_bytes(MPU6500_GYRO_XOUT_H , mpu_buff, 6);
+			gyro_status.x = ((mpu_buff[0]  << 8 | mpu_buff[1])  - mpu_data.gx_offset);//获取陀螺仪数据
+			gyro_status.y = ((mpu_buff[2] << 8 | mpu_buff[3]) - mpu_data.gy_offset);
+			gyro_status.z = ((mpu_buff[4] << 8 | mpu_buff[5]) - mpu_data.gz_offset);
+			PlaceStausCheck(gyro_status);//检测机器人状态
+		}
 		mpu_offset_call();
 	}
 	return 0;
@@ -855,7 +866,7 @@ void imu_ahrs_update(imu_t *mpu)
 	
 	mpu->yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
 	mpu->pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3+180; 
-	//mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;
+	mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;
 //	last_yaw_temp = yaw;
 //	//yaw_temp = angle[0]; 
 //	if(yaw-last_yaw_temp>=330)  //yaw轴角度经过处理后变成连续的

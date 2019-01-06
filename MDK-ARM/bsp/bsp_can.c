@@ -84,7 +84,8 @@ uint32_t FlashTimer;
 void HAL_CAN_RxCpltCallback(CAN_HandleTypeDef* _hcan)
 {
 
-	if(HAL_GetTick() - FlashTimer>500){
+	if(HAL_GetTick() - FlashTimer>500)//每1s闪烁一次LED_S灯
+	{
 			
 		HAL_GPIO_TogglePin(LED_S_GPIO_Port,LED_S_Pin);
 		FlashTimer = HAL_GetTick();
@@ -173,71 +174,71 @@ void get_total_angle(moto_measure_t *p){
 	p->last_angle = p->angle;
 }
 
-void set_moto_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2, s16 iq3, s16 iq4){
+//void set_moto_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2, s16 iq3, s16 iq4){
 
-	hcan->pTxMsg->StdId = 0x200;
-	hcan->pTxMsg->IDE = CAN_ID_STD;
-	hcan->pTxMsg->RTR = CAN_RTR_DATA;
-	hcan->pTxMsg->DLC = 0x08;
-	hcan->pTxMsg->Data[0] = (iq1 >> 8);
-	hcan->pTxMsg->Data[1] = iq1;
-	hcan->pTxMsg->Data[2] = (iq2 >> 8);
-	hcan->pTxMsg->Data[3] = iq2;
-	hcan->pTxMsg->Data[4] = iq3 >> 8;
-	hcan->pTxMsg->Data[5] = iq3;
-	hcan->pTxMsg->Data[6] = iq4 >> 8;
-	hcan->pTxMsg->Data[7] = iq4;
-	
-	HAL_CAN_Transmit(hcan, 100);
-}	
-void set_pan_tilt_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2){
-
-	hcan->pTxMsg->StdId = 0x1FF;
-	hcan->pTxMsg->IDE = CAN_ID_STD;
-	hcan->pTxMsg->RTR = CAN_RTR_DATA;
-	hcan->pTxMsg->DLC = 0x08;
-	hcan->pTxMsg->Data[0] = (iq1 >> 8);
-	hcan->pTxMsg->Data[1] = iq1;
-	hcan->pTxMsg->Data[2] = (iq2 >> 8);
-	hcan->pTxMsg->Data[3] = iq2;
-//	hcan->pTxMsg->Data[4] = iq3 >> 8;
-//	hcan->pTxMsg->Data[5] = iq3;
-//	hcan->pTxMsg->Data[6] = iq4 >> 8;
-//	hcan->pTxMsg->Data[7] = iq4;
-	
-	HAL_CAN_Transmit(hcan, 100);
-}	
-void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3)
-{
-
-	hcan->pTxMsg->StdId = 0x1FF;
-	hcan->pTxMsg->IDE = CAN_ID_STD;
-	hcan->pTxMsg->RTR = CAN_RTR_DATA;
-	hcan->pTxMsg->DLC = 0x08;
+//	hcan->pTxMsg->StdId = 0x200;
+//	hcan->pTxMsg->IDE = CAN_ID_STD;
+//	hcan->pTxMsg->RTR = CAN_RTR_DATA;
+//	hcan->pTxMsg->DLC = 0x08;
 //	hcan->pTxMsg->Data[0] = (iq1 >> 8);
 //	hcan->pTxMsg->Data[1] = iq1;
 //	hcan->pTxMsg->Data[2] = (iq2 >> 8);
 //	hcan->pTxMsg->Data[3] = iq2;
-	hcan->pTxMsg->Data[4] = iq3 >> 8;
-	hcan->pTxMsg->Data[5] = iq3;
+//	hcan->pTxMsg->Data[4] = iq3 >> 8;
+//	hcan->pTxMsg->Data[5] = iq3;
 //	hcan->pTxMsg->Data[6] = iq4 >> 8;
 //	hcan->pTxMsg->Data[7] = iq4;
-	
-	HAL_CAN_Transmit(hcan, 100);
-}	
+//	
+//	HAL_CAN_Transmit(hcan, 100);
+//}	
+//void set_pan_tilt_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2){
 
-void pan_tilt_calibrate(CAN_HandleTypeDef* hcan) //没用
-{
+//	hcan->pTxMsg->StdId = 0x1FF;
+//	hcan->pTxMsg->IDE = CAN_ID_STD;
+//	hcan->pTxMsg->RTR = CAN_RTR_DATA;
+//	hcan->pTxMsg->DLC = 0x08;
+//	hcan->pTxMsg->Data[0] = (iq1 >> 8);
+//	hcan->pTxMsg->Data[1] = iq1;
+//	hcan->pTxMsg->Data[2] = (iq2 >> 8);
+//	hcan->pTxMsg->Data[3] = iq2;
+////	hcan->pTxMsg->Data[4] = iq3 >> 8;
+////	hcan->pTxMsg->Data[5] = iq3;
+////	hcan->pTxMsg->Data[6] = iq4 >> 8;
+////	hcan->pTxMsg->Data[7] = iq4;
+//	
+//	HAL_CAN_Transmit(hcan, 100);
+//}	
+//void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3)
+//{
 
-	hcan->pTxMsg->StdId = 0x3F0;
-	hcan->pTxMsg->IDE = CAN_ID_STD;
-	hcan->pTxMsg->RTR = CAN_RTR_DATA;
-	hcan->pTxMsg->DLC = 0x08;
-	hcan->pTxMsg->Data[0] = 'c';
+//	hcan->pTxMsg->StdId = 0x1FF;
+//	hcan->pTxMsg->IDE = CAN_ID_STD;
+//	hcan->pTxMsg->RTR = CAN_RTR_DATA;
+//	hcan->pTxMsg->DLC = 0x08;
+////	hcan->pTxMsg->Data[0] = (iq1 >> 8);
+////	hcan->pTxMsg->Data[1] = iq1;
+////	hcan->pTxMsg->Data[2] = (iq2 >> 8);
+////	hcan->pTxMsg->Data[3] = iq2;
+//	hcan->pTxMsg->Data[4] = iq3 >> 8;
+//	hcan->pTxMsg->Data[5] = iq3;
+////	hcan->pTxMsg->Data[6] = iq4 >> 8;
+////	hcan->pTxMsg->Data[7] = iq4;
+//	
+//	HAL_CAN_Transmit(hcan, 100);
+//}	
 
-	
-	HAL_CAN_Transmit(hcan,100);
-}
+//void pan_tilt_calibrate(CAN_HandleTypeDef* hcan) //没用
+//{
+
+//	hcan->pTxMsg->StdId = 0x3F0;
+//	hcan->pTxMsg->IDE = CAN_ID_STD;
+//	hcan->pTxMsg->RTR = CAN_RTR_DATA;
+//	hcan->pTxMsg->DLC = 0x08;
+//	hcan->pTxMsg->Data[0] = 'c';
+
+//	
+//	HAL_CAN_Transmit(hcan,100);
+//}
 //CAN send message test
 void CAN_Send_Msg(CAN_HandleTypeDef* hcan, uint8_t *msg, uint32_t id, uint8_t len)
 {

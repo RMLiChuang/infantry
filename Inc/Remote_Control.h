@@ -61,6 +61,7 @@ enum{
 	Key_S,
 	//...
 };
+extern uint32_t dbus_time;
 extern int yaw_control;
 extern RC_Type remote_control;
 extern uint32_t  Latest_Remote_Control_Pack_Time ;

@@ -1,6 +1,6 @@
 /**
   *@file robomaster_control.c
-  *@date 2018-10-5
+  *@date 2019-1-6
   *@author izh20
   *@brief 
   */
@@ -13,18 +13,19 @@
 #define twist_speed        1000
 #define chassis_limit      1000       //走猫步时的底盘限位机械角度
 #define chassis_dead_band  100        //底盘机械角度的死区
-void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,float duty)
+void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,int duty)
 	{
 	
 	switch(tim_channel){	
-		case TIM_CHANNEL_1: tim->Instance->CCR1 = (10000*duty) - 1;break;
-		case TIM_CHANNEL_2: tim->Instance->CCR2 = (10000*duty) - 1;break;
-		case TIM_CHANNEL_3: tim->Instance->CCR3 = (10000*duty) - 1;break;
-		case TIM_CHANNEL_4: tim->Instance->CCR4 = (10000*duty) - 1;break;
+		case TIM_CHANNEL_1: tim->Instance->CCR1 = duty - 1;break;
+		case TIM_CHANNEL_2: tim->Instance->CCR2 = duty - 1;break;
+		case TIM_CHANNEL_3: tim->Instance->CCR3 = duty - 1;break;
+		case TIM_CHANNEL_4: tim->Instance->CCR4 = duty - 1;break;
 	}
 	
 }
-
+int i;
+int pwm_output;
 void shoot_control()
 {
 	if(remote_control.switch_left!=3)
@@ -38,10 +39,14 @@ void shoot_control()
 					HeadTxData[4]=0;
 					HeadTxData[5]=0;//拨弹轮电流值
 					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.16);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.16);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.16);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.16);
+					for(i=0;i<1000;i++)
+					{
+						pwm_output=2000-i*1;
+					}
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,pwm_output);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,pwm_output);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,pwm_output);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,pwm_output);
 				}
 				if(remote_control.switch_right==2)
 				{	
@@ -51,10 +56,10 @@ void shoot_control()
 					HeadTxData[5]=(uint8_t)(motor_pid[6].output&0xFF); 
 					//set_rammer_current(&hcan1,motor_pid[6].output);
 					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_1,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_2,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_3,0.14);
-					PWM_SetDuty(&htim5,TIM_CHANNEL_4,0.14);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_1,1400);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_2,1400);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_3,1400);
+					PWM_SetDuty(&htim5,TIM_CHANNEL_4,1400);
 				}
 				if(remote_control.switch_right==1)
 				{
@@ -76,107 +81,107 @@ void shoot_control()
 }
 
 //IMU_Type chassis_imu;
-/**********************************************************************************************************
-*函 数 名: chassis_control
-*功能说明: 底盘控制程序，加入了imu的z轴(yaw轴)的角度换和角速度环控制，底盘加入速度环进行控制
-*形    参: 需要yaw轴角度，角速度，电机速度反馈
-*返 回 值: 电流输出
-**********************************************************************************************************/
-extern int16_t moto_ctr[6];
-int32_t set_spd = 0;//速度参数
-int32_t turn=0;     //转弯
-long yaw_flag=0;
-extern int cnt1;
-extern int cnt2;
-char cnt_steer=0;
-int yaw_cnt=0;
-int chassis_yaw_correct=0;
-void chassis_control()
-{
-	if(remote_control.switch_right!=3)
-	{
-//			if(cnt1==100)//0.5s进入一次，使第4个led以2HZ频率闪烁，判断底盘程序正常运行
+///**********************************************************************************************************
+//*函 数 名: chassis_control
+//*功能说明: 底盘控制程序，加入了imu的z轴(yaw轴)的角度换和角速度环控制，底盘加入速度环进行控制
+//*形    参: 需要yaw轴角度，角速度，电机速度反馈
+//*返 回 值: 电流输出
+//**********************************************************************************************************/
+//extern int16_t moto_ctr[6];
+//int32_t set_spd = 0;//速度参数
+//int32_t turn=0;     //转弯
+//long yaw_flag=0;
+//extern int cnt1;
+//extern int cnt2;
+//char cnt_steer=0;
+//int yaw_cnt=0;
+//int chassis_yaw_correct=0;
+//void chassis_control()
+//{
+//	if(remote_control.switch_right!=3)
+//	{
+////			if(cnt1==100)//0.5s进入一次，使第4个led以2HZ频率闪烁，判断底盘程序正常运行
+////			{
+////					HAL_GPIO_TogglePin(LED_USER_GPIO_PORT,LED_G_Pin);
+////					cnt1=0;
+////			}
+//			Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_G_Pin,1);//设置ledG闪烁频率
+//			DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
+//			
+//			cnt_steer++;
+//			if(cnt_steer==4)
 //			{
-//					HAL_GPIO_TogglePin(LED_USER_GPIO_PORT,LED_G_Pin);
-//					cnt1=0;
+//				steer_control();
+//				cnt_steer=0;
 //			}
-			Bling_Set(&Light_G,2000,1000,0.5,0,LED_USER_GPIO_PORT,LED_G_Pin,1);//设置ledG闪烁频率
-			DBUS_Deal();//获取遥控器的数据并将数据赋值给电机的目标转速
-			
-			cnt_steer++;
-			if(cnt_steer==4)
-			{
-				steer_control();
-				cnt_steer=0;
-			}
-			
-			
-			if(remote_control.switch_right==2)	
-			{
-          /*************************yaw轴控制    begin**********/		
-	
-					if(remote_control.ch3==0)//偏航杆置于中位
-					{
-//						if(yaw_cnt<500)//步兵上电后一段时间锁定偏航角，磁力计、陀螺仪融合需要一段时间，这里取500
-//						yaw_cnt++;
-							if(chassis_yaw.target==0)  //回中时赋角度期望值
-							{
-								chassis_yaw.target=imu.yaw;
-							}
-							PID_Control_Yaw(&chassis_yaw,imu.yaw);//该函数解决0度到360度的突变
-								//chassis_yaw.f_cal_pid(&chassis_yaw,imu.yaw);    //偏航角度控制
-								chassis_yaw_speed.target=chassis_yaw.output;//偏航角速度环期望，来源于偏航角度控制器输出
-					}
-			
-					else//波动偏航方向杆后，只进行内环角速度控制
-					{
-							chassis_yaw.target=0;//偏航角期望给0,不进行角度控制
-							chassis_yaw_speed.target=remote_control.ch3*300/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
-					}
-		
-					/*************************yaw轴控制  end**********/		
-			
-					motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
-					motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
-					motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
-					motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
-	
-	
+//			
+//			
+//			if(remote_control.switch_right==2)	
+//			{
+//          /*************************yaw轴控制    begin**********/		
+//	
+//					if(remote_control.ch3==0)//偏航杆置于中位
+//					{
+////						if(yaw_cnt<500)//步兵上电后一段时间锁定偏航角，磁力计、陀螺仪融合需要一段时间，这里取500
+////						yaw_cnt++;
+//							if(chassis_yaw.target==0)  //回中时赋角度期望值
+//							{
+//								chassis_yaw.target=imu.yaw;
+//							}
+//							PID_Control_Yaw(&chassis_yaw,imu.yaw);//该函数解决0度到360度的突变
+//								//chassis_yaw.f_cal_pid(&chassis_yaw,imu.yaw);    //偏航角度控制
+//								chassis_yaw_speed.target=chassis_yaw.output;//偏航角速度环期望，来源于偏航角度控制器输出
+//					}
+//			
+//					else//波动偏航方向杆后，只进行内环角速度控制
+//					{
+//							chassis_yaw.target=0;//偏航角期望给0,不进行角度控制
+//							chassis_yaw_speed.target=remote_control.ch3*300/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+//					}
+//		
+//					/*************************yaw轴控制  end**********/		
+//			
+//					motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
+//					motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
+//					motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
+//					motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
+//	
+//	
 
-					chassis_yaw.f_cal_pid(&chassis_yaw_speed,-imu.gz);	
-	
-//					set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_speed.output,   //将PID的计算结果通过CAN发送到电机
-//																	motor_pid[1].output+chassis_yaw_speed.output,
-//																	motor_pid[2].output+chassis_yaw_speed.output,
-//																	motor_pid[3].output+chassis_yaw_speed.output);
-			}
-			
-			
-		if(remote_control.switch_right==1)  //遥控器给定数值直接作为速度目标
-		{
-			
-			
-			
-			
+//					chassis_yaw.f_cal_pid(&chassis_yaw_speed,-imu.gz);	
+//	
+////					set_moto_current(&hcan1,motor_pid[0].output+chassis_yaw_speed.output,   //将PID的计算结果通过CAN发送到电机
+////																	motor_pid[1].output+chassis_yaw_speed.output,
+////																	motor_pid[2].output+chassis_yaw_speed.output,
+////																	motor_pid[3].output+chassis_yaw_speed.output);
+//			}
+//			
+//			
+//		if(remote_control.switch_right==1)  //遥控器给定数值直接作为速度目标
+//		{
+//			
+//			
+//			
+//			
 
-						motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
-						motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
-						motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
-						motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
-						set_moto_current(&hcan1,motor_pid[0].output,   //将PID的计算结果通过CAN发送到电机
-															motor_pid[1].output,
-															motor_pid[2].output,
-															motor_pid[3].output);
-			//set_moto_current(&hcan1,500,500,0,500);
-		}
-	
-	}
-		else
-		{
-			//chassis_yaw.target=imu.yaw;  //上电后标定底盘的初始yaw值，
-		  set_moto_current(&hcan1,0,0,0,0);
-	  }
-}
+//						motor_pid[0].f_cal_pid(&motor_pid[0],moto_chassis[0].speed_rpm);    //根据设定值进行PID计算。
+//						motor_pid[1].f_cal_pid(&motor_pid[1],moto_chassis[1].speed_rpm);    //根据设定值进行PID计算。        速度为反馈值
+//						motor_pid[2].f_cal_pid(&motor_pid[2],moto_chassis[2].speed_rpm);    //根据设定值进行PID计算。
+//						motor_pid[3].f_cal_pid(&motor_pid[3],moto_chassis[3].speed_rpm);    //根据设定值进行PID计算。
+//						set_moto_current(&hcan1,motor_pid[0].output,   //将PID的计算结果通过CAN发送到电机
+//															motor_pid[1].output,
+//															motor_pid[2].output,
+//															motor_pid[3].output);
+//			//set_moto_current(&hcan1,500,500,0,500);
+//		}
+//	
+//	}
+//		else
+//		{
+//			//chassis_yaw.target=imu.yaw;  //上电后标定底盘的初始yaw值，
+//		  set_moto_current(&hcan1,0,0,0,0);
+//	  }
+//}
 /**********************************************************************************************************
 *函 数 名: GildeAverageValueFilter
 *功能说明: 底盘速度环控制
@@ -385,8 +390,25 @@ void calibrate_initial_position()
 {
 	chassis_yaw_angle.initial=moto_chassis[5].angle;//记录上电时刻底盘相对云台的初始位置
 }
-
-
+/**********************************************************************************************************
+*函 数 名: set_chassis_moto_target_zero
+*功能说明:设置底盘电机目标值为0  当步兵失控时会调用此函数
+*形    参: 
+*返 回 值: 
+**********************************************************************************************************/
+void set_chassis_moto_target_zero()
+{
+	char i;
+	for(i=0;i<8;i++)
+	{
+		MotorTxData[i]=0;
+		//HeadTxData[i]=0;
+		//CAN_Send_Msg(&hcan1,0,HEADID,8);
+		
+	}
+	CAN_Send_Msg(&hcan1, MotorTxData, MOTORID, 8);  //向底盘电机发送给定的电流值
+	//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+}
 
 
 /******************************************************

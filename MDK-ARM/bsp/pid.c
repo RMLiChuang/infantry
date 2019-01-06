@@ -333,13 +333,13 @@ void all_pid_init()
 	pid_init(&chassis_yaw_angle);//来源于yaw轴电机机械角度的数值
 	chassis_yaw_angle.f_param_init(&chassis_yaw_angle,
 																	PID_Speed,					
-																	3300,							//maxOutput												//输出限幅
-																	0,								//integralLimit										//积分限幅
+																	3700,							//maxOutput												//输出限幅
+																	1400,								//integralLimit										//积分限幅
 																	0.5,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	500,								//max_err													//最大误差
+																	700,								//max_err													//最大误差
 																	0,									//target
-																	16,								//kp
+																	10,								//kp
 																	0,							//ki	
 																	0);							//kd
 //chassis_yaw pid初始化  用于走直线，角度外环控制
@@ -418,13 +418,13 @@ void all_pid_init()
 	 pid_init(&motor_pid[5]);
     motor_pid[5].f_param_init(&motor_pid[5],
 																	PID_Speed,					
-																	120,							//maxOutput												//输出限幅
+																	250,							//maxOutput												//输出限幅
 																	0,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	100,								//max_err													//最大误差
 																	0,									//target
-																  0.8,								//kp 0.8
+																  4,								//kp 0.8
 																	0,							//ki	
 																	0);							//kd
 																	
@@ -446,12 +446,12 @@ void all_pid_init()
     pan_tilt_pitch.f_param_init(&pan_tilt_pitch,
 																	PID_Speed,					
 																	200,							//maxOutput												//输出限幅
-																	50,								//integralLimit										//积分限幅
+																	60,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	60,								//max_err													//最大误差
+																	100,								//max_err													//最大误差
 																	0,									//target
-																	11,							//kp 10
+																	10,							//kp 10
 																	0,							//ki	
 																	0);							//kd 0						
 	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    
@@ -472,15 +472,15 @@ void all_pid_init()
 	 pid_init(&pan_tilt_pitch_speed);
     pan_tilt_pitch_speed.f_param_init(&pan_tilt_pitch_speed,
 																	PID_Speed,					
-																	6000,							//maxOutput												//输出限幅
-																	3000,								//integralLimit										//积分限幅
+																	9000,							//maxOutput												//输出限幅
+																	2000,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	80,								//max_err													//最大误差
 																	0,									//target
-																	37,								//kp    55
-																	0.8,							//ki	   0.0001
-																	3);							//kd			0.5
+																	115,								//kp    37
+																	0.1,							//ki	   0.8
+																	3);							//kd			3
 	#endif																
 																	
 																	

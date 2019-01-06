@@ -24,14 +24,10 @@ void task()
 	imu_ahrs_update(&imu);//更新四元数和imu姿态
 	//mpu9250_get_data();
 	//imu_ahrs_update(&imu_9250);
-	
-	//pan_tilt_machine_home();//上电时机械归中
-  infantry_control();//步兵控制
-	//pan_tilt_control();
-	//chassis_control();		//底盘电机的控制
-	//pan_tilt_lock_control();
-//	if(cnt1%2==0)
-	shoot_control();			//摩擦轮以及拨弹电机的控制
-	
-	
+	if(robot_status.anomaly==NORMAL)
+	{
+		infantry_control();//步兵控制
+		shoot_control();			//摩擦轮以及拨弹电机的控制
+	}
+	robot_status_detection();
 }

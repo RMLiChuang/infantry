@@ -87,8 +87,8 @@ void my_can_filter_init_recv_all(CAN_HandleTypeDef* _hcan);
 void can_filter_recv_special(CAN_HandleTypeDef* hcan, uint8_t filter_number, uint16_t filtered_id);
 void get_moto_measure(moto_measure_t *ptr, CAN_HandleTypeDef* hcan);
 void can_receive_onetime(CAN_HandleTypeDef* _hcan, int time);
-void set_moto_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2, s16 iq3, s16 iq4);
-void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3);
-void set_pan_tilt_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2);
+//void set_moto_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2, s16 iq3, s16 iq4);
+//void set_rammer_current(CAN_HandleTypeDef* hcan,  s16 iq3);
+//void set_pan_tilt_current(CAN_HandleTypeDef* hcan, s16 iq1, s16 iq2);
 void CAN_Send_Msg(CAN_HandleTypeDef* hcan, uint8_t *msg, uint32_t id, uint8_t len);
 #endif
