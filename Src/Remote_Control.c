@@ -61,8 +61,8 @@ void Callback_RC_Handle(RC_Type* rc, uint8_t* buff)
 			
 			
 	}
-	robot_status.anomaly=NORMAL;//判断遥控器接受正常
-	dbus_time=Latest_Remote_Control_Pack_Time;
+	robot_status.anomaly=NORMAL;//判断遥控器接收正常
+	dbus_time=Latest_Remote_Control_Pack_Time;//获取时间
 	HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_B_Pin,GPIO_PIN_SET);
 }
 

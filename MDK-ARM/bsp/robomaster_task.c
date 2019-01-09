@@ -27,7 +27,8 @@ void task()
 	if(robot_status.anomaly==NORMAL)
 	{
 		infantry_control();//步兵控制
-		shoot_control();			//摩擦轮以及拨弹电机的控制
+		//shoot_control();			//摩擦轮以及拨弹电机的控制
+		single_shot();
 	}
 	robot_status_detection();
 }

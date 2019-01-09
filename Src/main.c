@@ -203,12 +203,20 @@ int main(void)
 //	  wave_form_data[5] =(short)moto_chassis[4].angle;
 
 //检测can通信的6个电机是否有数据
-		wave_form_data[0] =(short)motor_pid[0].target;      //YAW ID:206
-	  wave_form_data[1] =(short)motor_pid[1].target;
-	  wave_form_data[2] =(short)motor_pid[2].target;
-	  wave_form_data[3] =(short)motor_pid[3].target;//pan_tilt_yaw_speed.output;
-		wave_form_data[4] =(short)moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
-	  wave_form_data[5] =(short)moto_chassis[6].angle;
+//		wave_form_data[0] =(short)motor_pid[0].target;      //YAW ID:206
+//	  wave_form_data[1] =(short)motor_pid[1].target;
+//	  wave_form_data[2] =(short)motor_pid[2].target;
+//	  wave_form_data[3] =(short)motor_pid[3].target;//pan_tilt_yaw_speed.output;
+//		wave_form_data[4] =(short)moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+//	  wave_form_data[5] =(short)moto_chassis[6].angle;
+
+//键盘鼠标控制
+		wave_form_data[0] =(short)remote_control.mouse.x;
+	  wave_form_data[1] =(short)remote_control.mouse.y;//MPU_Set_Accel_Fsr(2);
+	  wave_form_data[2] =(short)remote_control.mouse.press_left;//chassis_yaw.output;
+	  wave_form_data[3] =(short)remote_control.mouse.press_right;//mag_field_intensity;//磁场强度;
+	  wave_form_data[4] =(short)remote_control.keyBoard.key_code;//imu.gz;
+	  wave_form_data[5] =(short)chassis_yaw_speed.output;
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
   }
   /* USER CODE END 3 */
