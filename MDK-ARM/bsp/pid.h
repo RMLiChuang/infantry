@@ -18,6 +18,9 @@
 
 #include "stdint.h"
 #include "mytype.h"
+
+#define pan_tilt_yaw_motor 		moto_chassis[5]
+#define pan_tilt_pitch_motor 		moto_chassis[4]
 typedef enum
 {
 
@@ -87,4 +90,4 @@ float PID_Control_Yaw(PID_TypeDef* pid, float measure);
 extern PID_TypeDef motor_pid[7];
 extern PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw;
 extern PID_TypeDef pan_tilt_pitch,pan_tilt_pitch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;
-
+extern PID_TypeDef vision_yaw,vision_pitch;

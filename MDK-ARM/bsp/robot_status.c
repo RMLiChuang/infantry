@@ -67,24 +67,31 @@ void robot_status_init()
 	robot_status.imu_status=HEATING;
 	robot_status.anomaly=NORMAL;
 	robot_status.placement=MOTIONAL;//初始化时需要让它为运动状态，来进入运动检测，避免陀螺仪获取错误零飘值
+	robot_status.vision_status=VISION_LOSE;
+	robot_status.chassis_control=CONTROL;
 }
 /**********************************************************************************************************
 *函 数 名: robot_status_init
 *功能说明: 初始化机器人各个状态
-*形    参: 角速度
+*形    参: 
 *返 回 值: 无
 **********************************************************************************************************/
 void robot_status_detection()
 {
 	if(HAL_GetTick()-dbus_time>20)
 	{
-		robot_status.anomaly=REMOTE_CONTROL_OFFLINE;
+		robot_status.anomaly=REMOTE_CONTROL_OFFLINE;//遥控器离线
 	}
 		
-	if(robot_status.anomaly==REMOTE_CONTROL_OFFLINE)
+	if(robot_status.anomaly==REMOTE_CONTROL_OFFLINE)//如果遥控器离线
 	{
-		set_chassis_moto_target_zero();
+		set_chassis_moto_target_zero();//关闭所有电机
 		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_B_Pin,GPIO_PIN_RESET);
+	}
+	if(HAL_GetTick()-vision_time>80)
+	{
+		robot_status.vision_status=VISION_LOSE;//视觉检测离线
+		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_D_Pin,GPIO_PIN_RESET);
 	}
 		
 }

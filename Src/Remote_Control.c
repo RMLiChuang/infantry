@@ -13,7 +13,30 @@
 #include "Remote_Control.h"
 #include "pid.h"
 #include "robomaster_common.h"
-#define INFANTRY_MAX_SPEED 4000
+#define INFANTRY_MAX_SPEED 2500
+#define chassis_speed_distribute 1.6 //底盘1，2号电机相对于3，4号电机速度分配
+/**
+  * @brief          遥控器的死区判断，因为遥控器的拨杆在中位的时候，不一定是发送1024过来，
+  * @author         RM
+  * @param[in]      输入的遥控器值
+  * @param[in]      输出的死区处理后遥控器值
+  * @param[in]      死区值
+  * @retval         返回空
+  */
+#define rc_deadline_limit(input, output, dealine)        \
+    {                                                    \
+        if ((input) > (dealine) || (input) < -(dealine)) \
+        {                                                \
+            (output) = (input);                          \
+        }                                                \
+        else                                             \
+        {                                                \
+            (output) = 0;                                \
+        }                                                \
+    }
+
+
+
 RC_Type remote_control;
 uint32_t  Latest_Remote_Control_Pack_Time = 0;
 uint32_t  LED_Flash_Timer_remote_control = 0;
@@ -120,37 +143,44 @@ __________________________________________________________________
 *************************** ***************************/
 int16_t moto_ctr[6];
 //遥控控制
-const int THRESHOLD=3000;  //极限速度
-const int TURNSPEED=3000;   //转弯极限速度
+const int THRESHOLD=4000;  //极限速度
+const int TURNSPEED=4000;   //转弯极限速度
 int yaw_control=0;
 void DBUS_Deal()
 {
-	if(remote_control.switch_left==2)//将imu融合到底盘中
-	{
-		moto_ctr[0]=remote_control.ch2+remote_control.ch1;
-		moto_ctr[1]=-remote_control.ch2+remote_control.ch1;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
-		moto_ctr[2]=-remote_control.ch2-remote_control.ch1;
-		moto_ctr[3]=remote_control.ch2-remote_control.ch1;
-//		/************设定中位死区，为20  ************/
-//		if(remote_control.ch3<-40)
-//			yaw_control=(remote_control.ch3+40)*150/620;
-//		if(remote_control.ch3>40)
-//			yaw_control=(remote_control.ch3-40)*150/620;
-//		else
-//			yaw_control=0;
-	}
-	if(remote_control.switch_left==1)
-	{
-		moto_ctr[0]=remote_control.ch2+remote_control.ch3+remote_control.ch1;
-		moto_ctr[1]=-remote_control.ch2+remote_control.ch3+remote_control.ch1;
-		moto_ctr[2]=-remote_control.ch2+remote_control.ch3-remote_control.ch1;   
-		moto_ctr[3]=remote_control.ch2+remote_control.ch3-remote_control.ch1;
-			
-	}
-	motor_pid[0].target=moto_ctr[0]*INFANTRY_MAX_SPEED/660;
-   motor_pid[1].target=moto_ctr[1]*INFANTRY_MAX_SPEED/660;
-   motor_pid[2].target=moto_ctr[2]*INFANTRY_MAX_SPEED/660;
-   motor_pid[3].target=moto_ctr[3]*INFANTRY_MAX_SPEED/660;
+//	if(remote_control.switch_left==2)//将imu融合到底盘中
+//	{
+//		moto_ctr[0]=remote_control.ch2+remote_control.ch1;
+//		moto_ctr[1]=-remote_control.ch2+remote_control.ch1;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
+//		moto_ctr[2]=-remote_control.ch2-remote_control.ch1;
+//		moto_ctr[3]=remote_control.ch2-remote_control.ch1;
+////		/************设定中位死区，为20  ************/
+////		if(remote_control.ch3<-40)
+////			yaw_control=(remote_control.ch3+40)*150/620;
+////		if(remote_control.ch3>40)
+////			yaw_control=(remote_control.ch3-40)*150/620;
+////		else
+////			yaw_control=0;
+//	}
+//	if(remote_control.switch_left==1)
+//	{
+//		moto_ctr[0]=remote_control.ch2+remote_control.ch3+remote_control.ch1;
+//		moto_ctr[1]=-remote_control.ch2+remote_control.ch3+remote_control.ch1;
+//		moto_ctr[2]=-remote_control.ch2+remote_control.ch3-remote_control.ch1;   
+//		moto_ctr[3]=remote_control.ch2+remote_control.ch3-remote_control.ch1;
+//			
+//	}
+		rc_deadline_limit(remote_control.ch3,remote_control.ch3,CHASSIS_RC_DEADLINE);
+		
+		moto_ctr[0]=remote_control.ch2+remote_control.ch1+remote_control.ch3*chassis_speed_distribute;
+		moto_ctr[1]=-remote_control.ch2+remote_control.ch1+remote_control.ch3*chassis_speed_distribute;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
+		moto_ctr[2]=-remote_control.ch2-remote_control.ch1+remote_control.ch3;
+		moto_ctr[3]=remote_control.ch2-remote_control.ch1+remote_control.ch3;
+	
+		motor_pid[0].target=moto_ctr[0]*INFANTRY_MAX_SPEED/660;
+		motor_pid[1].target=moto_ctr[1]*INFANTRY_MAX_SPEED/660;
+		motor_pid[2].target=moto_ctr[2]*INFANTRY_MAX_SPEED/660;
+		motor_pid[3].target=moto_ctr[3]*INFANTRY_MAX_SPEED/660;
 	
 	if((motor_pid[0].target>THRESHOLD)&&(motor_pid[1].target>THRESHOLD)&&(motor_pid[2].target>THRESHOLD)&&(motor_pid[3].target>THRESHOLD))			//顺转速度控制
 		{

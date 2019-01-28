@@ -32,6 +32,11 @@
 #include "pan_tilt_control.h"
 #include "bling.h"
 #include "delay.h"
+#include "referee_sys.h"//裁判系统
+#include "robomaster_userlib.h"//里面有斜坡函数
+#include "robomaster_vision.h"
+#include "robomaster_shoot.h"
+#include "robomaster_fric.h"
 /* USER CODE END Includes */
 
 #endif

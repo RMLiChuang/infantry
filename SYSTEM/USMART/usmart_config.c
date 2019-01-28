@@ -33,8 +33,10 @@ struct _m_usmart_dev usmart_dev=
 	usmart_init,
 	usmart_cmd_rec,
 	usmart_exe,
+	#if EN_USART2_RX   //如果使能了接收
 	usmart_scan,
 	sizeof(usmart_nametab)/sizeof(struct _m_usmart_nametab),//函数数量
+	#endif
 	0,	  	//参数数量
 	0,	 	//函数ID
 	1,		//参数显示类型,0,10进制;1,16进制
@@ -44,21 +46,6 @@ struct _m_usmart_dev usmart_dev=
 	0,		//函数的参数,需要PARM_LEN个0初始化
 	0,		//浮点参数储存数组
 };   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

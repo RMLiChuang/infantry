@@ -87,7 +87,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */  //编号为S的灯
-  GPIO_InitStruct.Pin =  GPIO_PIN_6|LED_S_Pin;
+  GPIO_InitStruct.Pin =  GPIO_PIN_6|LED_S_Pin; 
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -106,6 +106,15 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(IMU_TEMP_Port, &GPIO_InitStruct);
+	
+	//外部中断，用于射击时单发操作
+	GPIO_InitStruct.Pin = GPIO_PIN_1;						//设置引脚，第一引脚
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;	//设置中断触发态，上升沿中断
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;				//设置IO口电平，高电平
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);			//GPIO初始化配置，初始化GPIO中A组
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);			//设置外部中断优先级
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+	
 }
 
 /* USER CODE BEGIN 2 */

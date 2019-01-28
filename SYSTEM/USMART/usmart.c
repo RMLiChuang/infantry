@@ -75,7 +75,7 @@ u8 *sys_cmd_tab[]=
 	"hex",
 	"dec",
 	"runtime",	   
-};	    
+};
 //处理系统指令
 //0,成功处理;其他,错误代码;
 u8 usmart_sys_cmd_exe(u8 *str)
@@ -398,6 +398,7 @@ void usmart_exe(void)
 //以及时执行从串口发过来的各个函数.
 //本函数可以在中断里面调用,从而实现自动管理.
 //如果非ALIENTEK用户,则USART_RX_STA和USART_RX_BUF[]需要用户自己实现
+#if EN_USART2_RX   //如果使能了接收
 void usmart_scan(void)
 {
 	u8 sta,len;  
@@ -433,7 +434,8 @@ void usmart_scan(void)
 		}
 		USART_RX_STA=0;//状态寄存器清空	    
 	}
-}
+}	 
+#endif
 #if USMART_USE_WRFUNS==1 	//如果使能了读写操作
 //读取指定地址的值		 
 u32 read_addr(u32 addr)
@@ -446,17 +448,6 @@ void write_addr(u32 addr,u32 val)
 	*(u32*)addr=val; 	
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
 
 
 

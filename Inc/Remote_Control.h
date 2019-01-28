@@ -17,7 +17,8 @@
 #include "stm32f4xx_hal.h"
 
 #define RC_Frame_Lentgh		18
-
+#define CHASSIS_RC_DEADLINE 10 //Ò£¿ØÆ÷ËÀÇø
+#define int_abs(x) ((x) > 0 ? (x) : (-x))
 typedef struct {
 	int16_t ch1;	//each ch value from -364 -- +364
 	int16_t ch2;

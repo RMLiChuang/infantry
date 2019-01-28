@@ -48,6 +48,7 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
+extern UART_HandleTypeDef huart8;
 extern u8  USART_RX_BUF[USART_REC_LEN]; //接收缓冲,最大USART_REC_LEN个字节.末字节为换行符 
 extern u16 USART_RX_STA;         		//接收状态标记	
 
@@ -216,6 +217,28 @@ void CAN1_TX_IRQHandler(void)
   /* USER CODE END CAN1_TX_IRQn 1 */
 }
 
+
+int k=0,j=0;
+
+void EXTI1_IRQHandler(void)
+{ 
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+//  GPIO_InitTypeDef GPIO_InitStruct;
+  int s=0;
+	delay_us(2000);	
+  s=HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
+	if(s)
+	{
+	  k++;
+	  if(k>=3)
+	  {
+	    k=0;
+	    j=1;
+	  }
+	}
+	  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+}
+
 /**
 * @brief This function handles CAN1 RX0 interrupts.
 */
@@ -277,6 +300,7 @@ void TIM6_DAC_IRQHandler(void)
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
+
 /**
 * @brief This function handles DMA2 stream2 global interrupt.
 */
@@ -308,12 +332,25 @@ void DMA2_Stream6_IRQHandler(void)
 /**
 * @brief This function handles USART6 global interrupt.
 */
-void USART6_IRQHandler(void)
+//void USART6_IRQHandler(void)
+//{
+//  /* USER CODE BEGIN USART6_IRQn 0 */
+//  /* USER CODE END USART6_IRQn 0 */
+//  HAL_UART_IRQHandler(&huart6);
+//  /* USER CODE BEGIN USART6_IRQn 1 */
+
+//  /* USER CODE END USART6_IRQn 1 */
+//}
+
+/**
+* @brief This function handles USART6 global interrupt.
+*/
+void USART8_IRQHandler(void)
 {
   /* USER CODE BEGIN USART6_IRQn 0 */
 
   /* USER CODE END USART6_IRQn 0 */
-  HAL_UART_IRQHandler(&huart6);
+  HAL_UART_IRQHandler(&huart8);
   /* USER CODE BEGIN USART6_IRQn 1 */
 
   /* USER CODE END USART6_IRQn 1 */
@@ -321,37 +358,42 @@ void USART6_IRQHandler(void)
 /**
 * @brief This function handles USART3 global interrupt.
 */
-#if EN_USART2_RX   //如果使能了接收
-void USART2_IRQHandler(void)                	
-{ 
-	u8 Res;
+//#if EN_USART2_RX   //如果使能了接收
+//void USART2_IRQHandler(void)                	
+//{ 
+//	u8 Res;
 
-	if((__HAL_UART_GET_FLAG(&huart2,UART_FLAG_RXNE)!=RESET))  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
-	{
-        HAL_UART_Receive(&huart2,&Res,1,1000); 
-		if((USART_RX_STA&0x8000)==0)//接收未完成
-		{
-			if(USART_RX_STA&0x4000)//接收到了0x0d
-			{
-				if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
-				else USART_RX_STA|=0x8000;	//接收完成了 
-			}
-			else //还没收到0X0D
-			{	
-				if(Res==0x0d)USART_RX_STA|=0x4000;
-				else
-				{
-					USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
-					USART_RX_STA++;
-					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
-				}		 
-			}
-		}   		 
-	}
-	HAL_UART_IRQHandler(&huart2);	
-} 
-#endif	
+//	if((__HAL_UART_GET_FLAG(&huart2,UART_FLAG_RXNE)!=RESET))  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+//	{
+//        HAL_UART_Receive(&huart2,&Res,1,1000); 
+//		if((USART_RX_STA&0x8000)==0)//接收未完成
+//		{
+//			if(USART_RX_STA&0x4000)//接收到了0x0d
+//			{
+//				if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
+//				else USART_RX_STA|=0x8000;	//接收完成了 
+//			}
+//			else //还没收到0X0D
+//			{	
+//				if(Res==0x0d)USART_RX_STA|=0x4000;
+//				else
+//				{
+//					USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
+//					USART_RX_STA++;
+//					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
+//				}		 
+//			}
+//		}   		 
+//	}
+//	HAL_UART_IRQHandler(&huart2);	
+//} 
+//#endif	
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+
+
+
+

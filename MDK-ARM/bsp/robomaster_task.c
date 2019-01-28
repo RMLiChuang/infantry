@@ -1,5 +1,5 @@
 #include "robomaster_task.h"
-#include "mpu9250.h"
+//#include "mpu9250.h"
 #include "robomaster_common.h"
 
 /**
@@ -14,21 +14,23 @@ float mypitch=0.0,myroll=0.0,myyaw=0.0;
 int testmpu;
 int init_yaw=0;
 void task() 
-	
-
 {	
-	
 	cnt1++;	
 	Bling_Working(Bling_Mode);
 	mpu_get_data();//获得imu原始数据
 	imu_ahrs_update(&imu);//更新四元数和imu姿态
 	//mpu9250_get_data();
 	//imu_ahrs_update(&imu_9250);
+//	printf("test");
+	get_chassis_to_pan_tilt_angle();
 	if(robot_status.anomaly==NORMAL)
 	{
 		infantry_control();//步兵控制
 		//shoot_control();			//摩擦轮以及拨弹电机的控制
-		single_shot();
+		//single_shoot();
+		single_shoot1();
 	}
 	robot_status_detection();
+//	printf("test");
+//	display();
 }

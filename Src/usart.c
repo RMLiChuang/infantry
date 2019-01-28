@@ -17,8 +17,15 @@
 /* USER CODE BEGIN 0 */
 
 #include "Remote_Control.h"
-
+uint8_t rxbuf[6];
+uint8_t UART6_BUFF[200];
+uint8_t uart6_rx_buff[100];
 uint8_t UART_Buffer[100];
+//u8 aRxBuffer[RXBUFFERSIZE];//HAL库使用的串口接收缓冲
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/// 重定向c库函数printf到USART1
+//加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
+//#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)	
 #if 1
 #pragma import(__use_no_semihosting)             
 //标准库需要的支持函数                 
@@ -29,18 +36,19 @@ struct __FILE
 
 FILE __stdout;       
 //定义_sys_exit()以避免使用半主机模式    
-void _sys_exit(int x) 
+void _sys_exit(int x)
 { 
-	x = x; 
+	x = x;
 } 
 //重定义fputc函数 
 int fputc(int ch, FILE *f)
 { 	
-	while((USART2->SR&0X40)==0);//循环发送,直到发送完毕   
-	USART2->DR = (u8) ch;      
+	while((UART8->SR&0X40)==0);//循环发送,直到发送完毕   
+	UART8->DR = (uint8_t) ch;      
 	return ch;
 }
-#endif 
+#endif
+/* USER CODE END 1 */
 #if EN_USART2_RX   //如果使能了接收
 //串口2中断服务程序
 //注意,读取USARTx->SR能避免莫名其妙的错误   	
@@ -55,11 +63,33 @@ u16 USART_RX_STA=0;       //接收状态标记
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
+//UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
 UART_HandleTypeDef huart7;
+UART_HandleTypeDef huart8;
 DMA_HandleTypeDef hdma_usart1_rx;
+
+
+/* UART8 init function */
+void MX_UART8_Init(void)
+{
+
+  huart8.Instance = UART8;
+  huart8.Init.BaudRate = 115200;
+  huart8.Init.WordLength = UART_WORDLENGTH_8B;
+  huart8.Init.StopBits = UART_STOPBITS_1;
+  huart8.Init.Parity = UART_PARITY_NONE;
+  huart8.Init.Mode = UART_MODE_TX_RX;
+  huart8.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart8.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
 
 /* USART1 init function */
 
@@ -82,23 +112,23 @@ void MX_USART1_UART_Init(void)
 }
 /* USART2 init function */
 
-void MX_USART2_UART_Init(void)
-{
+//void MX_USART2_UART_Init(void)
+//{
 
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
+//  huart2.Instance = USART2;
+//  huart2.Init.BaudRate = 115200;
+//  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+//  huart2.Init.StopBits = UART_STOPBITS_1;
+//  huart2.Init.Parity = UART_PARITY_NONE;
+//  huart2.Init.Mode = UART_MODE_TX_RX;
+//  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+//  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+//  if (HAL_UART_Init(&huart2) != HAL_OK)
+//  {
+//    _Error_Handler(__FILE__, __LINE__);
+//  }
 
-}
+//}
 /* USART3 init function */
 
 void MX_USART3_UART_Init(void)
@@ -122,9 +152,8 @@ void MX_USART3_UART_Init(void)
 
 void MX_USART6_UART_Init(void)
 {
-
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;//57600;//
+  huart6.Init.BaudRate = 115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
@@ -140,7 +169,6 @@ void MX_USART6_UART_Init(void)
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct;
   if(uartHandle->Instance==USART1)
   {
@@ -207,11 +235,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* USER CODE BEGIN USART2_MspInit 1 */
-		__HAL_UART_DISABLE_IT(&huart2,UART_IT_TC);
+//		__HAL_UART_DISABLE_IT(&huart2,UART_IT_TC);//使用裁判系统，屏蔽掉此处
 #if EN_USART2_RX
 		__HAL_UART_ENABLE_IT(&huart2,UART_IT_RXNE);		//开启接收中断
 		HAL_NVIC_EnableIRQ(USART2_IRQn);				//使能USART2中断通道
-		HAL_NVIC_SetPriority(USART2_IRQn,0,0);			//抢占优先级0，子优先级0
+		HAL_NVIC_SetPriority(USART2_IRQn,0,1);			//抢占优先级0，子优先级0
 #endif	
   /* USER CODE END USART2_MspInit 1 */
   }
@@ -245,7 +273,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     /* USART6 clock enable */
     __HAL_RCC_USART6_CLK_ENABLE();
   
-    /**USART6 GPIO Configuration    
+    /**USART6 GPIO Configuration
     PG14     ------> USART6_TX
     PG9     ------> USART6_RX 
     */
@@ -256,13 +284,46 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
     HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
+//		__HAL_UART_ENABLE_IT(uartHandle,UART_IT_RXNE);
     /* USART6 interrupt Init */
-    HAL_NVIC_SetPriority(USART6_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
   /* USER CODE BEGIN USART6_MspInit 1 */
+//		__HAL_UART_ENABLE_IT(uartHandle, UART_IT_PE);
+		__HAL_UART_ENABLE_IT(uartHandle, UART_IT_RXNE);
+	/* USER CODE END USART6_MspInit 1 */
+	}
+	else if(uartHandle->Instance==UART8)
+  {
+  /* USER CODE BEGIN UART8_MspInit 0 */
 
-  /* USER CODE END USART6_MspInit 1 */
+  /* USER CODE END UART8_MspInit 0 */
+    /* UART8 clock enable */
+    __HAL_RCC_UART8_CLK_ENABLE();
+  
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    /**UART8 GPIO Configuration    
+    PE1     ------> UART8_TX
+    PE0     ------> UART8_RX 
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_UART8;
+    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+    /* UART8 interrupt Init */
+//    HAL_NVIC_SetPriority(UART8_IRQn, 1, 1);
+//    HAL_NVIC_EnableIRQ(UART8_IRQn);
+  /* USER CODE BEGIN UART8_MspInit 1 */
+
+  /* USER CODE END UART8_MspInit 1 */
   }
+	
+	
+	
+  
 }
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
@@ -347,6 +408,27 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART6_MspDeInit 1 */
   }
+	else if(uartHandle->Instance==UART8)
+  {
+  /* USER CODE BEGIN UART8_MspDeInit 0 */
+
+  /* USER CODE END UART8_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_UART8_CLK_DISABLE();
+  
+    /**UART8 GPIO Configuration    
+    PE1     ------> UART8_TX
+    PE0     ------> UART8_RX 
+    */
+    HAL_GPIO_DeInit(GPIOE, GPIO_PIN_1|GPIO_PIN_0);
+
+    /* UART8 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(UART8_IRQn);
+  /* USER CODE BEGIN UART8_MspDeInit 1 */
+
+  /* USER CODE END UART8_MspDeInit 1 */
+  }
+	
 } 
 
 /* USER CODE BEGIN 1 */

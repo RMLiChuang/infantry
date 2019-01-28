@@ -129,40 +129,15 @@ extern struct _m_usmart_dev usmart_dev;				//在usmart_config.c里面定义
 void usmart_init(u8 sysclk);//初始化
 u8 usmart_cmd_rec(u8*str);	//识别
 void usmart_exe(void);		//执行
+#if EN_USART2_RX   //如果使能了接收
 void usmart_scan(void);     //扫描
+#endif
 u32 read_addr(u32 addr);	//读取指定地址的值
 void write_addr(u32 addr,u32 val);//在指定地址写入指定的值
 u32 usmart_get_runtime(void);	//获取运行时间
 void usmart_reset_runtime(void);//复位运行时间
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1538,7 +1538,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
       UART_Receive_IT(huart);
       return;
     }
-  }  
+  }
 
   /* If some errors occur */
   if((errorflags != RESET) && (((cr3its & USART_CR3_EIE) != RESET) || ((cr1its & (USART_CR1_RXNEIE | USART_CR1_PEIE)) != RESET)))

@@ -22,11 +22,11 @@
 
 
 
-#define IST8310
+//#define IST8310
 #define MPU_HSPI hspi5
 #define MPU_NSS_LOW HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET)
 #define MPU_NSS_HIGH HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET)
-#define imu_temp 20   //陀螺仪温度设定
+#define imu_temp 35   //陀螺仪温度设定
 int16_t Mag_Offset[3]={0,0,0};
 float X_g_av,Y_g_av,Z_g_av;//可用的加速度计值
 float X_g_av_bpf,Y_g_av_bpf,Z_g_av_bpf;//带阻滤波后可用的加速度计值
@@ -365,6 +365,9 @@ void mpu_get_data()
 		if(imu.temp<imu_temp)
 		{
 			HAL_GPIO_WritePin(IMU_TEMP_Port, IMU_TEMP_Pin, GPIO_PIN_SET);//设置imu电阻引脚为高电平
+			
+			wave_form_data[0] =(short)imu.temp;      //YAW ID:206
+			shanwai_send_wave_form();
 		}
 		else
 		{
@@ -409,37 +412,37 @@ void mpu_get_data()
 void mpu9250_get_data()
 {
 		/********************mpu9250 原始数据读取 begin************************/
-			MPU_Get_Accelerometer(&mpu9250_data);
+			//MPU_Get_Accelerometer(&mpu9250_data);
 			MPU_Get_Gyroscope(&mpu9250_data);
 			//MPU_Get_Magnetometer(&mpu9250_data);
 
 //		/********************mpu9250 数据读取 end************************/
 //		/*******************mpu9250 陀螺仪滤波 *******************/
-		imu_9250.X_w_av_bpf=Butterworth_Filter(mpu9250_data.gx,&Gyro9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_98);
-		imu_9250.Y_w_av_bpf=Butterworth_Filter(mpu9250_data.gy,&Gyro9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_98);
+//		imu_9250.X_w_av_bpf=Butterworth_Filter(mpu9250_data.gx,&Gyro9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_98);
+//		imu_9250.Y_w_av_bpf=Butterworth_Filter(mpu9250_data.gy,&Gyro9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_98);
 		imu_9250.Z_w_av_bpf=Butterworth_Filter(mpu9250_data.gz,&Gyro9250_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_98);
 		
-		imu_9250.X_w_av=Butterworth_Filter(imu_9250.X_w_av_bpf,&Gyro9250_BufferData[0],&Gyro_Parameter);
-		imu_9250.Y_w_av=Butterworth_Filter(imu_9250.Y_w_av_bpf,&Gyro9250_BufferData[1],&Gyro_Parameter);
+//		imu_9250.X_w_av=Butterworth_Filter(imu_9250.X_w_av_bpf,&Gyro9250_BufferData[0],&Gyro_Parameter);
+//		imu_9250.Y_w_av=Butterworth_Filter(imu_9250.Y_w_av_bpf,&Gyro9250_BufferData[1],&Gyro_Parameter);
 		imu_9250.Z_w_av=Butterworth_Filter(imu_9250.Z_w_av_bpf,&Gyro9250_BufferData[2],&Gyro_Parameter);  
 		
 		
 		 /* 2000dps -> rad/s */  //弧度制
-		imu_9250.wx   = imu_9250.X_w_av / 16.384f / 57.3f; 
-    imu_9250.wy   = imu_9250.Y_w_av / 16.384f / 57.3f; 
+//		imu_9250.wx   = imu_9250.X_w_av / 16.384f / 57.3f; 
+//    imu_9250.wy   = imu_9250.Y_w_av / 16.384f / 57.3f; 
     imu_9250.wz   = imu_9250.Z_w_av / 16.384f / 57.3f;
 		/* 2000dps -> rad/s */  //角度制
-		imu_9250.gx   = imu_9250.X_w_av / 16.384f; 
-    imu_9250.gy   = imu_9250.Y_w_av / 16.384f; 
-    imu_9250.gz   = imu_9250.Z_w_av / 16.384f;
+//		imu_9250.gx   = imu_9250.X_w_av / 16.384f; 
+//    imu_9250.gy   = imu_9250.Y_w_av / 16.384f; 
+    imu_9250.gz   = imu_9250.Z_w_av / 32.768f;
 
 		/*******************板载imu 加速度计滤波 *******************/
-		imu_9250.X_g_av_bpf=Butterworth_Filter(mpu9250_data.ax,&Accel9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
-    imu_9250.Y_g_av_bpf=Butterworth_Filter(mpu9250_data.ay,&Accel9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
-    imu_9250.Z_g_av_bpf=Butterworth_Filter(mpu9250_data.az,&Accel9250_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_94);
-		imu_9250.X_g_av=Butterworth_Filter(imu_9250.X_g_av_bpf,&Accel9250_BufferData[0],&Accel_Parameter);
-		imu_9250.Y_g_av=Butterworth_Filter(imu_9250.Y_g_av_bpf,&Accel9250_BufferData[1],&Accel_Parameter);
-		imu_9250.Z_g_av=Butterworth_Filter(imu_9250.Z_g_av_bpf,&Accel9250_BufferData[2],&Accel_Parameter);
+//		imu_9250.X_g_av_bpf=Butterworth_Filter(mpu9250_data.ax,&Accel9250_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
+//    imu_9250.Y_g_av_bpf=Butterworth_Filter(mpu9250_data.ay,&Accel9250_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
+//    imu_9250.Z_g_av_bpf=Butterworth_Filter(mpu9250_data.az,&Accel9250_BufferData_BPF[2],&Bandstop_Filter_Parameter_30_94);
+//		imu_9250.X_g_av=Butterworth_Filter(imu_9250.X_g_av_bpf,&Accel9250_BufferData[0],&Accel_Parameter);
+//		imu_9250.Y_g_av=Butterworth_Filter(imu_9250.Y_g_av_bpf,&Accel9250_BufferData[1],&Accel_Parameter);
+//		imu_9250.Z_g_av=Butterworth_Filter(imu_9250.Z_g_av_bpf,&Accel9250_BufferData[2],&Accel_Parameter);
 }
 
 
@@ -866,7 +869,7 @@ void imu_ahrs_update(imu_t *mpu)
 	
 	mpu->yaw = -atan2(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1)* 57.3+180; 
 	mpu->pit = -asin(-2*q1*q3 + 2*q0*q2)* 57.3+180; 
-	mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;
+	mpu->rol =  atan2(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1)* 57.3+180;	
 //	last_yaw_temp = yaw;
 //	//yaw_temp = angle[0]; 
 //	if(yaw-last_yaw_temp>=330)  //yaw轴角度经过处理后变成连续的

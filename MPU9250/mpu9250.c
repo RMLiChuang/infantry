@@ -24,7 +24,7 @@ u8 MPU9250_Init(void)
     MPU_Write_Byte(MPU9250_ADDR,MPU_PWR_MGMT1_REG,0X80);//复位MPU9250
     //delay_ms(100);  //延时100ms
     MPU_Write_Byte(MPU9250_ADDR,MPU_PWR_MGMT1_REG,0X00);//唤醒MPU9250
-    MPU_Set_Gyro_Fsr(3);					        	//陀螺仪传感器,±2000dps
+    MPU_Set_Gyro_Fsr(2);					        	//陀螺仪传感器,±2000dps
 	  MPU_Set_Accel_Fsr(2);					       	 	//加速度传感器,±2g
     MPU_Set_Rate(50);						       	 	//设置采样率50Hz
     MPU_Write_Byte(MPU9250_ADDR,MPU_INT_EN_REG,0X00);   //关闭所有中断
@@ -45,7 +45,7 @@ u8 MPU9250_Init(void)
         MPU_Write_Byte(AK8963_ADDR,MAG_CNTL1,0X11);		//设置AK8963为单次测量模式
     }else return 1;
 		/****************重新设置imu量程参数，不然会初始化失败***************/
-		MPU_Set_Gyro_Fsr(3);					        	//陀螺仪传感器,±2000dps
+		MPU_Set_Gyro_Fsr(2);					        	//陀螺仪传感器,±2000dps
 	  MPU_Set_Accel_Fsr(2);					       	 	//加速度传感器,±2g
     return 0;
 }

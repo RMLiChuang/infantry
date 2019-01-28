@@ -19,19 +19,31 @@
 #include "stdio.h"
 #include "mytype.h"
 /* USER CODE BEGIN Includes */
-
+extern uint8_t rxbuf[6];
+extern uint8_t UART6_BUFF[200];
+extern uint8_t uart6_rx_buff[100];
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
+//extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
-
+extern UART_HandleTypeDef huart8;
 /* USER CODE BEGIN Private defines */
 #define USART_REC_LEN  			200  	//定义最大接收字节数 200
-#define EN_USART2_RX 			1		//使能（1）/禁止（0）串口2接收
+#define EN_USART2_RX 			0		//使能（1）/禁止（0）串口2接收
+	 
+#if EN_USART2_RX   //如果使能了接收
+	 
 extern u8  USART_RX_BUF[USART_REC_LEN]; //接收缓冲,最大USART_REC_LEN个字节.末字节为换行符 
-extern u16 USART_RX_STA;         		//接收状态标记	
+extern u16 USART_RX_STA;
+
+//接收状态标记	 
+#endif
+//#define RXBUFFERSIZE   1 //缓存大小
+//extern u8 aRxBuffer[RXBUFFERSIZE];//HAL库USART接收Buffer
+
+
 HAL_StatusTypeDef UART_Receive_DMA_NoIT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_Receive_IT_IDLE(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 void HAL_UART_IDLE_IRQHandler(UART_HandleTypeDef *huart);
@@ -44,7 +56,7 @@ void MX_USART1_UART_Init(void);
 void MX_USART2_UART_Init(void);
 void MX_USART3_UART_Init(void);
 void MX_USART6_UART_Init(void);
-
+void MX_UART8_Init(void);
 /* USER CODE BEGIN Prototypes */
 extern uint8_t UART_Buffer[100];
 

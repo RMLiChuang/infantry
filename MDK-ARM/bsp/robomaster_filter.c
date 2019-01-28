@@ -183,6 +183,7 @@ Butter_BufferData Accel_BufferData[3];
 Butter_BufferData Accel_BufferData_BPF[3];
 Butter_BufferData Gyro_BufferData_BPF[3];
 Butter_BufferData Gyro_BufferData[3];
+Butter_BufferData Vision_BufferData[2];
 float MPU_LPF(float curr_inputer,
                Butter_BufferData *Buffer,
                Butter_Parameter *Parameter)

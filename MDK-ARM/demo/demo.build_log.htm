@@ -21,13 +21,23 @@ Target DLL:      CMSIS_AGDI.dll V1.28.3.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
-D:\RM_2019\my_program\INTANTRY_V3.0\infantry\MDK-ARM\demo.uvprojx
-Project File Date:  12/04/2018
+C:\Users\izh20\Desktop\infantry\MDK-ARM\demo.uvprojx
+Project File Date:  01/23/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'demo'
-"demo\demo.axf" - 0 Error(s), 0 Warning(s).
+compiling robomaster_control.c...
+bsp\robomaster_control.c(18): warning:  #47-D: incompatible redefinition of macro "PI"  (declared at line 21 of "bsp\robomaster_filter.h")
+  #define PI 3.1415926
+bsp\robomaster_control.c(286): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	pan_tilt_rad=(chassis_yaw_angle.initial-
+an_tilt_yaw_motor.angle)/8192*360/
+I;
+bsp\robomaster_control.c: 2 warnings, 0 errors
+linking...
+Program Size: Code=36054 RO-data=1794 RW-data=676 ZI-data=5940  
+"demo\demo.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,7 +60,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>

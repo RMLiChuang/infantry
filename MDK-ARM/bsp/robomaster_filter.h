@@ -61,6 +61,7 @@ extern Butter_BufferData Accel_BufferData[3];
 extern Butter_BufferData Accel_BufferData_BPF[3];
 extern Butter_BufferData Gyro_BufferData_BPF[3];
 extern Butter_BufferData Gyro_BufferData[3];
+extern Butter_BufferData Vision_BufferData[2];
 extern Butter_BufferData Butter_5HZ_Buffer_Acce[3];
 
 extern float Acce_Control[3],Acce_Control_Feedback[3],Acce_SINS[3];

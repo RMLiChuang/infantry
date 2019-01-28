@@ -94,11 +94,14 @@ int main(void)
   MX_TIM1_Init();//用来计时，测试程序运行的时间
   MX_TIM5_Init();//产生4路pwm波来控制摩擦轮
   MX_USART6_UART_Init();//用于上位机调试
+//	HAL_UART_Receive_IT(&huart6, uart6_rx_buff, 1);//该函数会开启接收中断：标志位UART_IT_RXNE，并且设置接收缓冲以及接收缓冲接收最大数据量
   MX_SPI5_Init();//用于imu驱动
   MX_TIM2_Init();//中断控制程序  主要程序在TIM2中运行
   MX_TIM3_Init();//未用
+	MX_UART8_Init();
 //  MX_TIM4_Init();//USMART占用
-  MX_USART2_UART_Init();//蓝牙串口  未用
+//  MX_USART2_UART_Init();//蓝牙串口  未用
+	ref_sys_init();//裁判系统初始化，内部已设置好串口相关的东西
   MX_USART3_UART_Init();//大疆SDK串口 未用
   delay_init(168);//延时函数初始化
 	//MPU9250_Init();
@@ -121,6 +124,7 @@ int main(void)
   HAL_UART_Receive_IT_IDLE(&huart1,UART_Buffer,100);   //启动串口接收
 	
 	
+	
 
   
 	init_TIM5_PWM();			//初始化TIM5的PWM
@@ -130,11 +134,11 @@ int main(void)
 	init_quaternion();	//初始化四元数，用于姿态解算
 	all_pid_init();			//所有电机的pid初始化
     																	
-  
+	//ramp_init(&trigger_motor.fric2_ramp, SHOOT_CONTROL_TIME * 0.005f, Fric_DOWN, Fric_OFF);
 	
 	HAL_TIM_IC_Start_DMA(&htim1,TIM_CHANNEL_2,(uint32_t *)TIM_COUNT,2);
-	RM2312_Init();
 	HAL_TIM_Base_Start_IT(&htim2);//开启定时器2  程序主要任务都在定时器2中断里完成呢
+	
 	//RM2312_Init();
   /* USER CODE END 2 */
 
@@ -203,22 +207,37 @@ int main(void)
 //	  wave_form_data[5] =(short)moto_chassis[4].angle;
 
 //检测can通信的6个电机是否有数据
-//		wave_form_data[0] =(short)motor_pid[0].target;      //YAW ID:206
-//	  wave_form_data[1] =(short)motor_pid[1].target;
-//	  wave_form_data[2] =(short)motor_pid[2].target;
-//	  wave_form_data[3] =(short)motor_pid[3].target;//pan_tilt_yaw_speed.output;
-//		wave_form_data[4] =(short)moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
-//	  wave_form_data[5] =(short)moto_chassis[6].angle;
+//		wave_form_data[0] =(short)imu.yaw;//refSysData.PowerHeatData_t.chassisPower;//chassis_yaw_speed.output;      //YAW ID:206
+//	  wave_form_data[1] =(short)imu.gz;
+//	  wave_form_data[2] =(short)chassis_yaw_angle.output;
+//	  wave_form_data[3] =(short)chassis_yaw_angle.target;//motor_pid[3].target;//pan_tilt_yaw_speed.output;
+//		wave_form_data[4] =(short)uart6_rx_buff[4];//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+//		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//refSysData.PowerHeatData_t.chassisPower;
 
 //键盘鼠标控制
-		wave_form_data[0] =(short)remote_control.mouse.x;
-	  wave_form_data[1] =(short)remote_control.mouse.y;//MPU_Set_Accel_Fsr(2);
-	  wave_form_data[2] =(short)remote_control.mouse.press_left;//chassis_yaw.output;
-	  wave_form_data[3] =(short)remote_control.mouse.press_right;//mag_field_intensity;//磁场强度;
-	  wave_form_data[4] =(short)remote_control.keyBoard.key_code;//imu.gz;
-	  wave_form_data[5] =(short)chassis_yaw_speed.output;
+//		wave_form_data[0] =(short)remote_control.mouse.x;
+//	  wave_form_data[1] =(short)remote_control.mouse.y;//MPU_Set_Accel_Fsr(2);
+//	  wave_form_data[2] =(short)remote_control.mouse.press_left;//chassis_yaw.output;
+//	  wave_form_data[3] =(short)remote_control.mouse.press_right;//mag_field_intensity;//磁场强度;
+//	  wave_form_data[4] =(short)remote_control.keyBoard.key_code;//imu.gz;
+//	  wave_form_data[5] =(short)chassis_yaw_speed.output;
+
+//视觉信息
+		wave_form_data[0] =(short)pan_tilt_angle;
+	  wave_form_data[1] =(short)chassis_yaw_angle.initial;
+	  wave_form_data[2] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;
+	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;
+		wave_form_data[4] =(short)pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+		wave_form_data[5] =(short)UART6_Date[5];//refSysData.PowerHeatData_t.chassisPower;
+
+
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形
-  }
+		}
+	
+	
+
+	
+
   /* USER CODE END 3 */
 
 }
