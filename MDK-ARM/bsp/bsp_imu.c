@@ -366,7 +366,7 @@ void mpu_get_data()
 		{
 			HAL_GPIO_WritePin(IMU_TEMP_Port, IMU_TEMP_Pin, GPIO_PIN_SET);//设置imu电阻引脚为高电平
 			
-			wave_form_data[0] =(short)imu.temp;      //YAW ID:206
+			wave_form_data[0] =(short)imu.temp;     
 			shanwai_send_wave_form();
 		}
 		else
@@ -383,16 +383,6 @@ void mpu_get_data()
 		imu.Y_w_av=Butterworth_Filter(imu.Y_w_av_bpf,&Gyro_BufferData[1],&Gyro_Parameter);
 		imu.Z_w_av=Butterworth_Filter(imu.Z_w_av_bpf,&Gyro_BufferData[2],&Gyro_Parameter);  
 		
-		
-		 /* 2000dps -> rad/s */  //弧度制
-		imu.wx   = imu.X_w_av / 16.384f / 57.3f; 
-    imu.wy   = imu.Y_w_av / 16.384f / 57.3f; 
-    imu.wz   = imu.Z_w_av / 16.384f / 57.3f;
-		/* 2000dps -> rad/s */  //角度制
-		imu.gx   = imu.X_w_av / 16.384f; 
-    imu.gy   = imu.Y_w_av / 16.384f; 
-    imu.gz   = imu.Z_w_av / 16.384f;
-		
 		/*******************板载imu 加速度计滤波 *******************/
 		imu.X_g_av_bpf=Butterworth_Filter(imu.ax,&Accel_BufferData_BPF[0],&Bandstop_Filter_Parameter_30_94);
     imu.Y_g_av_bpf=Butterworth_Filter(imu.ay,&Accel_BufferData_BPF[1],&Bandstop_Filter_Parameter_30_94);
@@ -406,6 +396,14 @@ void mpu_get_data()
     imu.Y_m_av=GildeAverageValueFilter_MAG(imu.my-Mag_Offset[1],Data_Y_MAG);
     imu.Z_m_av=GildeAverageValueFilter_MAG(imu.mz-Mag_Offset[2],Data_Z_MAG);
 		
+		 /* 2000dps -> rad/s */  //弧度制
+		imu.wx   = imu.X_w_av / 16.384f / 57.3f; 
+    imu.wy   = imu.Y_w_av / 16.384f / 57.3f; 
+    imu.wz   = imu.Z_w_av / 16.384f / 57.3f;
+		/* 2000dps -> rad/s */  //角度制
+		imu.gx   = imu.X_w_av / 16.384f; 
+    imu.gy   = imu.Y_w_av / 16.384f; 
+    imu.gz   = imu.Z_w_av / 16.384f;
 
 }
 

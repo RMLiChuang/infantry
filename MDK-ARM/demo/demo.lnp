@@ -37,6 +37,7 @@
 "demo\robomaster_userlib.o"
 "demo\robomaster_fric.o"
 "demo\robomaster_shoot.o"
+"demo\kalman_filter.o"
 "demo\main.o"
 "demo\stm32f4xx_hal_msp.o"
 "demo\usart.o"
@@ -52,6 +53,7 @@
 "demo\usmart.o"
 "demo\usmart_config.o"
 "demo\usmart_str.o"
+"..\DSP_LIB\arm_cortexM4lf_math.lib"
 --library_type=microlib --strict --scatter "demo\demo.sct"
 --diag_suppress=L6329 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

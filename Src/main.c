@@ -145,10 +145,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 //  	uint8_t buf[]="asd";
-
+	float cosx;
   while (1)
   {	
-		 
+		  cosx=arm_cos_f32(24.6); //使用 DSP 优化的 sin，cos 函数 
 		
   /* USER CODE END WHILE */
 
