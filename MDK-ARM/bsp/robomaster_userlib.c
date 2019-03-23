@@ -1,6 +1,6 @@
 #include "robomaster_userlib.h"
 
-
+ramp_function_source_t fric_ramp;
 /**
   * @brief          斜波函数初始化
   * @author         RM
@@ -26,8 +26,7 @@ void ramp_init(ramp_function_source_t *ramp_source_type, fp32 frame_period, fp32
   * @param[in]      输入值
   * @param[in]      滤波参数
   * @retval         返回空
-  */
-void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input)
+  */void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input)
 {
     ramp_source_type->input = input;
     ramp_source_type->out += ramp_source_type->input * ramp_source_type->frame_period;

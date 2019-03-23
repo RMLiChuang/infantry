@@ -27,8 +27,8 @@ void task()
 	{
 		infantry_control();//步兵控制
 		//shoot_control();			//摩擦轮以及拨弹电机的控制
-		//single_shoot();
-		single_shoot1();
+		single_shoot();
+		//single_shoot1();
 	}
 	robot_status_detection();
 //	printf("test");

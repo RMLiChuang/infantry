@@ -19,24 +19,28 @@ static shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
 *形    参: 
 *返 回 值: 电流输出
 **********************************************************************************************************/
+int pwm_output;
 void single_shoot()
 {
-//	if(remote_control.switch_right==1)
-//	{
-//		//moto_chassis[6].round_cnt=0;
-//		HeadTxData[4]=0;
-//		HeadTxData[5]=0;
-//		init_TIM5_PWM();
-//	}
+	if(remote_control.switch_right==1)
+	{
+		//moto_chassis[6].round_cnt=0;
+		HeadTxData[4]=0;
+		HeadTxData[5]=0;
+		init_TIM5_PWM();
+		fric_ramp.out=1000;
+		//init_TIM5_PWM();
+	}
 	if(remote_control.switch_right==2)
 	{
 		moto_chassis[6].round_cnt=0;
 		HeadTxData[4]=0;
 		HeadTxData[5]=0;
-		PWM_SetDuty(&htim5,TIM_CHANNEL_1,1500);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_2,1500);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_3,1500);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_4,1500);
+		ramp_calc(&fric_ramp,1200);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
 	}
 	if(remote_control.switch_right==3)
 	{
@@ -52,10 +56,11 @@ void single_shoot()
 			HeadTxData[4]=0;
 			HeadTxData[5]=0;
 		}
-			PWM_SetDuty(&htim5,TIM_CHANNEL_1,1500);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_2,1500);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_3,1500);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_4,1500);
+			ramp_calc(&fric_ramp,1200);
+			PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
+			PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
+			PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
+			PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
 	}
 }
 
@@ -145,10 +150,15 @@ void single_shoot1(void)
 	int s=0;
 	if(remote_control.switch_left!=1)
 	{
-			PWM_SetDuty(&htim5,TIM_CHANNEL_1,1.4);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_2,1.4);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_3,1.4);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_4,1.4);
+		ramp_calc(&fric_ramp,1200);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
+//			PWM_SetDuty(&htim5,TIM_CHANNEL_1,1.2);
+//			PWM_SetDuty(&htim5,TIM_CHANNEL_2,1.2);
+//			PWM_SetDuty(&htim5,TIM_CHANNEL_3,1.2);
+//			PWM_SetDuty(&htim5,TIM_CHANNEL_4,1.2);
 				
 		if(remote_control.switch_right==2)//
 		{	
@@ -179,10 +189,15 @@ void single_shoot1(void)
 	
 	else
 	{
-		PWM_SetDuty(&htim5,TIM_CHANNEL_1,1.0);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_2,1.0);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_3,1.0);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_4,1.0);
+		ramp_calc(&fric_ramp,900);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
+		PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
+//		PWM_SetDuty(&htim5,TIM_CHANNEL_1,1.0);
+//		PWM_SetDuty(&htim5,TIM_CHANNEL_2,1.0);
+//		PWM_SetDuty(&htim5,TIM_CHANNEL_3,1.0);
+//		PWM_SetDuty(&htim5,TIM_CHANNEL_4,1.0);
 	}
 	
 		motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);

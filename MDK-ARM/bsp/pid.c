@@ -454,7 +454,7 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	100,								//max_err													//最大误差
 																	0,									//target
-																	5,							//kp 10
+																	7,							//kp 10
 																	0,							//ki	
 																	0);							//kd 0						
 	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    

@@ -19,6 +19,6 @@ void ramp_calc(ramp_function_source_t *ramp_source_type, fp32 input);
 
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue);
 
-
+extern ramp_function_source_t fric_ramp;
 
 #endif

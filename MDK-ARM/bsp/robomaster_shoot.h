@@ -15,7 +15,7 @@ typedef enum
 
 typedef struct
 {
- //   ramp_function_source_t fric1_ramp;
+//    ramp_function_source_t fric1_ramp;
 //    ramp_function_source_t fric2_ramp;
 //    const moto_measure_t *shoot_motor_measure;
     fp32 speed;

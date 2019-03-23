@@ -125,8 +125,14 @@ int main(void)
 	
 	
 	
-
-  
+	ramp_init(&fric_ramp,SHOOT_CONTROL_TIME * 0.001f, Fric_ON, Fric_OFF);
+	
+//  TIM_SetTIM5Compare(1600);
+//	delay_ms(1000);
+//	delay_ms(1000);
+//	delay_ms(1000);
+//	
+//	TIM_SetTIM5Compare(1000);
 	init_TIM5_PWM();			//初始化TIM5的PWM
 	Infantry_Start_Bling();//步兵状态指示灯
 	mpu_device_init();   //在初始化imu的时候，要先初始化SPI5和GPIOF6 不然无法初始化imu
@@ -135,6 +141,8 @@ int main(void)
 	all_pid_init();			//所有电机的pid初始化
     																	
 	//ramp_init(&trigger_motor.fric2_ramp, SHOOT_CONTROL_TIME * 0.005f, Fric_DOWN, Fric_OFF);
+	
+	
 	
 	HAL_TIM_IC_Start_DMA(&htim1,TIM_CHANNEL_2,(uint32_t *)TIM_COUNT,2);
 	HAL_TIM_Base_Start_IT(&htim2);//开启定时器2  程序主要任务都在定时器2中断里完成呢

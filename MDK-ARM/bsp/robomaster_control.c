@@ -29,10 +29,10 @@ void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,int duty)
 	{
 	
 	switch(tim_channel){	
-		case TIM_CHANNEL_1: tim->Instance->CCR1 = duty - 1;break;
-		case TIM_CHANNEL_2: tim->Instance->CCR2 = duty - 1;break;
-		case TIM_CHANNEL_3: tim->Instance->CCR3 = duty - 1;break;
-		case TIM_CHANNEL_4: tim->Instance->CCR4 = duty - 1;break;
+		case TIM_CHANNEL_1: tim->Instance->CCR1 = duty;break;
+		case TIM_CHANNEL_2: tim->Instance->CCR2 = duty;break;
+		case TIM_CHANNEL_3: tim->Instance->CCR3 = duty;break;
+		case TIM_CHANNEL_4: tim->Instance->CCR4 = duty;break;
 	}
 	
 }
