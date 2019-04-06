@@ -42,6 +42,10 @@ typedef double fp64;
 #define LED_B_Pin									GPIO_PIN_7
 #define LED_A_Pin									GPIO_PIN_8
 #define LED_USER_GPIO_PORT				GPIOG        //用户灯
+#define OLED_DC_Pin GPIO_PIN_9//OLED引脚定义
+#define OLED_DC_GPIO_Port GPIOB
+#define OLED_RST_Pin GPIO_PIN_10
+#define OLED_RST_GPIO_Port GPIOB
 
 #define IMU_TEMP_Pin       			GPIO_PIN_5 //imu电阻加热为PB5
 #define IMU_TEMP_Port						GPIOB

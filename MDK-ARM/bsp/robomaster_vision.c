@@ -14,8 +14,12 @@
 #define MAX_ERR 600//视觉误差限幅
 #define MIN_ERR 0
 
+#define VISION_YAW_TARGET 310 //视觉yaw的目标值
+#define VISION_PIT_TARGET 270 //视觉pit的目标值
+
 #define VISION_DATE_SIZE 6
-uint16_t UART6_Date[8]=0;//串口2接收pid调参数据
+
+uint16_t UART6_Date[8]={0};//串口6接收pid调参数据
 
 u8 Usart_Flag=0;
 Vision_Attack Armour_attack;
@@ -36,19 +40,62 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 /**********************************************************************************************************
 *函 数 名: armour_attack
 *功能说明: 视觉识别装甲板并攻击，   控制思路，只有当鼠标偏移量或遥控器的偏移量小于一定值的时候(即中位死区)，才能激活视觉识别
-*形    参:需要视觉提供云台相对于装甲板的yaw和pitch的err
+*形    参: 需要视觉提供云台相对于装甲板的yaw和pitch的err
 *返 回 值: 电流输出
 **********************************************************************************************************/
 void armour_attack()
 {
 	/***********YAW轴偏差矫正***************/
-	vision_yaw.target=320;
+//	vision_yaw.target=300;
+//	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
+	int yaw_err,pitch_err;
+	yaw_err=(Armour_attack.pan_tilt_angel_err.Yaw_Err-VISION_YAW_TARGET);
+	if(int_abs(yaw_err)<10)//视觉误差小于一定值
+	{
+		if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
+			{
+				pan_tilt_yaw.target=imu.yaw;
+			}
+			PID_Control_Yaw(&pan_tilt_yaw,imu.yaw);
+			pan_tilt_yaw_speed.target=pan_tilt_yaw.output;
+	}
+	else
+	{
+		pan_tilt_yaw.target=0;//偏航角期望给0,不进行角度控制
+		pan_tilt_yaw_speed.target=yaw_err;
+	}
+	//pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
+	
+	/***********PITCH轴偏差矫正***************/
+//	vision_pitch.target=300;
+//	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
+//	pan_tilt_pitch_speed.target=-vision_pitch.output;
+	pitch_err=(Armour_attack.pan_tilt_angel_err.Pitch_Err-VISION_PIT_TARGET)*1.3;
+	if(int_abs(pitch_err)<5)//视觉误差小于一定值
+	{
+		if(pan_tilt_pitch.target==0)  //回中时赋角度期望值
+			{
+				pan_tilt_pitch.target=imu.pit;
+			}
+			PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
+			pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
+	}
+	else
+	{
+		pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
+		pan_tilt_pitch_speed.target=pitch_err;
+	}
+
+	//pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
+	
+	
+	/***********YAW轴偏差矫正***************/
+	vision_yaw.target=VISION_YAW_TARGET;
 	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
 	pan_tilt_yaw_speed.target=-vision_yaw.output;
 	pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
-	
 	/***********PITCH轴偏差矫正***************/
-	vision_pitch.target=240;
+	vision_pitch.target=VISION_PIT_TARGET;
 	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
 	pan_tilt_pitch_speed.target=-vision_pitch.output;
 	pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
@@ -61,7 +108,6 @@ void armour_attack()
 **********************************************************************************************************/
 void  get_armour_err()
 {
-	u8 i=0;
 	if(USART6_RX_BUF==1)
 	{
 		USART6_RX_BUF=0;
@@ -83,8 +129,8 @@ void  get_armour_err()
 //			Armour_attack.pan_tilt_angel_err.Pitch_Err=Butterworth_Filter(Armour_attack.pan_tilt_angel_err.Pitch_Err,&Vision_BufferData[1],&Accel_Parameter);
 			
 	
-			Armour_attack.pan_tilt_angel_err.Yaw_Err=GildeAverageValueFilter(Armour_attack.pan_tilt_angel_err.Yaw_Err,Data);
-			Armour_attack.pan_tilt_angel_err.Pitch_Err=GildeAverageValueFilter(Armour_attack.pan_tilt_angel_err.Pitch_Err,Data);
+//			Armour_attack.pan_tilt_angel_err.Yaw_Err=GildeAverageValueFilter(Armour_attack.pan_tilt_angel_err.Yaw_Err,Data);
+//			Armour_attack.pan_tilt_angel_err.Pitch_Err=GildeAverageValueFilter(Armour_attack.pan_tilt_angel_err.Pitch_Err,Data);
 		}
 //		for(i=0;i<8;i++)
 //		{

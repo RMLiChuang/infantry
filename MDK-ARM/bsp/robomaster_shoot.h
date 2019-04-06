@@ -4,7 +4,8 @@
 #include "robomaster_userlib.h"
 #include "bsp_can.h"
 #define SHOOT_CONTROL_TIME 1
-
+#define FRIC1 TIM_CHANNEL_3 //摩擦轮通道
+#define FRIC2 TIM_CHANNEL_4 //摩擦轮通道
 typedef enum
 {
     SHOOT_STOP = 0,
@@ -13,10 +14,9 @@ typedef enum
     SHOOT_DONE,
 } shoot_mode_e;
 
+
 typedef struct
 {
-//    ramp_function_source_t fric1_ramp;
-//    ramp_function_source_t fric2_ramp;
 //    const moto_measure_t *shoot_motor_measure;
     fp32 speed;
     fp32 speed_set;

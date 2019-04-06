@@ -14,6 +14,7 @@
 #include "gpio.h"
 #include "mytype.h"
 #include <math.h>
+#include "adc.h"
 /* USER CODE BEGIN Includes */
 #include "bsp_can.h"
 #include "pid.h"
@@ -37,6 +38,10 @@
 #include "robomaster_vision.h"
 #include "robomaster_shoot.h"
 #include "robomaster_fric.h"
+#include "robomaster_cartridge.h"
+#include "Keyboard_Control.h"//¼üÅÌÎÄ¼þ
+#include "oled.h"
+#include "super_cap.h"
 /* USER CODE END Includes */
 
 #endif

@@ -86,7 +86,7 @@ void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 83;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 2999;
+  htim2.Init.Period = 4999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
   {
@@ -460,17 +460,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-void init_TIM5_PWM()
-{
-	//ramp_calc(&fric_ramp,1000);
-	
-	TIM_SetTIM5Compare(1000);
-	
-//	PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
-//	PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
-//	PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
-//	PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
-}
+
 /* USER CODE END 1 */
 
 /**

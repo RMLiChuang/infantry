@@ -229,6 +229,8 @@ void EXTI1_IRQHandler(void)
   s=HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
 	if(s)
 	{
+		oled_showstring(3,4,"BODAN");
+		
 	  k++;
 	  if(k>=3)
 	  {

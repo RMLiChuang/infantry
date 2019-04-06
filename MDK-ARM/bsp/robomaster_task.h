@@ -4,6 +4,7 @@
 
 void task(void);
 
-
+void select_mode(void);
+void remap_variable(void);
 #endif
 

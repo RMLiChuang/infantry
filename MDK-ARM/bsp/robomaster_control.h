@@ -61,19 +61,19 @@ extern int32_t set_spd;
 extern float pan_tilt_angle;
 
 
-void PWM_SetDuty(TIM_HandleTypeDef *tim,uint32_t tim_channel,int duty);
+
 
 //void chassis_control(void);
 void chassis_twist_control(void);
 void chassis_follow_pan_tilt_control(void);
 void chassis_speed_control(void);
-void chassis_current_mix(void);
+void chassis_current_mix(int16_t *output);
 void set_current_zero(void);
 void infantry_control(void);
 void calibrate_initial_position(void);
 float GildeAverageValueFilter(float NewValue,float *Data);
 void set_chassis_moto_target_zero(void);
-void TIM_SetTIM5Compare(uint16_t compare);
+
 void chassis_angle_speed_control(void);
 void get_chassis_to_pan_tilt_rad(void);
 void get_chassis_to_pan_tilt_angle(void);

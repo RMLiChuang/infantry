@@ -13,8 +13,11 @@
 #include "Remote_Control.h"
 #include "pid.h"
 #include "robomaster_common.h"
-#define INFANTRY_MAX_SPEED 2500
-#define chassis_speed_distribute 1.6 //底盘1，2号电机相对于3，4号电机速度分配
+#define INFANTRY_MAX_SPEED 5000
+#define chassis_speed_distribute 1.3 //底盘1，2号电机相对于3，4号电机速度分配
+#define twist_straight_speed_coefficient 0.4f //扭腰走直线时的速度系数
+const int THRESHOLD=5000;  //极限速度
+const int TURNSPEED=5000;   //转弯极限速度
 /**
   * @brief          遥控器的死区判断，因为遥控器的拨杆在中位的时候，不一定是发送1024过来，
   * @author         RM
@@ -141,11 +144,19 @@ __________________________________________________________________
 |  备注:|moto_ctr[0]|=|moto_ctr[1]|=|moto_ctr[2]|=|moto_ctr[3]|  |
 ``````````````````````````````````````````````````````````````````											
 *************************** ***************************/
+float twist_distribute;//扭腰走直线
+void cal_twist_distribute()
+{
+	twist_distribute=((cos(int_abs(pan_tilt_angle*angle_to_radian))-sin(int_abs(pan_tilt_angle*angle_to_radian)))
+										/(cos(int_abs(pan_tilt_angle*angle_to_radian))+sin(int_abs(pan_tilt_angle*angle_to_radian))));
+}
+
+
 int16_t moto_ctr[6];
 //遥控控制
-const int THRESHOLD=4000;  //极限速度
-const int TURNSPEED=4000;   //转弯极限速度
+
 int yaw_control=0;
+int translation=0,straight=0;
 void DBUS_Deal()
 {
 //	if(remote_control.switch_left==2)//将imu融合到底盘中
@@ -171,18 +182,39 @@ void DBUS_Deal()
 //			
 //	}
 		rc_deadline_limit(remote_control.ch3,remote_control.ch3,CHASSIS_RC_DEADLINE);
+		if(robot_status.mode==TWIST)//当车再扭腰模式时
+		{
+			cal_twist_distribute();
+			if(pan_tilt_angle>0)//底盘相对于云台为正方向
+			{
+				moto_ctr[0]=straight+translation+yaw_velocity_target*chassis_speed_distribute*0.3;
+				moto_ctr[1]=-straight*twist_distribute+translation+yaw_velocity_target*chassis_speed_distribute*0.3;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
+				moto_ctr[2]=-straight-translation+yaw_velocity_target*0.3;
+				moto_ctr[3]=straight*twist_distribute-translation+yaw_velocity_target*0.3;
+			}
+			else//底盘相对于云台为
+			{
+				moto_ctr[0]=straight*twist_distribute*twist_straight_speed_coefficient+translation+yaw_velocity_target*chassis_speed_distribute*0.4f;
+				moto_ctr[1]=-straight*twist_straight_speed_coefficient+translation+yaw_velocity_target*chassis_speed_distribute*0.4f;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
+				moto_ctr[2]=-straight*twist_distribute*twist_straight_speed_coefficient-translation+yaw_velocity_target*0.4f;
+				moto_ctr[3]=straight*twist_straight_speed_coefficient-translation+yaw_velocity_target*0.4f;
+			}
+		}
+		else//当车不在扭腰模式时
+		{
+			moto_ctr[0]=straight+yaw_velocity_target*chassis_speed_distribute*0.4f+translation;
+			moto_ctr[1]=-straight+yaw_velocity_target*chassis_speed_distribute*0.4f+translation;
+			moto_ctr[2]=-straight+yaw_velocity_target*chassis_speed_distribute*0.4f-translation;   
+			moto_ctr[3]=straight+yaw_velocity_target*chassis_speed_distribute*0.4f-translation;
+		}
+	
+			motor_pid[0].target=moto_ctr[0]*INFANTRY_MAX_SPEED/660;
+			motor_pid[1].target=moto_ctr[1]*INFANTRY_MAX_SPEED/660;
+			motor_pid[2].target=moto_ctr[2]*INFANTRY_MAX_SPEED/660;
+			motor_pid[3].target=moto_ctr[3]*INFANTRY_MAX_SPEED/660;
+	
 		
-		moto_ctr[0]=remote_control.ch2+remote_control.ch1+remote_control.ch3*chassis_speed_distribute;
-		moto_ctr[1]=-remote_control.ch2+remote_control.ch1+remote_control.ch3*chassis_speed_distribute;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒
-		moto_ctr[2]=-remote_control.ch2-remote_control.ch1+remote_control.ch3;
-		moto_ctr[3]=remote_control.ch2-remote_control.ch1+remote_control.ch3;
-	
-		motor_pid[0].target=moto_ctr[0]*INFANTRY_MAX_SPEED/660;
-		motor_pid[1].target=moto_ctr[1]*INFANTRY_MAX_SPEED/660;
-		motor_pid[2].target=moto_ctr[2]*INFANTRY_MAX_SPEED/660;
-		motor_pid[3].target=moto_ctr[3]*INFANTRY_MAX_SPEED/660;
-	
-	if((motor_pid[0].target>THRESHOLD)&&(motor_pid[1].target>THRESHOLD)&&(motor_pid[2].target>THRESHOLD)&&(motor_pid[3].target>THRESHOLD))			//顺转速度控制
+		if((motor_pid[0].target>THRESHOLD)&&(motor_pid[1].target>THRESHOLD)&&(motor_pid[2].target>THRESHOLD)&&(motor_pid[3].target>THRESHOLD))			//顺转速度控制
 		{
 			motor_pid[0].target=TURNSPEED;
 			motor_pid[1].target=TURNSPEED;
@@ -198,3 +230,4 @@ void DBUS_Deal()
 			motor_pid[3].target=-TURNSPEED;
 		}	  
 }
+

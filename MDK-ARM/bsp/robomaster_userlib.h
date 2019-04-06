@@ -2,8 +2,7 @@
 #define __ROBOMASTER_USERLIB
 #include "robomaster_common.h"
 
-
-typedef __packed struct
+typedef struct
 {
     fp32 input;        //输入数据
     fp32 out;          //输出数据

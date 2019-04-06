@@ -15,7 +15,7 @@
 #define __RC__
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
+#define angle_to_radian  PI/180  //角度转弧度
 #define RC_Frame_Lentgh		18
 #define CHASSIS_RC_DEADLINE 10 //遥控器死区
 #define int_abs(x) ((x) > 0 ? (x) : (-x))
@@ -62,12 +62,15 @@ enum{
 	Key_S,
 	//...
 };
+extern int translation,straight;
+extern float twist_distribute;//扭腰走直线
 extern uint32_t dbus_time;
 extern int yaw_control;
 extern RC_Type remote_control;
 extern uint32_t  Latest_Remote_Control_Pack_Time ;
 void Callback_RC_Handle(RC_Type* rc, uint8_t* buff);
 void DBUS_Deal(void);
+void cal_twist_distribute(void);
 
 #endif
 

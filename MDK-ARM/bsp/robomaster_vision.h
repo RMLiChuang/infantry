@@ -25,7 +25,7 @@ typedef struct
 
 extern uint32_t  Latest_Vision_Control_Pack_Time;
 extern uint32_t vision_time;//用于检测使视觉识别是否离线
-extern uint16_t UART6_Date[8];//串口2接收pid调参数据
+extern uint16_t UART6_Date[8];//串口6接收pid调参数据
 extern u8 Usart_Flag;
 extern Vision_Attack Armour_attack;//装甲板识别结构体
 extern uint8_t USART6_RX_BUF;

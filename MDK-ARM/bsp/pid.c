@@ -305,8 +305,8 @@ void all_pid_init()
     pid_init(&motor_pid[i]);
     motor_pid[i].f_param_init(&motor_pid[i],
 																	PID_Speed,					
-																	3000,							//maxOutput												//输出限幅
-																	1000,								//integralLimit										//积分限幅
+																	9000,							//maxOutput												//输出限幅
+																	2000,								//integralLimit										//积分限幅
 																	10,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	1000,								//max_err													//最大误差
@@ -336,15 +336,15 @@ void all_pid_init()
 	pid_init(&chassis_yaw_angle);//来源于yaw轴电机机械角度的数值
 	chassis_yaw_angle.f_param_init(&chassis_yaw_angle,
 																	PID_Speed,					
-																	4200,							//maxOutput												//输出限幅
-																	50,								//integralLimit										//积分限幅
+																	4000,							//maxOutput												//输出限幅
+																	1000,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	700,								//max_err													//最大误差
+																	500,								//max_err													//最大误差
 																	0,									//target
 																	10,								//kp  10
-																	0,							//ki	
-																	0);							//kd
+																	0.001,							//ki	
+																	5);							//kd
 //chassis_yaw pid初始化  用于走直线，角度外环控制
 	pid_init(&chassis_yaw);//来源于imu的yaw轴角度
 	chassis_yaw.f_param_init(&chassis_yaw,
@@ -364,15 +364,15 @@ void all_pid_init()
 	pid_init(&chassis_yaw_speed);
 	chassis_yaw_speed.f_param_init(&chassis_yaw_speed,
 																	PID_Speed,					
-																	3000,							//maxOutput												//输出限幅
+																	3000,								//maxOutput												//输出限幅
 																	1000,								//integralLimit										//积分限幅
 																	1,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
 																	150,								//max_err													//最大误差
 																	0,									//target
-																	30,								//kp
-																	0,							//ki	
-																	5);							//kd
+																	30,									//kp
+																	0,									//ki	
+																	5);									//kd
 	#ifdef QUADROTOR_PAN_TILT
 	//pitch轴电机角度环pid初始化  
 	 pid_init(&motor_pid[4]);
@@ -384,9 +384,9 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	5000,								//max_err													//最大误差
 																	0,									//target
-																	50,								//kp
-																	10,							//ki	
-																	65);							//kd
+																	50,									//kp
+																	10,									//ki	
+																	65);								//kd
 	//yaw轴电机角度环pid初始化    
 	 pid_init(&motor_pid[5]);
     motor_pid[5].f_param_init(&motor_pid[5],
@@ -397,9 +397,9 @@ void all_pid_init()
 																	0,									//controlPeriod										//控制周期
 																	5000,								//max_err													//最大误差
 																	0,									//target
-																	50,								//kp
-																	10,							//ki	
-																	65);							//kd
+																	50,									//kp
+																	10,									//ki	
+																	65);								//kd
 
 	#endif
 	#ifdef INFANTRY_PAN_TILT
@@ -407,15 +407,15 @@ void all_pid_init()
 	 pid_init(&pan_tilt_yaw);
     pan_tilt_yaw.f_param_init(&pan_tilt_yaw,
 																	PID_Speed,					
-																	120,							//maxOutput												//输出限幅
+																	130,							//maxOutput												//输出限幅
 																	0,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
 																	30,								//max_err													//最大误差
-																	0,									//target
-																  6.5,								//kp
-																	0,							//ki	
-																	0);							//kd
+																	0,								//target
+																  6.5,							//kp
+																	0,								//ki	
+																	0);								//kd
 																	
 	//YAW轴电机角度环pid初始化  //反馈值由电机编码器获得
 	 pid_init(&motor_pid[5]);
@@ -423,94 +423,94 @@ void all_pid_init()
 																	PID_Speed,					
 																	250,							//maxOutput												//输出限幅
 																	0,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
-																	100,								//max_err													//最大误差
-																	0,									//target
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
+																	100,							//max_err													//最大误差
+																	0,								//target
 																  4,								//kp 0.8
-																	0,							//ki	
-																	0);							//kd
+																	0,								//ki	
+																	0);								//kd
 																	
 	//YAW轴电机角速度环pid初始化		//反馈值由imu获得														
 	  pid_init(&pan_tilt_yaw_speed);
     pan_tilt_yaw_speed.f_param_init(&pan_tilt_yaw_speed,
 																	PID_Speed,					
 																	5000,							//maxOutput												//输出限幅
-																	2000,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
+																	2000,							//integralLimit										//积分限幅
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
 																	60,								//max_err													//最大误差
-																	0,									//target
-																	75,								//kp    50
-																	0,							//ki	    0.003
-																	2);							//kd			1																
+																	0,								//target
+																	95,								//kp    50
+																	0,								//ki	    0.003
+																	2);								//kd			1																
 	//PITCH轴电机机械角度环pid初始化，反馈值由imu获取    
 	 pid_init(&pan_tilt_pitch);
     pan_tilt_pitch.f_param_init(&pan_tilt_pitch,
 																	PID_Speed,					
 																	200,							//maxOutput												//输出限幅
 																	60,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
-																	100,								//max_err													//最大误差
-																	0,									//target
-																	7,							//kp 10
-																	0,							//ki	
-																	0);							//kd 0						
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
+																	100,							//max_err													//最大误差
+																	0,								//target
+																	11,								//kp 10
+																	0,								//ki	
+																	0);								//kd 0						
 	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    
 	 pid_init(&motor_pid[4]);
     motor_pid[4].f_param_init(&motor_pid[4],
 																	PID_Speed,					
 																	200,							//maxOutput												//输出限幅
 																	50,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
-																	300,								//max_err													//最大误差
-																	0,									//target
-																	0,							//kp 0.32
-																	0,							//ki	
-																	0);							//kd 0
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
+																	300,							//max_err													//最大误差
+																	0,								//target
+																	0,								//kp 0.32
+																	0,								//ki	
+																	0);								//kd 0
 	
 	//PITCH轴电机角速度环pid初始化    
 	 pid_init(&pan_tilt_pitch_speed);
     pan_tilt_pitch_speed.f_param_init(&pan_tilt_pitch_speed,
 																	PID_Speed,					
-																	9000,							//maxOutput												//输出限幅
-																	2000,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
+																	9500,							//maxOutput												//输出限幅
+																	2000,							//integralLimit										//积分限幅
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
 																	80,								//max_err													//最大误差
-																	0,									//target
-																	100,								//kp    37
+																	0,								//target
+																	75,								//kp    37
 																	0.1,							//ki	   0.8
-																	3);							//kd			3
+																	3);								//kd			3
 	#endif																
 	
 //	#ifdef VISION_DETECT
 	pid_init(&vision_yaw);
 	vision_yaw.f_param_init(&vision_yaw,
 																	PID_Speed,					
-																	120,							//maxOutput												//输出限幅
+																	35,							//maxOutput												//输出限幅
 																	50,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
-																	100,								//max_err													//最大误差
-																	0,									//target
-																	0.14,								//kp   
-																	0,							//ki	   
-																	0);							//kd			
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
+																	200,							//max_err													//最大误差
+																	0,								//target
+																	1.2,								//kp   
+																	0,								//ki	   
+																	0);								//kd			
 	pid_init(&vision_pitch);
   vision_pitch.f_param_init(&vision_pitch,
 																	PID_Speed,					
-																	120,							//maxOutput												//输出限幅
+																	40,							//maxOutput												//输出限幅
 																	50,								//integralLimit										//积分限幅
-																	0,									//deadband												//死区（绝对值）
-																	0,									//controlPeriod										//控制周期
-																	100,								//max_err													//最大误差
-																	0,									//target
-																	0.7,								//kp    
-																	0,							//ki	   
-																	0);							//kd			
+																	0,								//deadband												//死区（绝对值）
+																	0,								//controlPeriod										//控制周期
+																	100,							//max_err													//最大误差
+																	0,								//target
+																	1.5,								//kp    
+																	0,								//ki	   
+																	0);								//kd			
 																	
 	//		#endif														
 	

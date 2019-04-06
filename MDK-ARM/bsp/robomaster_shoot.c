@@ -11,8 +11,9 @@
 
 #include "robomaster_shoot.h"
 
-static Shoot_Motor_t trigger_motor;          //射击数据
-static shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
+
+//static Shoot_Motor_t trigger_motor;          //射击数据
+//static shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
 /**********************************************************************************************************
 *函 数 名: single_shot
 *功能说明: 拨弹轮单发
@@ -20,47 +21,41 @@ static shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
 *返 回 值: 电流输出
 **********************************************************************************************************/
 int pwm_output;
+
 void single_shoot()
 {
-	if(remote_control.switch_right==1)
+	if(remote_control.switch_left!=3)
 	{
-		//moto_chassis[6].round_cnt=0;
-		HeadTxData[4]=0;
-		HeadTxData[5]=0;
-		init_TIM5_PWM();
-		fric_ramp.out=1000;
-		//init_TIM5_PWM();
-	}
-	if(remote_control.switch_right==2)
-	{
-		moto_chassis[6].round_cnt=0;
-		HeadTxData[4]=0;
-		HeadTxData[5]=0;
-		ramp_calc(&fric_ramp,1200);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
-		PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
-	}
-	if(remote_control.switch_right==3)
-	{
-		if(moto_chassis[6].round_cnt<4)
+		if(remote_control.switch_right==1)
+		{
+			HeadTxData[4]=0;
+			HeadTxData[5]=0;
+			init_Fric_PWM();
+			fric_ramp.out=1000;
+		}
+		if(remote_control.switch_right==2)
+		{
+			moto_chassis[6].round_cnt=0;
+			HeadTxData[4]=0;
+			HeadTxData[5]=0;
+			mid_fire();
+		}
+		if(remote_control.switch_right==3)
+		{
+			if(moto_chassis[6].round_cnt<1)
 			{
 					motor_pid[6].target=2500;
 					motor_pid[6].f_cal_pid(&motor_pid[6],moto_chassis[6].speed_rpm);
 					HeadTxData[4]=(uint8_t)((motor_pid[6].output>>8)&0xFF);//拨弹电机电流值
 					HeadTxData[5]=(uint8_t)(motor_pid[6].output&0xFF); 
 			}
-		else
-		{
-			HeadTxData[4]=0;
-			HeadTxData[5]=0;
+			else
+			{
+					HeadTxData[4]=0;
+					HeadTxData[5]=0;
+			}
+			mid_fire();
 		}
-			ramp_calc(&fric_ramp,1200);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_1,fric_ramp.out);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_2,fric_ramp.out);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_3,fric_ramp.out);
-			PWM_SetDuty(&htim5,TIM_CHANNEL_4,fric_ramp.out);
 	}
 }
 
@@ -130,7 +125,7 @@ void shoot_control()
 					HeadTxData[5]=0;//拨弹轮电流值
 					//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 					//set_rammer_current(&hcan1,0);
-					init_TIM5_PWM();
+					init_Fric_PWM();
 				}
 
 		if(remote_control.switch_left==3)
@@ -139,7 +134,7 @@ void shoot_control()
 			HeadTxData[5]=0;//拨弹轮电流值
 			//CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 			//set_rammer_current(&hcan1,0);
-			init_TIM5_PWM();
+			init_Fric_PWM();
 		}
 }
 
@@ -207,5 +202,10 @@ void single_shoot1(void)
 		//HeadTxData[6]=(uint8_t)((motor_pid[7].output>>8)&0xFF);//拨弹电机电流值
 		//HeadTxData[7]=(uint8_t)(motor_pid[7].output&0xFF);
 		CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+}
+
+void single_shot()
+{
+	
 }
 

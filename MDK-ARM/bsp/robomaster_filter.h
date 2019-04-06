@@ -18,7 +18,7 @@
 #define __ROBOMASTER_FILTER
 #include "robomaster_common.h"
 #define Sampling_Freq 200//200hz
-#define PI 3.1415926535898
+#define PI 3.1415926535898f
 #define M_PI_F 3.141592653589793f
 #define N2 10   //磁力计滤波使用
 typedef struct

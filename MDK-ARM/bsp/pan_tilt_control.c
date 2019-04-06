@@ -147,9 +147,9 @@ void pan_tilt_machine_home(void)
 **********************************************************************************************************/
 void pan_tilt_lock_control()
 {
-	if(robot_status.vision_status==VISION_SUCCESS)//如果视觉没有离线
+	if(robot_status.vision_status==VISION_SUCCESS&&robot_status.vision_mode==ACTIVATE)//如果视觉没有离线并且左边开关为1，进行视觉打击
 		armour_attack();
-	else if(robot_status.vision_status==VISION_LOSE)
+	else 
 	{
 		pan_tilt_yaw_imu_angle_control();
 		pan_tilt_pitch_imu_angle_control();
@@ -159,16 +159,23 @@ void pan_tilt_lock_control()
 	  
 	HeadTxData[2]=(uint8_t)((pan_tilt_yaw_speed.output>>8)&0xFF);
   HeadTxData[3]=(uint8_t)(pan_tilt_yaw_speed.output&0xFF);           //206  yaw 
-	if(remote_control.switch_left!=3)
+	if(robot_status.control_mode==REMOTE_CONTROL)
 	{
-		CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+		if(remote_control.switch_left!=3)
+		{
+			CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+		}
+		else if(remote_control.switch_left==3)
+		{
+			HeadTxData[0]=0;
+			HeadTxData[1]=0;           //205   pitch
+			HeadTxData[2]=0;
+			HeadTxData[3]=0;           //206  yaw 
+			CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
+		}
 	}
-	else if(remote_control.switch_left==3)
+	else if(robot_status.control_mode==KEYBOARD_CONTROL)
 	{
-		HeadTxData[0]=0;
-		HeadTxData[1]=0;           //205   pitch
-		HeadTxData[2]=0;
-		HeadTxData[3]=0;           //206  yaw 
 		CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 	}
 	
@@ -182,11 +189,12 @@ void pan_tilt_lock_control()
 *形    参: 需要yaw轴imu的角度，角速度(imu.yaw,imu.gz)
 *返 回 值: 电流输出
 **********************************************************************************************************/
+int yaw_velocity_target;//yaw轴角速度输入目标值
 void pan_tilt_yaw_imu_angle_control(void)
 {	
 //	if(remote_control.switch_left==2)
 //	{
-	if(remote_control.ch3==0)//偏航杆置于中位
+	if(yaw_velocity_target==0)//偏航杆置于中位
 		{
 			if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
 			{
@@ -200,7 +208,7 @@ void pan_tilt_yaw_imu_angle_control(void)
 		else
 		{
 			pan_tilt_yaw.target=0;////偏航角期望给0,不进行角度控制
-			pan_tilt_yaw_speed.target=remote_control.ch3*chassis_pan_tilt_max_rotate_speed/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
+			pan_tilt_yaw_speed.target=yaw_velocity_target*chassis_pan_tilt_max_rotate_speed/660;//yaw_control;//偏航角速度环期望，直接来源于遥控器打杆量
 		}
 	//}
 		
@@ -272,9 +280,10 @@ void pan_tilt_yaw_mechanical_angle_control(void)
 *形    参: 需要yaw轴imu的角度，角速度(imu.pitch,imu.gx)
 *返 回 值: 电流输出
 **********************************************************************************************************/
+int pitch_velocity_target;//pitch轴角速度输入目标值
 void pan_tilt_pitch_imu_angle_control(void)
 {
-	if(remote_control.ch4==0)//偏航杆置于中位
+	if(pitch_velocity_target==0)//俯仰杆置于中位
 		{
 			if(pan_tilt_pitch.target==0)  //回中时赋角度期望值
 			{
@@ -286,7 +295,7 @@ void pan_tilt_pitch_imu_angle_control(void)
 		else
 		{
 			pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
-			pan_tilt_pitch_speed.target=remote_control.ch4*300/660;//pitch_control;//偏航角速度环期望，直接来源于遥控器打杆量
+			pan_tilt_pitch_speed.target=pitch_velocity_target*300/660;//pitch_control;//偏航角速度环期望，直接来源于遥控器打杆量
 		}
 		
 //		pan_tilt_pitch.target=178;//pan_tilt_pitch.initial;
