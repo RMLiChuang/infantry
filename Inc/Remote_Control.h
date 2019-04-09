@@ -15,10 +15,30 @@
 #define __RC__
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#define angle_to_radian  PI/180  //角度转弧度
+#define angle_to_radian  (PI/180)  //角度转弧度
 #define RC_Frame_Lentgh		18
 #define CHASSIS_RC_DEADLINE 10 //遥控器死区
 #define int_abs(x) ((x) > 0 ? (x) : (-x))
+/* ----------------------- RC Switch Definition----------------------------- */
+#define RC_SW_UP ((uint16_t)1)
+#define RC_SW_MID ((uint16_t)3)
+#define RC_SW_DOWN ((uint16_t)2)
+#define switch_is_down(s) (s == RC_SW_DOWN)
+#define switch_is_mid(s) (s == RC_SW_MID)
+#define switch_is_up(s) (s == RC_SW_UP)
+#define rc_deadline_limit(input, output, dealine)        \
+    {                                                    \
+        if ((input) > (dealine) || (input) < -(dealine)) \
+        {                                                \
+            (output) = (input);                          \
+        }                                                \
+        else                                             \
+        {                                                \
+            (output) = 0;                                \
+        }                                                \
+    }
+
+
 typedef struct {
 	int16_t ch1;	//each ch value from -364 -- +364
 	int16_t ch2;

@@ -143,6 +143,9 @@ int main(void)
 	
   /* USER CODE END 2 */
 	Super_Cap_Init();//超级电容初始化，内部已初始化好ADC
+	
+	 //底盘初始化
+    chassis_init(&chassis_move);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -155,7 +158,7 @@ int main(void)
     oled_refresh_gram();
   /* USER CODE BEGIN 3 */
 
-		}
+		debug_program();
 	
 	
 
@@ -163,6 +166,7 @@ int main(void)
 
   /* USER CODE END 3 */
 
+	}
 }
 
 /** System Clock Configuration

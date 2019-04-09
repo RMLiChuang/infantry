@@ -26,17 +26,7 @@ const int TURNSPEED=5000;   //转弯极限速度
   * @param[in]      死区值
   * @retval         返回空
   */
-#define rc_deadline_limit(input, output, dealine)        \
-    {                                                    \
-        if ((input) > (dealine) || (input) < -(dealine)) \
-        {                                                \
-            (output) = (input);                          \
-        }                                                \
-        else                                             \
-        {                                                \
-            (output) = 0;                                \
-        }                                                \
-    }
+
 
 
 
@@ -147,8 +137,8 @@ __________________________________________________________________
 float twist_distribute;//扭腰走直线
 void cal_twist_distribute()
 {
-	twist_distribute=((cos(int_abs(pan_tilt_angle*angle_to_radian))-sin(int_abs(pan_tilt_angle*angle_to_radian)))
-										/(cos(int_abs(pan_tilt_angle*angle_to_radian))+sin(int_abs(pan_tilt_angle*angle_to_radian))));
+	twist_distribute=((arm_cos_f32(int_abs(chassis_move.chassis_relative_angle))-arm_sin_f32(int_abs(chassis_move.chassis_relative_angle)))
+										/(arm_cos_f32(int_abs(chassis_move.chassis_relative_angle))+arm_sin_f32(int_abs(chassis_move.chassis_relative_angle))));
 }
 
 

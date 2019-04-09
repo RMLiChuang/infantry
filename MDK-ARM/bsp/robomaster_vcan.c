@@ -84,11 +84,11 @@ void debug_program()
 //检测can通信的6个电机是否有数据
 //		wave_form_data[0] =(short)refSysData.PowerHeatData_t.chassisPower;//chassis_yaw_speed.output;      //YAW ID:206
 //		wave_form_data[1] =(short)refSysData.PowerHeatData_t.chassisPowerBuffer;
-			wave_form_data[0]=refSysData.PowerHeatData_t.chassisPower;//功率
-			wave_form_data[1]=refSysData.PowerHeatData_t.chassisPowerBuffer;//60J能量缓冲
-			wave_form_data[2]=(MY_ADC_GetValue()*(100.0/2.4));//电容电量
-			wave_form_data[3]=(Calc_Cap_Power(MY_ADC_GetValue(),Cap_In_flag));//电容实时充电功率
-			wave_form_data[4]=control_state*30;//控制状态标志
+//			wave_form_data[0]=refSysData.PowerHeatData_t.chassisPower;//功率
+//			wave_form_data[1]=refSysData.PowerHeatData_t.chassisPowerBuffer;//60J能量缓冲
+//			wave_form_data[2]=(MY_ADC_GetValue()*(100.0/2.4));//电容电量
+//			wave_form_data[3]=(Calc_Cap_Power(MY_ADC_GetValue(),Cap_In_flag));//电容实时充电功率
+//			wave_form_data[4]=control_state*30;//控制状态标志
 //	  wave_form_data[1] =(short)imu.gz;
 //	  wave_form_data[2] =(short)chassis_yaw_angle.output;
 //	  wave_form_data[3] =(short)chassis_yaw_angle.target;//motor_pid[3].target;//pan_tilt_yaw_speed.output;
@@ -110,6 +110,13 @@ void debug_program()
 //	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
 //		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
 //		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;//mpu_data.gy;//refSysData.PowerHeatData_t.chassisPower;
+//底盘相关数据
+		wave_form_data[0] =(short)(chassis_move.vx*100);
+	  wave_form_data[1] =(short)(chassis_move.vy*100);
+	  wave_form_data[2] =(short)motor_pid[0].target;//(pan_tilt_yaw_angle*100);//(chassis_move.wz*100);
+	  wave_form_data[3] =(short)(chassis_move.vx_set*100);
+	  wave_form_data[4] =(short)(chassis_move.vy_set*100);//pan_tilt_pit_angle;//moto_chassis[4].angle;//chassis_move.chassis_pitch;//moto_chassis[0].real_current;
+	  wave_form_data[5] =(short)(chassis_move.wz_set*100);//moto_chassis[0].hall;
 
 
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形

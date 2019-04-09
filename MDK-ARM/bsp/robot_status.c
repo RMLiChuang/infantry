@@ -111,7 +111,7 @@ void robot_status_display()
 {
 	if(robot_status.vision_status==VISION_LOSE)
 	{
-		oled_showstring(1,4,"LOSE");
+		//oled_showstring(1,4,"LOSE");
 	}
 	if(robot_status.vision_status==VISION_SUCCESS)
 	{

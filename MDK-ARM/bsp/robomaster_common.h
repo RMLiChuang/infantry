@@ -15,6 +15,7 @@
 #include "mytype.h"
 #include <math.h>
 #include "adc.h"
+#include "arm_math.h"
 /* USER CODE BEGIN Includes */
 #include "bsp_can.h"
 #include "pid.h"
@@ -42,6 +43,7 @@
 #include "Keyboard_Control.h"//╪Эелнд╪Ч
 #include "oled.h"
 #include "super_cap.h"
+#include "robomaster_chassis.h"
 /* USER CODE END Includes */
 
 #endif

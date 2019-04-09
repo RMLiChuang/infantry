@@ -1,4 +1,6 @@
 #include "robomaster_userlib.h"
+first_order_filter_type_t chassis_cmd_slow_set_vx;
+first_order_filter_type_t chassis_cmd_slow_set_vy;
 
 ramp_function_source_t fric_ramp;
 /**
@@ -39,6 +41,17 @@ void ramp_init(ramp_function_source_t *ramp_source_type, fp32 frame_period, fp32
         ramp_source_type->out = ramp_source_type->min_value;
     }
 }
+//限幅函数
+fp32 fp32_constrain(fp32 Value, fp32 minValue, fp32 maxValue)
+{
+    if (Value < minValue)
+        return minValue;
+    else if (Value > maxValue)
+        return maxValue;
+    else
+        return Value;
+}
+
 
 //限幅函数
 int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue)
@@ -50,3 +63,62 @@ int16_t int16_constrain(int16_t Value, int16_t minValue, int16_t maxValue)
     else
         return Value;
 }
+/**
+  * @brief          一阶低通滤波初始化
+  * @author         RM
+  * @param[in]      一阶低通滤波结构体
+  * @param[in]      间隔的时间，单位 s
+  * @param[in]      滤波参数
+  * @retval         返回空
+  */
+void first_order_filter_init(first_order_filter_type_t *first_order_filter_type, fp32 frame_period, const fp32 num[1])
+{
+    first_order_filter_type->frame_period = frame_period;
+    first_order_filter_type->num[0] = num[0];
+    first_order_filter_type->input = 0.0f;
+    first_order_filter_type->out = 0.0f;
+}
+
+/**
+  * @brief          一阶低通滤波计算
+  * @author         RM
+  * @param[in]      一阶低通滤波结构体
+  * @param[in]      间隔的时间，单位 s
+  * @retval         返回空
+  */
+void first_order_filter_cali(first_order_filter_type_t *first_order_filter_type, fp32 input)
+{
+    first_order_filter_type->input = input;
+    first_order_filter_type->out =
+        first_order_filter_type->num[0] / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->out 
+				+ first_order_filter_type->frame_period / (first_order_filter_type->num[0] + first_order_filter_type->frame_period) * first_order_filter_type->input;
+}
+
+//循环限幅函数
+fp32 loop_fp32_constrain(fp32 Input, fp32 minValue, fp32 maxValue)
+{
+    if (maxValue < minValue)
+    {
+        return Input;
+    }
+
+    if (Input > maxValue)
+    {
+        fp32 len = maxValue - minValue;
+        while (Input > maxValue)
+        {
+            Input -= len;
+        }
+    }
+    else if (Input < minValue)
+    {
+        fp32 len = maxValue - minValue;
+        while (Input < minValue)
+        {
+            Input += len;
+        }
+    }
+    return Input;
+}
+
+

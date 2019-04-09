@@ -833,6 +833,7 @@ void imu_ahrs_update(imu_t *mpu)
 	wy = 2.0f*bx*(q1q2 - q0q3) + 2.0f*bz*(q0q1 + q2q3);
 	wz = 2.0f*bx*(q0q2 + q1q3) + 2.0f*bz*(0.5f - q1q1 - q2q2);  
 	
+	
 	/* 
 	 * error is sum of cross product between reference direction 
 	 * of fields and direction measured by sensors 

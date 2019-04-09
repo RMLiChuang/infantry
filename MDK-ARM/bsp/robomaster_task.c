@@ -29,7 +29,9 @@ void task()
 	get_chassis_to_pan_tilt_angle();
 	if(robot_status.anomaly==NORMAL)
 	{
-		infantry_control();//步兵控制
+		chassis_task();
+		
+		//infantry_control();//步兵控制
 		//shoot_control();			//摩擦轮以及拨弹电机的控制
 		
 		single_shoot();
@@ -39,6 +41,9 @@ void task()
 	select_mode();//控制模式选择：1遥控器	2键盘
 	remap_variable();//变量重定义，目的用于键盘和遥控器对车的操作
 
+	
+	chassis_feedback_update(&chassis_move);
+	
 //	display();
 }
 

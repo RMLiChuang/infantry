@@ -44,31 +44,31 @@ typedef struct _PID_TypeDef
 	float   err;							//误差
 	float   last_err;      		//上次误差
 	
-	float pout;
-	float iout;
-	float dout;
+	int16_t pout;
+	int16_t iout;
+	int16_t dout;
 	
 	int16_t output;						//本次输出
-	float last_output;			//上次输出
+	int16_t last_output;			//上次输出
 	
-	float MaxOutput;				//输出限幅
+	int16_t MaxOutput;				//输出限幅
 	float IntegralLimit;		//积分限幅
 	float DeadBand;			  //死区（绝对值）
 	float ControlPeriod;		//控制周期
 	float  Max_Err;					//最大误差
 	
-					  uint32_t thistime;
-					uint32_t lasttime;
+					  float thistime;
+					float lasttime;
 						uint8_t dtime;	
 	
 	void (*f_param_init)(struct _PID_TypeDef *pid,  //PID参数初始化
 				   PID_ID id,
-				   uint16_t maxOutput,
-				   uint16_t integralLimit,
-				   float deadband,
-				   uint16_t controlPeriod,
-					int16_t max_err,     
-					int16_t  target,
+				   int16_t maxOutput,
+				   int16_t integralLimit,
+				   int16_t deadband,
+				   int16_t controlPeriod,
+					float max_err,     
+					float  target,
 				   float kp,
 				   float ki,
 				   float kd);
@@ -88,6 +88,6 @@ float PID_Control_Yaw(PID_TypeDef* pid, float measure);
 
 //extern PID_TypeDef pid_pitch;    
 extern PID_TypeDef motor_pid[7];
-extern PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw;
+extern PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw,chassis_angle_pid;
 extern PID_TypeDef pan_tilt_pitch,pan_tilt_pitch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;
 extern PID_TypeDef vision_yaw,vision_pitch;

@@ -19,7 +19,7 @@
 #define ABS(x)		((x>0)? x: -x) 
 PID_TypeDef motor_pid[7];//初始化7个电机的pid结构体 其中0 1 2 3对应底盘电机，4 5 对应云台电机 6对应拨弹电机，目前只用到了0 1 2 3 6号电机
 PID_TypeDef pan_tilt_pitch,pan_tilt_pitch_speed,pan_tilt_roll,pan_tilt_roll_speed,pan_tilt_yaw,pan_tilt_yaw_speed;//定义了云台pitch，yaw轴的角度，角速度结构体
-PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw;//定义了底盘yaw轴的编码器角度，imu的角速度和imu的角度结构体
+PID_TypeDef chassis_yaw_angle,chassis_yaw_speed,chassis_yaw,chassis_pit_angle,chassis_angle_pid;//定义了底盘yaw轴的编码器角度，imu的角速度和imu的角度结构体
 PID_TypeDef chassis_imu_temperature;//定义了底盘imu温度结构体 用于温度补偿
 PID_TypeDef vision_yaw,vision_pitch;
 
@@ -30,12 +30,12 @@ PID_TypeDef vision_yaw,vision_pitch;
 static void pid_param_init(
 	PID_TypeDef * pid, 
 	PID_ID   id,
-	uint16_t maxout,
-	uint16_t intergral_limit,
-	float deadband,
-	uint16_t period,
-	int16_t  max_err,
-	int16_t  target,
+	int16_t maxout,
+	int16_t intergral_limit,
+	int16_t deadband,
+	int16_t period,
+	float  max_err,
+	float  target,
 
 	float 	kp, 
 	float 	ki, 
@@ -62,9 +62,9 @@ void pid_reset_chassis(u8 motornum,u32 kp, u32 ki, u32 kd)
 {
 	//main函数里面定义了7个pid结构
 	if(motornum<7){
-		motor_pid[motornum].kp = (float)kp/1000.0;
-		motor_pid[motornum].ki = (float)ki/1000.0;
-		motor_pid[motornum].kd = (float)kd/1000.0;
+		motor_pid[motornum].kp = (float)kp/1000.0f;
+		motor_pid[motornum].ki = (float)ki/1000.0f;
+		motor_pid[motornum].kd = (float)kd/1000.0f;
 	}
 }
 void pid_reset_all_chassis(u32 kp, u32 ki, u32 kd)
@@ -305,15 +305,15 @@ void all_pid_init()
     pid_init(&motor_pid[i]);
     motor_pid[i].f_param_init(&motor_pid[i],
 																	PID_Speed,					
-																	9000,							//maxOutput												//输出限幅
-																	2000,								//integralLimit										//积分限幅
-																	10,									//deadband												//死区（绝对值）
+																	13000,						//maxOutput												//输出限幅
+																	500,								//integralLimit										//积分限幅
+																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
-																	1000,								//max_err													//最大误差
+																	4,								//max_err													//最大误差
 																	0,									//target
-																	8,								//kp
-																	0.05,							//ki	
-																	0.01);							//kd
+																	8000.0f,								//kp
+																	0,							//ki	
+																	0);							//kd
     																	
   }
 	
@@ -336,7 +336,7 @@ void all_pid_init()
 	pid_init(&chassis_yaw_angle);//来源于yaw轴电机机械角度的数值
 	chassis_yaw_angle.f_param_init(&chassis_yaw_angle,
 																	PID_Speed,					
-																	4000,							//maxOutput												//输出限幅
+																	5000,							//maxOutput												//输出限幅
 																	1000,								//integralLimit										//积分限幅
 																	0,									//deadband												//死区（绝对值）
 																	0,									//controlPeriod										//控制周期
@@ -345,6 +345,21 @@ void all_pid_init()
 																	10,								//kp  10
 																	0.001,							//ki	
 																	5);							//kd
+																	
+																	//chassis_yaw_angle pid初始化  
+	pid_init(&chassis_angle_pid);//底盘弧度
+	chassis_yaw_angle.f_param_init(&chassis_angle_pid,
+																	PID_Speed,					
+																	6,							//maxOutput												//输出限幅
+																	0.2,								//integralLimit										//积分限幅
+																	0,									//deadband												//死区（绝对值）
+																	0,									//controlPeriod										//控制周期
+																	6,								//max_err													//最大误差
+																	0,									//target
+																	30,								//kp  10
+																	0,							//ki	
+																	0);							//kd
+																	
 //chassis_yaw pid初始化  用于走直线，角度外环控制
 	pid_init(&chassis_yaw);//来源于imu的yaw轴角度
 	chassis_yaw.f_param_init(&chassis_yaw,

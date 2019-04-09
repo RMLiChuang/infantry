@@ -635,6 +635,11 @@
               <FileType>1</FileType>
               <FilePath>.\bsp\super_cap.c</FilePath>
             </File>
+            <File>
+              <FileName>robomaster_chassis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bsp\robomaster_chassis.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

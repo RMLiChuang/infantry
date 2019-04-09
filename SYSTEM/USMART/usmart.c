@@ -304,7 +304,6 @@ u8 usmart_cmd_rec(u8*str)
 void usmart_exe(void)
 {
 	u8 id,i;
-	u8 f;
 	u32 res;		   
 	u32 temp[MAX_PARM];//参数转换,使之支持了字符串 
 	u8 sfname[MAX_FNAME_LEN];//存放本地函数名

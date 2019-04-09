@@ -44,6 +44,7 @@
 "demo\keyboard_control.o"
 "demo\oled.o"
 "demo\super_cap.o"
+"demo\robomaster_chassis.o"
 "demo\main.o"
 "demo\stm32f4xx_hal_msp.o"
 "demo\usart.o"
