@@ -65,7 +65,7 @@ void DMA2_Stream2_IRQHandler(void);
 void DMA2_Stream6_IRQHandler(void);
 void USART6_IRQHandler(void);
 void USART8_IRQHandler(void);
- extern int k,j;//
+extern char limit_switch;//限位开关状态
 #ifdef __cplusplus
 }
 #endif

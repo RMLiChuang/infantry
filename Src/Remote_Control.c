@@ -175,7 +175,7 @@ void DBUS_Deal()
 		if(robot_status.mode==TWIST)//当车再扭腰模式时
 		{
 			cal_twist_distribute();
-			if(pan_tilt_angle>0)//底盘相对于云台为正方向
+			if(chassis_move.chassis_relative_angle>0)//底盘相对于云台为正方向
 			{
 				moto_ctr[0]=straight+translation+yaw_velocity_target*chassis_speed_distribute*0.3;
 				moto_ctr[1]=-straight*twist_distribute+translation+yaw_velocity_target*chassis_speed_distribute*0.3;   //移除第三通道对底盘左右旋转的控制，将3通道用于控制yaw偏转  2018.11.21  12：16  修改 周恒

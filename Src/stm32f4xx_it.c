@@ -218,26 +218,14 @@ void CAN1_TX_IRQHandler(void)
 }
 
 
-int k=0,j=0;
 
+char limit_switch=0;//限位开关状态
 void EXTI1_IRQHandler(void)
 { 
   /* USER CODE BEGIN EXTI1_IRQn 0 */
 //  GPIO_InitTypeDef GPIO_InitStruct;
-  int s=0;
-	delay_us(2000);	
-  s=HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
-	if(s)
-	{
-		oled_showstring(3,4,"BODAN");
-		
-	  k++;
-	  if(k>=3)
-	  {
-	    k=0;
-	    j=1;
-	  }
-	}
+  limit_switch=HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
+	
 	  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 

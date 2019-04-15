@@ -45,6 +45,6 @@
 #include "super_cap.h"
 #include "robomaster_chassis.h"
 /* USER CODE END Includes */
-
+#define DEBUG_MODE//µ÷ÊÔÄ£Ê½
 #endif
 

@@ -20,16 +20,15 @@
 #include "robomaster_common.h"
 
 //遥控器前进摇杆（max 660）转化成车体前进速度（m/s）的比例
-#define CHASSIS_VX_RC_SEN 0.006f
-//遥控器左右摇杆（max 660）转化成车体左右速度（m/s）的比例
-#define CHASSIS_VY_RC_SEN 0.005f
+#define CHASSIS_VX_RC_SEN 0.0045f
+//遥控器左右摇杆（max 660）转化成车体左右速度（m/s）的比例  最大3m/s
+#define CHASSIS_VY_RC_SEN 0.0045f
 //跟随底盘yaw模式下，遥控器的yaw遥杆（max 660）增加到车体角度的比例
 #define CHASSIS_ANGLE_Z_RC_SEN 0.00002f
 //不跟随云台的时候 遥控器的yaw遥杆（max 660）转化成车体旋转速度的比例
 #define CHASSIS_WZ_RC_SEN 0.01f
 
-#define CHASSIS_ACCEL_X_NUM 0.1666666667f
-#define CHASSIS_ACCEL_Y_NUM 0.3333333333f
+
 
 #define CHASSIS_RC_DEADLINE 10
 
@@ -67,14 +66,17 @@
 //底盘运动过程最大前进速度
 #define NORMAL_MAX_CHASSIS_SPEED_X 3.0f
 //底盘运动过程最大平移速度
-#define NORMAL_MAX_CHASSIS_SPEED_Y 2.9f
+#define NORMAL_MAX_CHASSIS_SPEED_Y 3.0f
 //底盘设置旋转速度，设置前后左右轮不同设定速度的比例分权 0为在几何中心，不需要补偿
 #define CHASSIS_WZ_SET_SCALE 0.1f
-
+//云台位于底盘中间时，yaw轴电机机械角度为4104
+#define CHASSIS_YAW_MID_VALUE 4180
+//pit轴云台相对于底盘平行时的机械角度
+#define CHASSIS_PIT_MID_VALUE 4424
 //摇摆原地不动摇摆最大角度(rad)
-#define SWING_NO_MOVE_ANGLE 0.7f
+#define SWING_NO_MOVE_ANGLE 0.55f
 //摇摆过程底盘运动最大角度(rad)
-#define SWING_MOVE_ANGLE 0.31415926535897932384626433832795f
+#define SWING_MOVE_ANGLE 0.4f
 typedef enum
 {
   CHASSIS_ZERO_FORCE,                  //底盘无力
@@ -152,4 +154,5 @@ void chassis_mode_change_control_transit(chassis_move_t *chassis_move_transit);
 void chassis_set_mode(chassis_move_t *chassis_move_mode);
 void chassis_zero_force_control(fp32 *vx_can_set, fp32 *vy_can_set, fp32 *wz_can_set, chassis_move_t *chassis_move_rc_to_vector);
 void chassis_task(void);
+void chassis_current_mix(int16_t *output);
 #endif

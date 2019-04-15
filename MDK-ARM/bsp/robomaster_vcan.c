@@ -100,23 +100,23 @@ void debug_program()
 //	  wave_form_data[1] =(short)remote_control.mouse.y;//MPU_Set_Accel_Fsr(2);
 //	  wave_form_data[2] =(short)yaw_velocity_target;//remote_control.mouse.press_left;//chassis_yaw.output;
 //	  wave_form_data[3] =(short)pitch_velocity_target;//remote_control.mouse.press_right;//mag_field_intensity;//磁场强度;
-//	  wave_form_data[4] =(short)remote_control.keyBoard.key_code;//imu.gz;
-//	  wave_form_data[5] =(short)chassis_yaw_speed.output;
+//	  wave_form_data[4] =(short)imu.pit;//remote_control.keyBoard.key_code;//;
+//	  wave_form_data[5] =(short)pan_tilt_pitch.target;//chassis_yaw_speed.output;
 
 //视觉信息
-//		wave_form_data[0] =(short)pan_tilt_angle;
-//	  wave_form_data[1] =(short)imu.gy;//chassis_yaw_angle.initial;
-//	  wave_form_data[2] =(short)Armour_attack.pan_tilt_angel_err.origin_yaw;
-//	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
-//		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
-//		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;//mpu_data.gy;//refSysData.PowerHeatData_t.chassisPower;
+		wave_form_data[0] =(short)pan_tilt_pitch.output;
+	  wave_form_data[1] =(short)imu.gy;//chassis_yaw_angle.initial;
+	  wave_form_data[2] =(short)Armour_attack.pan_tilt_angel_err.origin_yaw;
+	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
+		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;//mpu_data.gy;//refSysData.PowerHeatData_t.chassisPower;
 //底盘相关数据
-		wave_form_data[0] =(short)(chassis_move.vx*100);
-	  wave_form_data[1] =(short)(chassis_move.vy*100);
-	  wave_form_data[2] =(short)motor_pid[0].target;//(pan_tilt_yaw_angle*100);//(chassis_move.wz*100);
-	  wave_form_data[3] =(short)(chassis_move.vx_set*100);
-	  wave_form_data[4] =(short)(chassis_move.vy_set*100);//pan_tilt_pit_angle;//moto_chassis[4].angle;//chassis_move.chassis_pitch;//moto_chassis[0].real_current;
-	  wave_form_data[5] =(short)(chassis_move.wz_set*100);//moto_chassis[0].hall;
+//		wave_form_data[0] =(short)(chassis_move.vx*100);
+//	  wave_form_data[1] =(short)(chassis_move.vy*100);
+//	  wave_form_data[2] =(short)pan_tilt_yaw_motor.angle;//(pan_tilt_yaw_angle*100);//(chassis_move.wz*100);
+//	  wave_form_data[3] =(short)(chassis_move.vx_set*100);
+//	  wave_form_data[4] =(short)(chassis_move.vy_set*100);//pan_tilt_pit_angle;//moto_chassis[4].angle;//chassis_move.chassis_pitch;//moto_chassis[0].real_current;
+//	  wave_form_data[5] =(short)(chassis_move.wz_set*100);//moto_chassis[0].hall;
 
 
 		shanwai_send_wave_form();   //将数据传输到三外上位机，可以看到实时波形

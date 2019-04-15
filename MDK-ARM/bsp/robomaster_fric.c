@@ -10,7 +10,7 @@
   */
 
 #include "robomaster_fric.h"
-int Close_Fric_ON=1110,Mid_Fric_ON=1160,Remote_Fric_ON=1210,Intercontinental_Fric_ON=1270,Fric_OFF=1000;//1100对应于10m/s 1200对应于20m/s 1300对应于30m/s
+int Close_Fric_ON=1100,Mid_Fric_ON=1150,Remote_Fric_ON=1210,Intercontinental_Fric_ON=1270,Fric_OFF=1000;//1100对应于10m/s 1200对应于20m/s 1300对应于30m/s
 
 void init_Fric_PWM()
 {	

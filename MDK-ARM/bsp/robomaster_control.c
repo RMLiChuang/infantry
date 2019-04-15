@@ -15,8 +15,6 @@ ramp_function_source_t chassis_ramp;
 #define chassis_limit      1000       //走猫步时的底盘限位机械角度
 #define chassis_dead_band  10        //底盘机械角度的死区
 #define twist_dead_band    100				//用于猫步中识别遥控器操作时底盘与云台位置的误差
-#define CHASSIS_YAW_MID_VALUE 4190//云台位于底盘中间时，yaw轴电机机械角度为4190
-#define CHASSIS_PIT_MID_VALUE 3045//pit轴云台相对于底盘平行时的机械角度
 #define MAX_ANGEL 45//云台相对于底盘转动的最大角度值
 
 
@@ -47,53 +45,53 @@ void get_chassis_to_pan_tilt_rad()
 *形    参: 
 *返 回 值: 角度
 **********************************************************************************************************/
-float pan_tilt_angle,pan_tilt_pit_angle,pan_tilt_yaw_angle;
+//float pan_tilt_angle,pan_tilt_pit_angle,pan_tilt_yaw_angle;
 
 void get_chassis_to_pan_tilt_angle()
 {
-	chassis_move.chassis_relative_pit_angle=(CHASSIS_PIT_MID_VALUE-pan_tilt_pitch_motor.angle)/8192.0f*360.0f*angle_to_radian;//底盘相对于云台pit的角度
-	chassis_move.chassis_relative_angle=(CHASSIS_YAW_MID_VALUE-pan_tilt_yaw_motor.angle)/8192.0f*360.0f*angle_to_radian;//底盘相对于云台yaw的角度
-	pan_tilt_angle=(CHASSIS_YAW_MID_VALUE-pan_tilt_yaw_motor.angle)/8192.0f*360.0f;//角度制
-	pan_tilt_yaw_angle=pan_tilt_angle*angle_to_radian;//弧度制
-	pan_tilt_pit_angle=(CHASSIS_PIT_MID_VALUE-pan_tilt_pitch_motor.angle)/8192.0f*360.0f;//角度制
-	if(int_abs(pan_tilt_angle)>MAX_ANGEL)
-	{
-		robot_status.chassis_control=OUT_OF_CONTROL;
-	}
-	else 
-	{
-		robot_status.chassis_control=CONTROL;
-	}
+//	chassis_move.chassis_relative_pit_angle=(CHASSIS_PIT_MID_VALUE-pan_tilt_pitch_motor.angle)/8192.0f*360.0f*angle_to_radian;//底盘相对于云台pit的角度
+//	chassis_move.chassis_relative_angle=(CHASSIS_YAW_MID_VALUE-pan_tilt_yaw_motor.angle)/8192.0f*360.0f*angle_to_radian;//底盘相对于云台yaw的角度
+//	pan_tilt_angle=(CHASSIS_YAW_MID_VALUE-pan_tilt_yaw_motor.angle)/8192.0f*360.0f;//角度制
+//	pan_tilt_yaw_angle=pan_tilt_angle*angle_to_radian;//弧度制
+//	pan_tilt_pit_angle=(CHASSIS_PIT_MID_VALUE-pan_tilt_pitch_motor.angle)/8192.0f*360.0f;//角度制
+//	if(int_abs(pan_tilt_angle)>MAX_ANGEL)
+//	{
+//		robot_status.chassis_control=OUT_OF_CONTROL;
+//	}
+//	else 
+//	{
+//		robot_status.chassis_control=CONTROL;
+//	}
 
 }
-/**********************************************************************************************************
-*函 数 名: GildeAverageValueFilter
-*功能说明: 底盘速度环控制
-*形    参: 
-*返 回 值: 电流输出
-**********************************************************************************************************/
-float Data[N];
-float GildeAverageValueFilter(float NewValue,float *Data)
-{
-  float max,min;
-  float sum;
-  unsigned char i;
-  Data[0]=NewValue;
-  max=Data[0];
-  min=Data[0];
-  sum=Data[0];
-  for(i=N-1;i!=0;i--)
-  {
-    if(Data[i]>max) max=Data[i];
-    else if(Data[i]<min) min=Data[i];
-    sum+=Data[i];
-    Data[i]=Data[i-1];
-  }
-  i=N-2;
-  sum=sum-max-min;
-  sum=sum/i;
-  return(sum);
-}
+///**********************************************************************************************************
+//*函 数 名: GildeAverageValueFilter
+//*功能说明: 底盘速度环控制
+//*形    参: 
+//*返 回 值: 电流输出
+//**********************************************************************************************************/
+//float Data[N];
+//float GildeAverageValueFilter(float NewValue,float *Data)
+//{
+//  float max,min;
+//  float sum;
+//  unsigned char i;
+//  Data[0]=NewValue;
+//  max=Data[0];
+//  min=Data[0];
+//  sum=Data[0];
+//  for(i=N-1;i!=0;i--)
+//  {
+//    if(Data[i]>max) max=Data[i];
+//    else if(Data[i]<min) min=Data[i];
+//    sum+=Data[i];
+//    Data[i]=Data[i-1];
+//  }
+//  i=N-2;
+//  sum=sum-max-min;
+//  sum=sum/i;
+//  return(sum);
+//}
 /**********************************************************************************************************
 *函 数 名: chassis_speed_control
 *功能说明: 底盘速度环控制
@@ -119,34 +117,23 @@ void chassis_speed_control()
 //	MotorTxData[7] = (motor_pid[3].output&0xFF); 
 
 }
-/**********************************************************************************************************
-*函 数 名: chassis_current_mix
-*功能说明: 底盘电流输出融合
-*形    参: 需要速度环电流，位置换电流，功率环电流
-*返 回 值: 电流输出
-**********************************************************************************************************/
-void chassis_current_mix(int16_t *output)
-{
-//	MotorTxData[0] = (((motor_pid[0].output+chassis_yaw_angle.output)>>8)&0xFF);
-//	MotorTxData[1] = ((motor_pid[0].output+chassis_yaw_angle.output)&0xFF); 
-//	MotorTxData[2] = (((motor_pid[1].output+chassis_yaw_angle.output)>>8)&0xFF);
-//	MotorTxData[3] = ((motor_pid[1].output+chassis_yaw_angle.output)&0xFF); 
-//	MotorTxData[4] = (((motor_pid[2].output+chassis_yaw_angle.output)>>8)&0xFF);
-//	MotorTxData[5] = ((motor_pid[2].output+chassis_yaw_angle.output)&0xFF); 
-//	MotorTxData[6] = (((motor_pid[3].output+chassis_yaw_angle.output)>>8)&0xFF);
-//	MotorTxData[7] = ((motor_pid[3].output+chassis_yaw_angle.output)&0xFF); 
-	
-	MotorTxData[0] = output[0]>>8&0xFF;
-	MotorTxData[1] = output[0]&0xFF;
-	MotorTxData[2] = output[1]>>8&0xFF;
-	MotorTxData[3] = output[1]&0xFF;
-	MotorTxData[4] = output[2]>>8&0xFF;
-	MotorTxData[5] = output[2]&0xFF;
-	MotorTxData[6] = output[3]>>8&0xFF;
-	MotorTxData[7] = output[3]&0xFF;
-	
-	
-}
+///**********************************************************************************************************
+//*函 数 名: chassis_current_mix
+//*功能说明: 底盘电流输出融合
+//*形    参: 需要速度环电流，位置换电流，功率环电流
+//*返 回 值: 电流输出
+//**********************************************************************************************************/
+//void chassis_current_mix(int16_t *output)
+//{
+//	MotorTxData[0] = output[0]>>8&0xFF;
+//	MotorTxData[1] = output[0]&0xFF;
+//	MotorTxData[2] = output[1]>>8&0xFF;
+//	MotorTxData[3] = output[1]&0xFF;
+//	MotorTxData[4] = output[2]>>8&0xFF;
+//	MotorTxData[5] = output[2]&0xFF;
+//	MotorTxData[6] = output[3]>>8&0xFF;
+//	MotorTxData[7] = output[3]&0xFF;
+//}
 
 /**********************************************************************************************************
 *函 数 名: set_current_zero
@@ -309,7 +296,7 @@ void infantry_control()
 	}
 	else if(robot_status.control_mode==KEYBOARD_CONTROL)
 	{
-		Keyboard_Init();
+		
 //		if(kb.c_flag==1)
 //		{
 //			chassis_twist_control();
@@ -403,34 +390,4 @@ void set_chassis_moto_target_zero()
 }
 
 
-
-
-/******************************************************
-                      底盘电机控制2017(上一届)
-
-1, 就算出四种姿态的输出
-2，四种姿态的叠加
-3，准备CAN的数据输出
-4，开始电机控制
-__________________________________________________________________
-| 电机位置 |电机号| 输出\方向 | 前 | 后 | 左 | 右 | 顺 | 逆 | 停 | 													前			后
-``````````````````````````````````````````````````````````````````
-|   左前   |0X201 |moto_ctr[0]| >0 | <0 | <0 | >0 | >0 | <0 | =0 |      									>0	|		<0
-``````````````````````````````````````````````````````````````````	
-|   右前   |0X202 |moto_ctr[1]| <0 | >0 | <0 | >0 | >0 | <0 | =0 |												<0	|		>0
-``````````````````````````````````````````````````````````````````   //2018.10.6 修改 												2018.10.7（经测试，原版没问题）
-|   左后   |0X203 |moto_ctr[2]| <0 | >0 | >0 | <0 | >0 | <0 | =0 |												>0  |		<0
-``````````````````````````````````````````````````````````````````	
-|   右后   |0X204 |moto_ctr[3]| >0 | <0 | >0 | <0 | >0 | <0 | =0 |												<0	|		>0
-``````````````````````````````````````````````````````````````````
-|  备注:|moto_ctr[0]|=|moto_ctr[1]|=|moto_ctr[2]|=|moto_ctr[3]|  |
-``````````````````````````````````````````````````````````````````											
-*************************** ***************************/
-//static float record=0.0;
-//void walk_straight(void){
-//	if(moto_ctr[0]>0&&moto_ctr[1]>0&&moto_ctr[2]>0&&moto_ctr[3]>0){
-//			record=imu.yaw;
-//	}else if(moto_ctr[0]<0&&moto_ctr[1]<0&&moto_ctr[2]<0&&moto_ctr[3]<0){
-//	}
-//}
 

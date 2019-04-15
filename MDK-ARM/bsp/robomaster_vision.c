@@ -14,8 +14,7 @@
 #define MAX_ERR 600//视觉误差限幅
 #define MIN_ERR 0
 
-#define VISION_YAW_TARGET 310 //视觉yaw的目标值
-#define VISION_PIT_TARGET 270 //视觉pit的目标值
+
 
 #define VISION_DATE_SIZE 6
 
@@ -45,46 +44,46 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 **********************************************************************************************************/
 void armour_attack()
 {
-	/***********YAW轴偏差矫正***************/
-//	vision_yaw.target=300;
-//	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
-	int yaw_err,pitch_err;
-	yaw_err=(Armour_attack.pan_tilt_angel_err.Yaw_Err-VISION_YAW_TARGET);
-	if(int_abs(yaw_err)<10)//视觉误差小于一定值
-	{
-		if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
-			{
-				pan_tilt_yaw.target=imu.yaw;
-			}
-			PID_Control_Yaw(&pan_tilt_yaw,imu.yaw);
-			pan_tilt_yaw_speed.target=pan_tilt_yaw.output;
-	}
-	else
-	{
-		pan_tilt_yaw.target=0;//偏航角期望给0,不进行角度控制
-		pan_tilt_yaw_speed.target=yaw_err;
-	}
-	//pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
-	
-	/***********PITCH轴偏差矫正***************/
-//	vision_pitch.target=300;
-//	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
-//	pan_tilt_pitch_speed.target=-vision_pitch.output;
-	pitch_err=(Armour_attack.pan_tilt_angel_err.Pitch_Err-VISION_PIT_TARGET)*1.3;
-	if(int_abs(pitch_err)<5)//视觉误差小于一定值
-	{
-		if(pan_tilt_pitch.target==0)  //回中时赋角度期望值
-			{
-				pan_tilt_pitch.target=imu.pit;
-			}
-			PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
-			pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
-	}
-	else
-	{
-		pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
-		pan_tilt_pitch_speed.target=pitch_err;
-	}
+//	/***********YAW轴偏差矫正***************/
+////	vision_yaw.target=300;
+////	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
+//	int yaw_err,pitch_err;
+//	yaw_err=(Armour_attack.pan_tilt_angel_err.Yaw_Err-VISION_YAW_TARGET);
+//	if(int_abs(yaw_err)<10)//视觉误差小于一定值
+//	{
+//		if(pan_tilt_yaw.target==0)  //回中时赋角度期望值
+//			{
+//				pan_tilt_yaw.target=imu.yaw;
+//			}
+//			PID_Control_Yaw(&pan_tilt_yaw,imu.yaw);
+//			pan_tilt_yaw_speed.target=pan_tilt_yaw.output;
+//	}
+//	else
+//	{
+//		pan_tilt_yaw.target=0;//偏航角期望给0,不进行角度控制
+//		pan_tilt_yaw_speed.target=yaw_err;
+//	}
+//	//pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
+//	
+//	/***********PITCH轴偏差矫正***************/
+////	vision_pitch.target=300;
+////	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
+////	pan_tilt_pitch_speed.target=-vision_pitch.output;
+//	pitch_err=(Armour_attack.pan_tilt_angel_err.Pitch_Err-VISION_PIT_TARGET)*1.3;
+//	if(int_abs(pitch_err)<5)//视觉误差小于一定值
+//	{
+//		if(pan_tilt_pitch.target==0)  //回中时赋角度期望值
+//			{
+//				pan_tilt_pitch.target=imu.pit;
+//			}
+//			PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
+//			pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
+//	}
+//	else
+//	{
+//		pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
+//		pan_tilt_pitch_speed.target=pitch_err;
+//	}
 
 	//pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
 	
@@ -93,12 +92,18 @@ void armour_attack()
 	vision_yaw.target=VISION_YAW_TARGET;
 	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
 	pan_tilt_yaw_speed.target=-vision_yaw.output;
-	pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
+	if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
+		pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
+	else
+		pan_tilt_yaw_speed.output=0;
 	/***********PITCH轴偏差矫正***************/
 	vision_pitch.target=VISION_PIT_TARGET;
 	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
 	pan_tilt_pitch_speed.target=-vision_pitch.output;
-	pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
+	if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
+		pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
+	else
+		pan_tilt_pitch_speed.output=0;
 }
 /**********************************************************************************************************
 *函 数 名: get_armour_err

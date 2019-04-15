@@ -1,6 +1,8 @@
 #include "robomaster_userlib.h"
 first_order_filter_type_t chassis_cmd_slow_set_vx;
 first_order_filter_type_t chassis_cmd_slow_set_vy;
+first_order_filter_type_t pan_tilt_cmd_slow_set_yaw;
+first_order_filter_type_t pan_tilt_cmd_slow_set_pit;
 
 ramp_function_source_t fric_ramp;
 /**
@@ -120,5 +122,32 @@ fp32 loop_fp32_constrain(fp32 Input, fp32 minValue, fp32 maxValue)
     }
     return Input;
 }
-
+/**********************************************************************************************************
+*函 数 名: GildeAverageValueFilter
+*功能说明: 底盘速度环控制
+*形    参: 
+*返 回 值: 电流输出
+**********************************************************************************************************/
+float Data[N];
+float GildeAverageValueFilter(float NewValue,float *Data)
+{
+  float max,min;
+  float sum;
+  unsigned char i;
+  Data[0]=NewValue;
+  max=Data[0];
+  min=Data[0];
+  sum=Data[0];
+  for(i=N-1;i!=0;i--)
+  {
+    if(Data[i]>max) max=Data[i];
+    else if(Data[i]<min) min=Data[i];
+    sum+=Data[i];
+    Data[i]=Data[i-1];
+  }
+  i=N-2;
+  sum=sum-max-min;
+  sum=sum/i;
+  return(sum);
+}
 

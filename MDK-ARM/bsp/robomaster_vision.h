@@ -1,7 +1,8 @@
 #ifndef __ROBOMASTER_VISION_H
 #define __ROBOMASTER_VISION_H
 #include "robomaster_common.h"
-
+#define VISION_YAW_TARGET 310 //视觉yaw的目标值
+#define VISION_PIT_TARGET 270 //视觉pit的目标值
 
 #define VISION_DETECT 1 //使能视觉识别
 

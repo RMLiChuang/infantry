@@ -133,10 +133,6 @@ int main(void)
 	robot_status_init();//步兵模式初始化
 	init_quaternion();	//初始化四元数，用于姿态解算
 	all_pid_init();			//所有电机的pid初始化
-    																	
-	//ramp_init(&trigger_motor.fric2_ramp, SHOOT_CONTROL_TIME * 0.005f, Fric_DOWN, Fric_OFF);
-	
-	Keyboard_value_Init();//键盘初始化
 	
 	HAL_TIM_IC_Start_DMA(&htim1,TIM_CHANNEL_2,(uint32_t *)TIM_COUNT,2);
 	HAL_TIM_Base_Start_IT(&htim2);//开启定时器2  程序主要任务都在定时器2中断里完成呢
@@ -146,14 +142,18 @@ int main(void)
 	
 	 //底盘初始化
     chassis_init(&chassis_move);
+		//云台初始化
+		pan_tilt_init();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {	
 		
   /* USER CODE END WHILE */
-		oled_shownum(3,4,k,0,1);
 		
+		oled_shownum(0,4,imu.pit,0,3);
+		
+		oled_shownum(0,10,pan_tilt_pitch.target,0,3);
     //oled_LOGO();
     oled_refresh_gram();
   /* USER CODE BEGIN 3 */
