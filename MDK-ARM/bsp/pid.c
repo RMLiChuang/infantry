@@ -475,15 +475,15 @@ void all_pid_init()
 pid_init(&pan_tilt_pitch);
     pan_tilt_pitch.f_param_init(&pan_tilt_pitch,
 																	PID_Speed,					
-																	110,							//maxOutput												//输出限幅
+																	200,							//maxOutput												//输出限幅
 																	60,								//integralLimit										//积分限幅
 																	0,								//deadband												//死区（绝对值）
 																	0,								//controlPeriod										//控制周期
 																	100,							//max_err													//最大误差
 																	0,								//target
-																	17.0f,								//kp				 5.2f
+																	15.0f,								//kp			16
 																	0.0f,								//ki	
-																	6.0f);								//kd 0	
+																	6.0f);								//kd 0	6
 	//PITCH轴电机机械角度环pid初始化，反馈值由电机编码器获取    
 	 pid_init(&motor_pid[4]);
     motor_pid[4].f_param_init(&motor_pid[4],
@@ -508,36 +508,36 @@ pid_init(&pan_tilt_pitch);
 																	0,								//controlPeriod										//控制周期
 																	100,								//max_err													//最大误差
 																	0,								//target
-																	75.0f,//75,								//kp    37
+																	150.0f,//75,								//kp    37
 																	0.15f,//0.1,							//ki	   0.8
-																	5.0f);//3);								//kd			3
+																	20.0f);//3);								//kd			3
 	#endif																
 	
 //	#ifdef VISION_DETECT
 	pid_init(&vision_yaw);
 	vision_yaw.f_param_init(&vision_yaw,
 																	PID_Speed,					
-																	65,							//maxOutput												//输出限幅
+																	26,							//maxOutput												//输出限幅
 																	50,								//integralLimit										//积分限幅
 																	0,								//deadband												//死区（绝对值）
 																	0,								//controlPeriod										//控制周期
 																	200,							//max_err													//最大误差
 																	0,								//target
-																	1.3f,								//kp   
+																	0.8f,								//kp   
 																	0,								//ki	   
-																	0);								//kd			
+																	0.1f);								//kd			
 	pid_init(&vision_pitch);
   vision_pitch.f_param_init(&vision_pitch,
 																	PID_Speed,					
-																	200,							//maxOutput												//输出限幅
+																	27,							//maxOutput												//输出限幅
 																	50,								//integralLimit										//积分限幅
 																	0,								//deadband												//死区（绝对值）
 																	0,								//controlPeriod										//控制周期
 																	100,							//max_err													//最大误差
 																	0,								//target
-																	1.11f,								//kp    
-																	0.005,								//ki	   
-																	0);								//kd			
+																	1.2f,								//kp    
+																	0.0f,								//ki	   
+																	0.3f);								//kd			
 																	
 	//		#endif														
 	

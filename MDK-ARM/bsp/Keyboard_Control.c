@@ -53,15 +53,16 @@ void Keyboard_Control()
 		if(Twist_speed<80.0f)
 			Twist_speed=80.0f;
 	}
-	else if (remote_control.keyBoard.key_code==0x100)                               //按下“r”。
+	else if (remote_control.keyBoard.key_code & KEY_PRESSED_OFFSET_R)                               //按下“r”。
 	{
-		detect_cartridge();//打开弹舱并查看弹药
+		open_cap();//取弹，比赛过程中只需打开弹舱，摄像头要保持前方
+		//detect_cartridge();//打开弹舱并查看弹药
 	}
-	else if(remote_control.keyBoard.key_code==0x8000)																//按下“b”,切换射击模式
+	else if(remote_control.keyBoard.key_code	& KEY_PRESSED_OFFSET_B)																//按下“b”,检测弹药
 	{
 		detect_cartridge();//打开弹舱并查看弹药
 	}		
-	else if(remote_control.keyBoard.key_code==0x4000)//V
+	else if(remote_control.keyBoard.key_code	& KEY_PRESSED_OFFSET_V)//V
 	{
 			keyboard_count++;
 		if(keyboard_count==10)
@@ -73,7 +74,7 @@ void Keyboard_Control()
 			fric_count=0;
 		}
 		#ifdef DEBUG_MODE//调试模式可以关闭摩擦轮，比赛过程中不准关闭摩擦轮
-		if(fric_count==0)
+		if(fric_count==0&&shoot_mode == SHOOT_STOP)//只有在拨弹轮停止时才能关闭摩擦轮
 		{
 			robot_status.fric_mode=STOP;
 		}
@@ -95,11 +96,11 @@ void Keyboard_Control()
 			robot_status.fric_mode=INTERCONTINENTAL_FIRE;
 		}
 	}
-	else if(remote_control.mouse.press_left==1)
-	{
-//		kb.mousel_flag   =   1;
-//		kb.mousel        =   0;
-	}
+//	else if(remote_control.mouse.press_left==1)
+//	{
+////		kb.mousel_flag   =   1;
+////		kb.mousel        =   0;
+//	}
 	
 	else if(remote_control.mouse.press_right==1)
 	{

@@ -4,6 +4,8 @@
 
 #define CHASSIS_ACCEL_X_NUM 0.6f
 #define CHASSIS_ACCEL_Y_NUM 0.6f
+#define CHASSIS_KEYBOARD_SPEED 1.6f
+#define CHASSIS_KEYBOARD_FAST_SPEED 2.8f
 //底盘行为状态机
 static chassis_behaviour_e chassis_behaviour_mode = CHASSIS_ZERO_FORCE;
 //底盘运动数据
@@ -297,27 +299,27 @@ void chassis_rc_to_control_vector(fp32 *vx_set, fp32 *vy_set, chassis_move_t *ch
 
       if (remote_control.keyBoard.key_code & CHASSIS_FRONT_KEY)
     {
-        vx_set_channel = 1.5f;
+        vx_set_channel = CHASSIS_KEYBOARD_SPEED;
     }
     else if (remote_control.keyBoard.key_code & CHASSIS_BACK_KEY)
     {
-        vx_set_channel = -1.5f;
+        vx_set_channel = -CHASSIS_KEYBOARD_SPEED;
     }
 
     if (remote_control.keyBoard.key_code & CHASSIS_LEFT_KEY)
     {
-        vy_set_channel = 1.5f;
+        vy_set_channel = CHASSIS_KEYBOARD_SPEED;
     }
     else if (remote_control.keyBoard.key_code & CHASSIS_RIGHT_KEY)
     {
-        vy_set_channel = -1.5f;
+        vy_set_channel = -CHASSIS_KEYBOARD_SPEED;
     }
 		else if(remote_control.keyBoard.key_code & KEY_PRESSED_OFFSET_SHIFT)
 		{
 			if(vx_set_channel>0)
-				vx_set_channel=2.5f;
+				vx_set_channel=CHASSIS_KEYBOARD_FAST_SPEED;
 			else if(vx_set_channel<0)
-				vx_set_channel=-2.5f;
+				vx_set_channel=-CHASSIS_KEYBOARD_FAST_SPEED;
 		}
     //一阶低通滤波代替斜波作为底盘速度输入
     first_order_filter_cali(&chassis_cmd_slow_set_vx, vx_set_channel);
@@ -400,8 +402,8 @@ void chassis_set_contorl(chassis_move_t *chassis_move_control)
         sin_yaw = arm_sin_f32(chassis_move.chassis_relative_angle);//底盘相对于云台的角度 rad/s 弧度制
         cos_yaw = arm_cos_f32(chassis_move.chassis_relative_angle);
 			
-				oled_shownum(0,0,int_abs(chassis_move.chassis_relative_angle)*100,0,3);
-				oled_shownum(1,0,int_abs(chassis_move_control->wz_set)*100,0,3);
+//				oled_shownum(0,0,int_abs(chassis_move.chassis_relative_angle)*100,0,3);
+//				oled_shownum(1,0,int_abs(chassis_move_control->wz_set)*100,0,3);
 			
         chassis_move_control->vx_set = cos_yaw * vx_set + sin_yaw * vy_set;//前进方向始终相对于云台
         chassis_move_control->vy_set = -sin_yaw * vx_set + cos_yaw * vy_set;
@@ -468,15 +470,14 @@ void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     //麦轮运动分解
     chassis_vector_to_mecanum_wheel_speed(chassis_move_control_loop->vx_set,
                                           chassis_move_control_loop->vy_set, chassis_move_control_loop->wz_set, wheel_speed);
-		oled_shownum(1,4,int_abs(chassis_move_control_loop->vx_set)*100,0,3);
-		oled_shownum(1,8,int_abs(chassis_move_control_loop->vy_set)*100,0,3);
+//		oled_shownum(1,4,int_abs(chassis_move_control_loop->vx_set)*100,0,3);
+//		oled_shownum(1,8,int_abs(chassis_move_control_loop->vy_set)*100,0,3);
 
 
     //计算轮子控制最大速度，并限制其最大速度
     for (i = 0; i < 4; i++)
     {
         motor_pid[i].target = wheel_speed[i];
-			oled_shownum(3,0,int_abs( motor_pid[1].target)*100,0,3);
         temp = fabs(motor_pid[i].target);
         if (max_vector < temp)
         {
@@ -499,7 +500,7 @@ void chassis_control_loop(chassis_move_t *chassis_move_control_loop)
     {
         motor_pid[i].f_cal_pid(&motor_pid[i], chassis_move_control_loop->motor_chassis[i].speed);
     }
-		oled_shownum(4,0,int_abs(motor_pid[1].output),0,5);
+		//oled_shownum(4,0,int_abs(motor_pid[1].output),0,5);
     //赋值电流值
 //    for (i = 0; i < 4; i++)
 //    {

@@ -92,18 +92,18 @@ void armour_attack()
 	vision_yaw.target=VISION_YAW_TARGET;
 	vision_yaw.f_cal_pid(&vision_yaw,Armour_attack.pan_tilt_angel_err.Yaw_Err);
 	pan_tilt_yaw_speed.target=-vision_yaw.output;
-	if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
+	//if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
 		pan_tilt_yaw_speed.f_cal_pid(&pan_tilt_yaw_speed,-imu.gz);
-	else
-		pan_tilt_yaw_speed.output=0;
+//	else
+//		pan_tilt_yaw_speed.output=0;
 	/***********PITCH轴偏差矫正***************/
 	vision_pitch.target=VISION_PIT_TARGET;
 	vision_pitch.f_cal_pid(&vision_pitch,Armour_attack.pan_tilt_angel_err.Pitch_Err);
 	pan_tilt_pitch_speed.target=-vision_pitch.output;
-	if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
+	//if(int_abs(vision_yaw.err)<40&&int_abs(vision_pitch.err)<40)
 		pan_tilt_pitch_speed.f_cal_pid(&pan_tilt_pitch_speed,-imu.gy);
-	else
-		pan_tilt_pitch_speed.output=0;
+//	else
+//		pan_tilt_pitch_speed.output=0;
 }
 /**********************************************************************************************************
 *函 数 名: get_armour_err
@@ -162,13 +162,12 @@ uint8_t USART6_RX_BUF=0;
 void USART6_IRQHandler(void)                	
 {
 	uint8_t Res;
-	
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);	
 	if((__HAL_UART_GET_FLAG(&huart6,UART_FLAG_RXNE)!=RESET))//接收中断
 	{
         HAL_UART_Receive(&huart6,&Res,1,1000); 
-	}
+
 	//协议为5a a5 x[0] x[1] y[0] y[1] sum[0] sum[1]
-	
 	Latest_Vision_Control_Pack_Time = HAL_GetTick();		
 	UART6_Date[counter] =Res;	
 		
@@ -189,10 +188,12 @@ void USART6_IRQHandler(void)
 			counter=0; 
 			USART6_RX_BUF=1;	
 		}
-		get_armour_err();
+	}
+		
 		vision_time=Latest_Vision_Control_Pack_Time;
 		robot_status.vision_status=VISION_SUCCESS;//有视觉信息，正常
-		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_D_Pin,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_D_Pin,GPIO_PIN_SET);	
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
 }                             
 
 

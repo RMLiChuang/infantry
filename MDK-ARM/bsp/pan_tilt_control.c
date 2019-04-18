@@ -68,11 +68,12 @@ void pan_tilt_machine_home(void)
 void pan_tilt_lock_control()
 {
 	if(robot_status.vision_status==VISION_SUCCESS&&
-		robot_status.vision_mode==ACTIVATE&&
-		int_abs(VISION_YAW_TARGET-Armour_attack.pan_tilt_angel_err.Yaw_Err)<60&&
-		int_abs(VISION_PIT_TARGET-Armour_attack.pan_tilt_angel_err.Pitch_Err)<60)//如果视觉没有离线并且左边开关为1，进行视觉打击
+		robot_status.vision_mode==ACTIVATE)
+		//int_abs(VISION_YAW_TARGET-Armour_attack.pan_tilt_angel_err.Yaw_Err)<60&&
+		//int_abs(VISION_PIT_TARGET-Armour_attack.pan_tilt_angel_err.Pitch_Err)<60)//如果视觉没有离线并且左边开关为1，进行视觉打击
 	{
 		armour_attack();
+		//pan_tilt_pitch_imu_angle_control();
 	}
 	else 
 	{
@@ -98,6 +99,11 @@ void pan_tilt_lock_control()
 			HeadTxData[1]=0;           //205   pitch
 			HeadTxData[2]=0;
 			HeadTxData[3]=0;           //206  yaw 
+			if(remote_control.switch_right!=3)//不在键盘模式时，关闭摩擦轮
+			{
+				HeadTxData[4]=0;
+				HeadTxData[5]=0; 
+			}
 			CAN_Send_Msg(&hcan1,HeadTxData,HEADID,8);
 		}
 	}

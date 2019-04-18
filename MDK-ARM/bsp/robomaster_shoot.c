@@ -12,7 +12,7 @@
 #include "robomaster_shoot.h"
 
 Shoot_Motor_t trigger_motor;          //射击数据
-static shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
+shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
 //微动开关IO
 #define Butten_Trig_Pin HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)
 //拨弹速度
@@ -89,7 +89,7 @@ void shoot_init(void)
 int16_t shoot_control_loop(void)
 {
     int16_t shoot_CAN_Set_Current; //返回的can值
-		oled_shownum(3,4, trigger_motor.BulletShootCnt,0,1);
+//		oled_shownum(3,4, trigger_motor.BulletShootCnt,0,3);
     Shoot_Set_Mode();        //设置状态机
     Shoot_Feedback_Update(); //更新数据
 

@@ -104,8 +104,8 @@ void debug_program()
 //	  wave_form_data[5] =(short)pan_tilt_pitch.target;//chassis_yaw_speed.output;
 
 // ”æı–≈œ¢
-		wave_form_data[0] =(short)pan_tilt_pitch.output;
-	  wave_form_data[1] =(short)imu.gy;//chassis_yaw_angle.initial;
+		wave_form_data[0] =(short)vision_pitch.output;//pan_tilt_pitch.output;
+	  wave_form_data[1] =(short)pan_tilt_pitch.output;//vision_yaw.output;//imu.gy;//chassis_yaw_angle.initial;
 	  wave_form_data[2] =(short)Armour_attack.pan_tilt_angel_err.origin_yaw;
 	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
 		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205

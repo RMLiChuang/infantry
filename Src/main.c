@@ -151,9 +151,7 @@ int main(void)
 		
   /* USER CODE END WHILE */
 		
-		oled_shownum(0,4,imu.pit,0,3);
 		
-		oled_shownum(0,10,pan_tilt_pitch.target,0,3);
     //oled_LOGO();
     oled_refresh_gram();
   /* USER CODE BEGIN 3 */

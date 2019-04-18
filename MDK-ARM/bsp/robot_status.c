@@ -109,12 +109,25 @@ void robot_status_detection()
 **********************************************************************************************************/
 void robot_status_display()
 {
+	oled_showstring(0,1,"Pit:");
+	oled_shownum(0,5,imu.pit,0,3);
+	oled_showstring(0,9,"Target:");
+	oled_shownum(0,16,pan_tilt_pitch.target,0,3);
+	
+	oled_showstring(1,1,"Yaw:");
+	oled_shownum(1,5,imu.yaw,0,3);
+	oled_showstring(1,9,"Target:");
+	oled_shownum(1,16,pan_tilt_yaw.target,0,3);
+	
+	oled_showstring(2,1,"Vision:");
 	if(robot_status.vision_status==VISION_LOSE)
 	{
-		//oled_showstring(1,4,"LOSE");
+		oled_showstring(2,8,"lose");
 	}
 	if(robot_status.vision_status==VISION_SUCCESS)
 	{
-		oled_showstring(1,4,"SUCCESS");
+		oled_showstring(2,8,"success");
 	}
+	oled_showstring(3,1,"BulletNum:");
+	oled_shownum(3,8, trigger_motor.BulletShootCnt,0,3);
 }

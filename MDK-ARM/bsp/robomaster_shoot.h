@@ -72,7 +72,7 @@ typedef struct
     int16_t BulletShootCnt;
     int16_t last_butter_count;
 } Shoot_Motor_t;
-
+extern shoot_mode_e shoot_mode;
 extern Shoot_Motor_t trigger_motor;          //Éä»÷Êý¾Ý
 int16_t shoot_control_loop(void);
 void shoot_init(void);
