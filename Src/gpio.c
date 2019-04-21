@@ -81,7 +81,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD14 PDPin */
-  GPIO_InitStruct.Pin = GPIO_PIN_14|KEY_Pin;
+  GPIO_InitStruct.Pin = GPIO_PIN_14|KEY_Pin|GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);

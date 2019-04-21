@@ -11,9 +11,10 @@
 #define SHOOT_ON_KEYBOARD KEY_PRESSED_OFFSET_Q
 #define SHOOT_OFF_KEYBOARD KEY_PRESSED_OFFSET_E
 
-
+#define SWITCH_TRIGGER_ON 1
+#define SWITCH_TRIGGER_OFF 0
 //鼠标长按判断
-#define PRESS_LONG_TIME 200
+#define PRESS_LONG_TIME 400
 //遥控器射击开关打下档一段时间后 连续发射子弹 用于清单
 #define RC_S_LONG_TIME 2000
 //摩擦轮高速 加速 时间
@@ -40,7 +41,7 @@ typedef enum
     SHOOT_STOP = 0,
     SHOOT_READY,
     SHOOT_BULLET,
-    SHOOT_DONE,
+    SHOOT_DONE
 } shoot_mode_e;
 
 

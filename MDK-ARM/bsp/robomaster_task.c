@@ -24,13 +24,16 @@ void task()
 			pan_tilt_lock_control(); //云台锁头程序启动
 			chassis_task();//底盘控制
 	}
-	get_armour_err();
+
 	robot_status_detection();//步兵状态检测 OLED显示
 	select_mode();//控制模式选择：1遥控器	2键盘
 	remap_variable();//变量重定义，目的用于键盘和遥控器对车的操作
 	Bling_Working(Bling_Mode);
-	if(cnt1%100==0)//0.5秒进入一次
+	if(cnt1%80==0)//0.4秒进入一次
+	{
+		oled_refresh_gram();
 		oled_clear(Pen_Clear);//清屏
+	}
 //	display();
 }
 

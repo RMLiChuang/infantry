@@ -15,9 +15,12 @@ void pan_tilt_init()
 		pitch_angle_target=179.0f;																																																																																
     const static fp32 pan_tilt_yaw_order_filter[1] = {PAN_TILT_YAW_NUM};
     const static fp32 pan_tilt_pit_order_filter[1] = {PAN_TILT_PIT_NUM};
+		init_Fric_PWM();			//初始化摩擦轮的PWM
     //用一阶滤波代替斜波函数生成
     first_order_filter_init(&pan_tilt_cmd_slow_set_yaw, PAN_TILT_CONTROL_TIME, pan_tilt_yaw_order_filter);
     first_order_filter_init(&pan_tilt_cmd_slow_set_pit, PAN_TILT_CONTROL_TIME, pan_tilt_pit_order_filter);
+		//摩擦轮斜坡函数初始化
+		ramp_init(&fric_ramp,SHOOT_CONTROL_TIME * 0.001f, Close_Fric_ON, Fric_OFF);
 }
 /**********************************************************************************************************
 *函 数 名: pan_tilt_machine_home
@@ -258,7 +261,7 @@ void pan_tilt_pitch_imu_angle_control(void)
 			{
 				pan_tilt_pitch.target=imu.pit;
 			}
-			PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
+		PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
 			pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
 	  }
 		else
@@ -266,17 +269,34 @@ void pan_tilt_pitch_imu_angle_control(void)
 			pan_tilt_pitch.target=0;////偏航角期望给0,不进行角度控制
 			pan_tilt_pitch_speed.target=pitch_velocity_target*300/660;//pitch_control;//偏航角速度环期望，直接来源于遥控器打杆量
 		}
+		#ifdef INFANTRY_1
 		PID_Control_Pitch(&pan_tilt_pitch_speed,-imu.gy);//角速度环
-		pan_tilt_pitch_speed.output=pan_tilt_pitch_speed.output;//GildeAverageValueFilter(pan_tilt_pitch_speed.output,Data);//滤波？
+		#endif
+		#ifdef INFANTRY_2
+		PID_Control_Pitch(&pan_tilt_pitch_speed,imu.gy);//角速度环
+		#endif
+		//pan_tilt_pitch_speed.output=GildeAverageValueFilter(pan_tilt_pitch_speed.output,Data);//滤波？
 	}
 	else if(robot_status.control_mode==KEYBOARD_CONTROL)
 	{
 		pan_tilt_pitch.target=pitch_angle_target;//来源于鼠标控制
-		fp32_constrain(pan_tilt_pitch.target,150.0f,190.0f);//限幅
+		
 		//PID_Pitch_control();
+		#ifdef INFANTRY_1
+		pan_tilt_pitch.target=fp32_constrain(pan_tilt_pitch.target,150.0f,190.0f);//限幅
 		PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
+		#endif
+		#ifdef INFANTRY_2
+		pan_tilt_pitch.target=fp32_constrain(pan_tilt_pitch.target,165.0f,197.0f);//限幅
+		PID_Control_Pitch(&pan_tilt_pitch,imu.pit);
+		#endif
 		pan_tilt_pitch_speed.target=pan_tilt_pitch.output;
+		#ifdef INFANTRY_1
 		PID_Control_Pitch(&pan_tilt_pitch_speed,-imu.gy);//角速度环
+		#endif
+		#ifdef INFANTRY_2
+		PID_Control_Pitch(&pan_tilt_pitch_speed,imu.gy);//角速度环
+		#endif
 	}
 }
 

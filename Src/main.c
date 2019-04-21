@@ -93,41 +93,35 @@ int main(void)
   MX_USART1_UART_Init();//遥控器接收，串口中断
   MX_TIM1_Init();//用来计时，测试程序运行的时间
   MX_TIM5_Init();//产生4路pwm波来控制摩擦轮
-  MX_USART6_UART_Init();//用于上位机调试
+  MX_USART6_UART_Init();//视觉接收
 	MX_ADC1_Init();
   MX_SPI1_Init();
 //	HAL_UART_Receive_IT(&huart6, uart6_rx_buff, 1);//该函数会开启接收中断：标志位UART_IT_RXNE，并且设置接收缓冲以及接收缓冲接收最大数据量
   MX_SPI5_Init();//用于imu驱动
   MX_TIM2_Init();//中断控制程序  主要程序在TIM2中运行
-  MX_TIM3_Init();//未用
-	MX_UART8_Init();
-//  MX_TIM4_Init();//USMART占用
-//  MX_USART2_UART_Init();//蓝牙串口  未用
+  //MX_TIM3_Init();//未用
+	MX_UART8_Init();//用于上位机调试
 	ref_sys_init();//裁判系统初始化，内部已设置好串口相关的东西
-  MX_USART3_UART_Init();//大疆SDK串口 未用
   delay_init(168);//延时函数初始化
 	//MPU9250_Init();
-  //usmart_dev.init(84);//USMART初始化
   /* USER CODE BEGIN 2 */
-	/**TIM5 GPIO Configuration    
-	PI0     ------> TIM5_CH4
-	PH12     ------> TIM5_CH3
-	PH11     ------> TIM5_CH2
-	PH10     ------> TIM5_CH1 
-	*/
+	
 
 	HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim5,TIM_CHANNEL_4);
-	
+	 //底盘初始化
+    chassis_init(&chassis_move);
+		//云台初始化
+		pan_tilt_init();
   my_can_filter_init_recv_all(&hcan1);     //配置CAN过滤器
   HAL_CAN_Receive_IT(&hcan1, CAN_FIFO0);   //启动CAN接收中断
   HAL_UART_Receive_IT_IDLE(&huart1,UART_Buffer,100);   //启动串口接收
-	
-	ramp_init(&fric_ramp,SHOOT_CONTROL_TIME * 0.001f, Close_Fric_ON, Fric_OFF);
+	HAL_UART_Receive_IT_IDLE(&huart6,UART6_Date,8);
+
 	oled_init();
-	init_Fric_PWM();			//初始化摩擦轮的PWM
+	oled_LOGO();
 	Infantry_Start_Bling();//步兵状态指示灯
 	mpu_device_init();   //在初始化imu的时候，要先初始化SPI5和GPIOF6 不然无法初始化imu
 	robot_status_init();//步兵模式初始化
@@ -140,10 +134,7 @@ int main(void)
   /* USER CODE END 2 */
 	Super_Cap_Init();//超级电容初始化，内部已初始化好ADC
 	
-	 //底盘初始化
-    chassis_init(&chassis_move);
-		//云台初始化
-		pan_tilt_init();
+	
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -153,7 +144,7 @@ int main(void)
 		
 		
     //oled_LOGO();
-    oled_refresh_gram();
+    
   /* USER CODE BEGIN 3 */
 
 		debug_program();

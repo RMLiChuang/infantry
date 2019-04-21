@@ -47,6 +47,7 @@ void ramp_init(ramp_function_source_t *ramp_source_type, fp32 frame_period, fp32
 fp32 fp32_constrain(fp32 Value, fp32 minValue, fp32 maxValue)
 {
     if (Value < minValue)
+			
         return minValue;
     else if (Value > maxValue)
         return maxValue;

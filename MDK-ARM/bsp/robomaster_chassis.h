@@ -19,6 +19,22 @@
 #define ROBOMASTER_CHASSIS_H
 #include "robomaster_common.h"
 
+#ifdef INFANTRY_1
+//云台位于底盘中间时，yaw轴电机机械角度为4104
+#define CHASSIS_YAW_MID_VALUE 4180
+//pit轴云台相对于底盘平行时的机械角度
+#define CHASSIS_PIT_MID_VALUE 4424
+#endif
+#ifdef INFANTRY_2
+//云台位于底盘中间时，yaw轴电机机械角度为4104
+#define CHASSIS_YAW_MID_VALUE 3900
+//pit轴云台相对于底盘平行时的机械角度
+#define CHASSIS_PIT_MID_VALUE 7510
+#endif
+
+
+
+
 //遥控器前进摇杆（max 660）转化成车体前进速度（m/s）的比例
 #define CHASSIS_VX_RC_SEN 0.0045f
 //遥控器左右摇杆（max 660）转化成车体左右速度（m/s）的比例  最大3m/s
@@ -69,10 +85,7 @@
 #define NORMAL_MAX_CHASSIS_SPEED_Y 3.0f
 //底盘设置旋转速度，设置前后左右轮不同设定速度的比例分权 0为在几何中心，不需要补偿
 #define CHASSIS_WZ_SET_SCALE 0.1f
-//云台位于底盘中间时，yaw轴电机机械角度为4104
-#define CHASSIS_YAW_MID_VALUE 4180
-//pit轴云台相对于底盘平行时的机械角度
-#define CHASSIS_PIT_MID_VALUE 4424
+
 //摇摆原地不动摇摆最大角度(rad)
 #define SWING_NO_MOVE_ANGLE 0.55f
 //摇摆过程底盘运动最大角度(rad)

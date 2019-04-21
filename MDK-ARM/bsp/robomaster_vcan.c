@@ -66,14 +66,14 @@ void debug_program()
 //	  wave_form_data[5] =(short)imu.yaw;
 
 ////pitch轴imu角度反馈调试
-//    wave_form_data[0] =(short)pan_tilt_pitch.target;      //YAW ID:206
-//	  wave_form_data[1] =(short)pan_tilt_pitch.output;
-//	  wave_form_data[2] =(short)pan_tilt_pitch_speed.target;
-//	  wave_form_data[3] =(short)imu.gy;//pan_tilt_yaw_speed.output;
-//		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
-//	  wave_form_data[5] =(short)imu.pit;//moto_chassis[4].angle;
+    wave_form_data[0] =(short)pan_tilt_pitch.target;      //YAW ID:206
+	  wave_form_data[1] =(short)pan_tilt_pitch.output;
+	  wave_form_data[2] =(short)pan_tilt_pitch_speed.target;
+	  wave_form_data[3] =(short)imu.gy;//pan_tilt_yaw_speed.output;
+		wave_form_data[4] =(short)pan_tilt_pitch_speed.output;//motor_pid[5].err;      //PITCH ID:205
+	  wave_form_data[5] =(short)HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);//moto_chassis[4].angle;
 
-////云台归中的yaw和pitch机械角度调试
+//云台归中的yaw和pitch机械角度调试
 //		wave_form_data[0] =(short)motor_pid[5].target;    //YAW ID:206
 //	  wave_form_data[1] =(short)motor_pid[5].err;
 //	  wave_form_data[2] =(short)moto_chassis[5].angle;
@@ -104,12 +104,12 @@ void debug_program()
 //	  wave_form_data[5] =(short)pan_tilt_pitch.target;//chassis_yaw_speed.output;
 
 //视觉信息
-		wave_form_data[0] =(short)vision_pitch.output;//pan_tilt_pitch.output;
-	  wave_form_data[1] =(short)pan_tilt_pitch.output;//vision_yaw.output;//imu.gy;//chassis_yaw_angle.initial;
-	  wave_form_data[2] =(short)Armour_attack.pan_tilt_angel_err.origin_yaw;
-	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
-		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
-		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;//mpu_data.gy;//refSysData.PowerHeatData_t.chassisPower;
+//		wave_form_data[0] =(short)vision_yaw.err;//vision_pitch.output;//pan_tilt_pitch.output;
+//	  wave_form_data[1] =(short)vision_pitch.err;//pan_tilt_pitch.output;//vision_yaw.output;//imu.gy;//chassis_yaw_angle.initial;
+//	  wave_form_data[2] =(short)UART6_Date[2];//Armour_attack.pan_tilt_angel_err.origin_yaw;
+//	  wave_form_data[3] =(short)Armour_attack.pan_tilt_angel_err.origin_pitch;
+//		wave_form_data[4] =(short)Armour_attack.pan_tilt_angel_err.Yaw_Err;//pan_tilt_yaw_motor.angle;//vision_yaw.output;;//moto_chassis[4].angle;//moto_chassis[6].round_cnt;//motor_pid[5].err;      //PITCH ID:205
+//		wave_form_data[5] =(short)Armour_attack.pan_tilt_angel_err.Pitch_Err;//mpu_data.gy;//refSysData.PowerHeatData_t.chassisPower;
 //底盘相关数据
 //		wave_form_data[0] =(short)(chassis_move.vx*100);
 //	  wave_form_data[1] =(short)(chassis_move.vy*100);

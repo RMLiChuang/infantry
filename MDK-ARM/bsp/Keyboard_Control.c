@@ -21,10 +21,10 @@ void Keyboard_Control()
 		yaw_velocity_target=pan_tilt_cmd_slow_set_yaw.out;
 		//pitch_velocity_target=pan_tilt_cmd_slow_set_pit.out;
 		pitch_angle_target+=pan_tilt_cmd_slow_set_pit.out;
-	if(pitch_angle_target>190.0f)
-		pitch_angle_target=190.0f;
-	if(pitch_angle_target<150.0f)
-		pitch_angle_target=150.0f;
+//	if(pitch_angle_target>190.0f)
+//		pitch_angle_target=190.0f;
+//	if(pitch_angle_target<150.0f)
+//		pitch_angle_target=150.0f;
 		switch(robot_status.fric_mode)//Ä¦²ÁÂÖ¿ØÖÆ
 		{
 			case STOP:										init_Fric_PWM();				 break;

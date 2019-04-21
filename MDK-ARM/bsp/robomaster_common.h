@@ -46,5 +46,7 @@
 #include "robomaster_chassis.h"
 /* USER CODE END Includes */
 #define DEBUG_MODE//调试模式
+//#define INFANTRY_2//步兵二号
+#define INFANTRY_1//步兵一号
 #endif
 

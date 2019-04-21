@@ -153,7 +153,24 @@
           <Name></Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>502</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134245086</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\RM_2019\my_program\姝ュ叺浜屽彿\infantry\MDK-ARM\bsp\pid.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\demo\bsp/pid.c\502</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>

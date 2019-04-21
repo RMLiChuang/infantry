@@ -92,7 +92,7 @@ void robot_status_detection()
 		set_chassis_moto_target_zero();//关闭所有电机
 		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_B_Pin,GPIO_PIN_RESET);
 	}
-	if(HAL_GetTick()-vision_time>500)
+	if(HAL_GetTick()-Armour_attack.current_time>100)
 	{
 		robot_status.vision_status=VISION_LOSE;//视觉检测离线
 		HAL_GPIO_WritePin(LED_USER_GPIO_PORT, LED_D_Pin,GPIO_PIN_RESET);
@@ -128,6 +128,11 @@ void robot_status_display()
 	{
 		oled_showstring(2,8,"success");
 	}
+	oled_showstring(2,15,"fps:");
+	oled_shownum(2,19, Armour_attack.vision_frame,0,2);
 	oled_showstring(3,1,"BulletNum:");
-	oled_shownum(3,8, trigger_motor.BulletShootCnt,0,3);
+	oled_shownum(3,11, trigger_motor.BulletShootCnt,0,3);
+	
+	
+	//oled_shownum(4,18, Armour_attack.delta_time,0,3);
 }

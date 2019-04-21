@@ -26,7 +26,7 @@
 #define MPU_HSPI hspi5
 #define MPU_NSS_LOW HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET)
 #define MPU_NSS_HIGH HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET)
-#define imu_temp 35   //陀螺仪温度设定
+#define imu_temp 40   //陀螺仪温度设定
 int16_t Mag_Offset[3]={0,0,0};
 float X_g_av,Y_g_av,Z_g_av;//可用的加速度计值
 float X_g_av_bpf,Y_g_av_bpf,Z_g_av_bpf;//带阻滤波后可用的加速度计值

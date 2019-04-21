@@ -367,7 +367,7 @@ void chassis_follow_pan_tilt_control()
 void calibrate_initial_position() //yaw轴机械角度中间值为4190
 {
 	//chassis_yaw_angle.initial=moto_chassis[5].angle;//记录上电时刻底盘相对云台的初始位置
-	chassis_yaw_angle.initial=CHASSIS_YAW_MID_VALUE;
+	//chassis_yaw_angle.initial=CHASSIS_YAW_MID_VALUE;
 }
 /**********************************************************************************************************
 *函 数 名: set_chassis_moto_target_zero

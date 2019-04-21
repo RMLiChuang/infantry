@@ -69,7 +69,7 @@ UART_HandleTypeDef huart6;
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart8;
 DMA_HandleTypeDef hdma_usart1_rx;
-
+DMA_HandleTypeDef hdma_usart6_rx;
 
 /* UART8 init function */
 void MX_UART8_Init(void)
@@ -153,18 +153,21 @@ void MX_USART3_UART_Init(void)
 void MX_USART6_UART_Init(void)
 {
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;
+  huart6.Init.BaudRate =115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
   huart6.Init.Mode = UART_MODE_TX_RX;
   huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart6.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart6) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
+//  if (HAL_UART_Init(&huart6) != HAL_OK)
+//  {
+//    _Error_Handler(__FILE__, __LINE__);
+//  }
+if (HAL_MultiProcessor_Init(&huart6, 0, UART_WAKEUPMETHOD_IDLELINE) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
@@ -189,7 +192,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* USART1 DMA Init */
+    /* USART1 DMA Init *///
     /* USART1_RX Init */
     hdma_usart1_rx.Instance = DMA2_Stream2;
     hdma_usart1_rx.Init.Channel = DMA_CHANNEL_4;
@@ -272,7 +275,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART6_MspInit 0 */
     /* USART6 clock enable */
     __HAL_RCC_USART6_CLK_ENABLE();
-  
+		//__HAL_RCC_DMA1_CLK_ENABLE();
     /**USART6 GPIO Configuration
     PG14     ------> USART6_TX
     PG9     ------> USART6_RX 
@@ -283,14 +286,36 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
     HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+		
+		//串口6接收 dma数据流5，通道1
+		hdma_usart6_rx.Instance = DMA2_Stream1;
+    hdma_usart6_rx.Init.Channel = DMA_CHANNEL_5;
+    hdma_usart6_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_usart6_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart6_rx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart6_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart6_rx.Init.Mode = DMA_NORMAL;
+    hdma_usart6_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_usart6_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    if (HAL_DMA_Init(&hdma_usart6_rx) != HAL_OK)
+    {
+      _Error_Handler(__FILE__, __LINE__);
+    }
 
+    __HAL_LINKDMA(&huart6,hdmarx,hdma_usart6_rx);
+
+//if (HAL_UART_Receive_DMA(&huart6, UART6_Date, 8) != HAL_OK)
+//	{
+//		Error_Handler();
+//	}
 //		__HAL_UART_ENABLE_IT(uartHandle,UART_IT_RXNE);
     /* USART6 interrupt Init */
-    HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(USART6_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
   /* USER CODE BEGIN USART6_MspInit 1 */
 //		__HAL_UART_ENABLE_IT(uartHandle, UART_IT_PE);
-		__HAL_UART_ENABLE_IT(uartHandle, UART_IT_RXNE);
+		//__HAL_UART_ENABLE_IT(uartHandle, UART_IT_IDLE);
 	/* USER CODE END USART6_MspInit 1 */
 	}
 	else if(uartHandle->Instance==UART8)
@@ -510,7 +535,7 @@ void HAL_UART_IDLE_IRQHandler(UART_HandleTypeDef *huart)
 		
 		uint32_t DMA_FLAGS,tmp;
 	
-			
+		
 	if(__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE)){
 			
 		tmp = huart->Instance->SR;
@@ -527,11 +552,17 @@ void HAL_UART_IDLE_IRQHandler(UART_HandleTypeDef *huart)
 		
 	}
 		
-	
-	Callback_RC_Handle(&remote_control,huart->pRxBuffPtr);
-	
+	 if(huart->Instance==USART1)
+  {	
+		Callback_RC_Handle(&remote_control,huart->pRxBuffPtr);
+	}
+	 if(huart->Instance==USART6)
+  {	
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);	
+		get_armour_err();
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);	
+	}
 }
-
 
 /* USER CODE END 1 */
 

@@ -14,16 +14,17 @@
 Shoot_Motor_t trigger_motor;          //射击数据
 shoot_mode_e shoot_mode = SHOOT_STOP; //射击状态机
 //微动开关IO
+
 #define Butten_Trig_Pin HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)
+
 //拨弹速度
-#define TRIGGER_SPEED 11.0f
+#define TRIGGER_SPEED 9.0f
 #define Ready_Trigger_Speed 7.0f
 
 #define KEY_OFF_JUGUE_TIME 200
 //射击完成后 子弹弹出去后，判断时间，以防误触发
 #define SHOOT_DONE_KEY_OFF_TIME 1
-#define SWITCH_TRIGGER_ON 1
-#define SWITCH_TRIGGER_OFF 0
+
 /**
   * @brief          射击状态机设置，遥控器上拨一次开启，再上拨关闭，下拨1次发射1颗，一直处在下，则持续发射，用于3min准备时间清理子弹
   * @author         RM
@@ -96,8 +97,6 @@ int16_t shoot_control_loop(void)
     //发射状态控制
     if (shoot_mode == SHOOT_BULLET)
     {
-//			trigger_motor_pid.max_out = TRIGGER_BULLET_PID_MAX_OUT;
-//			trigger_motor_pid.max_iout = TRIGGER_BULLET_PID_MAX_IOUT;
         shoot_bullet_control();
     }
     //发射完成状态控制
@@ -108,8 +107,6 @@ int16_t shoot_control_loop(void)
     //发射准备状态控制
     else if (shoot_mode == SHOOT_READY)
     {
-//        trigger_motor_pid.max_out = TRIGGER_READY_PID_MAX_OUT;
-//        trigger_motor_pid.max_iout = TRIGGER_READY_PID_MAX_IOUT;
         shoot_ready_control();
     }
 
@@ -120,57 +117,9 @@ int16_t shoot_control_loop(void)
     }
     else
     {
-//        //摩擦轮pwm
-//        static uint16_t fric_pwm1 = Fric_OFF;
-//        static uint16_t fric_pwm2 = Fric_OFF;
-
-
-//        //shoot_laser_on();       //激光开启
-
-
-//        //摩擦轮需要一个个斜波开启，不能同时直接开启，否则可能电机不转
-//        ramp_calc(&trigger_motor.fric1_ramp, SHOOT_FRIC_PWM_ADD_VALUE);
-
-//        if(trigger_motor.fric1_ramp.out == trigger_motor.fric1_ramp.max_value)
-//        {
-//            ramp_calc(&trigger_motor.fric2_ramp, SHOOT_FRIC_PWM_ADD_VALUE);
-//        }
-
-//        if( trigger_motor.fric2_ramp.out != trigger_motor.fric2_ramp.max_value)
-//        {
-//            trigger_motor.speed_set = 0.0f;
-//        }
-
-
-////鼠标右键按下加速摩擦轮，使得左键低速射击， 右键高速射击
-//        static uint16_t up_time = 0;
-//        if (trigger_motor.press_r)
-//        {
-//            up_time = UP_ADD_TIME;
-//        }
-
-//        if (up_time > 0)
-//        {
-//            trigger_motor.fric1_ramp.max_value = Fric_UP;
-//            trigger_motor.fric2_ramp.max_value = Fric_UP;
-//            up_time--;
-//        }
-//        else
-//        {
-//            trigger_motor.fric1_ramp.max_value = Fric_DOWN;
-//            trigger_motor.fric2_ramp.max_value = Fric_DOWN;
-//        }
-
-//        fric_pwm1 = (uint16_t)(trigger_motor.fric1_ramp.out);
-//        fric_pwm2 = (uint16_t)(trigger_motor.fric2_ramp.out);
-
-//        shoot_fric1_on(fric_pwm1);
-//        shoot_fric2_on(fric_pwm2);
-
         //计算拨弹轮电机PID
 				motor_pid[6].target=trigger_motor.speed_set;
 				motor_pid[6].f_cal_pid(&motor_pid[6],trigger_motor.speed);
-        //PID_Calc(&trigger_motor_pid, trigger_motor.speed, trigger_motor.speed_set);
 
         trigger_motor.given_current = (int16_t)(motor_pid[6].output);
         shoot_CAN_Set_Current = trigger_motor.given_current;
